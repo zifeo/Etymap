@@ -1,0 +1,40 @@
+{
+  "plugins": [
+    "babel",
+    "react",
+    "flowtype",
+    "prettier"
+  ],
+  "extends": [
+    "airbnb",
+    "plugin:react/recommended",
+    "plugin:flowtype/recommended",
+    "prettier",
+    "prettier/react",
+    "prettier/flowtype"
+  ],
+  "env": {
+    "browser": true
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "max-len": ["error", 120],
+    "no-underscore-dangle": "off",
+    "react/no-unescaped-entities": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 120,
+        "singleQuote": true,
+        "trailingComma": "es5",
+        "bracketSpacing": true,
+        "jsxBracketSameLine": true
+      }
+    ]
+  }
+}
