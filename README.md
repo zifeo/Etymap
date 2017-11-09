@@ -2,7 +2,7 @@
 
 ## Getting started
 
-Install Livereload [extension](http://livereload.com/extensions/).
+Install Livereload [extension](http://livereload.com/extensions/) and extract `data.zip`.
 
 ```shell
 pip3 install -r requirements.txt
@@ -22,13 +22,13 @@ The target audience would be linguists, historians and more generally anyone cur
 
 Some similar work can be found on the "etymology maps" subreddit (https://www.reddit.com/r/etymologymaps/). However most the vizualisation are not interactive and only project one aspect of the data.
 
-## Datasets
+## Main dataset
 
-http://www1.icsi.berkeley.edu/~demelo/etymwn/
+http://www1.icsi.berkeley.edu/~demelo/etymwn
 
 This dataset describes the relations between words: derivations (from or to), etymological relations and variations. We will also use other ISO datasets to get the mappings between language codes to their actual name.
 
 ## References
 
-http://www1.icsi.berkeley.edu/~demelo/etymwn/
-https://www.wiktionary.org/
+- http://www1.icsi.berkeley.edu/~demelo/etymwn
+- https://www.wiktionary.org

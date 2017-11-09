@@ -52,28 +52,23 @@ module.exports = function(grunt) {
         files: ['static/fonts/**/*', 'static/img/**/*'],
         tasks: 'copy',
       },
-      babel: {
-        files: 'src/**/*.js',
-        tasks: 'babel',
-      },
       flask: {
         files: 'server/**/*.py',
       },
     },
     clean: ['build'],
     browserify: {
-      dev: {
+      dist: {
         options: {
           transform: ['babelify'],
           watch: true,
           browserifyOptions: {
-            extensions: ['.jsx'],
             debug: true,
           },
           plugin: ['livereactload'],
         },
         files: {
-          'build/app.js': 'src/app.jsx',
+          'build/app.js': 'src/app.js',
         },
       },
     },
@@ -91,7 +86,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['clean', 'less', 'htmlmin', 'copy']);
-  grunt.registerTask('dev', ['default', 'browserify:dev', 'shell', 'watch']);
+  grunt.registerTask('dev', ['default', 'browserify', 'shell', 'watch']);
 
 };
 
