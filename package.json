@@ -1,5 +1,5 @@
 {
-  "name": "adversial-examples.viz",
+  "name": "Etymap",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -47,9 +47,9 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "d3": "^4.11.0",
+    "datamaps": "^0.5.8",
+    "jquery": "^3.2.1",
     "lodash": "^4.17.4",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
     "whatwg-fetch": "^2.0.3"
   }
 }
