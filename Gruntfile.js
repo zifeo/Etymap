@@ -55,6 +55,10 @@ module.exports = function(grunt) {
       flask: {
         files: 'server/**/*.py',
       },
+      browserify: {
+        files: 'src/**/*.js',
+        tasks: 'browserify'
+      }
     },
     clean: ['build'],
     browserify: {
@@ -65,7 +69,7 @@ module.exports = function(grunt) {
           browserifyOptions: {
             debug: true,
           },
-          plugin: ['livereactload'],
+          //plugin: ['livereactload'],
         },
         files: {
           'build/app.js': 'src/app.js',
