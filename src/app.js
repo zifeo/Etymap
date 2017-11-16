@@ -8,13 +8,6 @@ import * as d3 from 'd3';
 
 const geojson = require('./world.geo');
 
-const onReload = module.onReload || (() => {});
-onReload(() => {
-  // eslint-disable-next-line
-  console.info('hot reloading');
-  d3.select('#map').remove();
-});
-
 let width = $(window).width();
 let height = $(window).height();
 
@@ -40,6 +33,23 @@ g.selectAll("path")
     .attr("stroke-width", "0")
     .attr("d", geoPath);
 
+let languagesCoo = [];
+d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/master/data/languages_coordinates.csv", function(data) { //don't know what path to use to load from the server
+  data.forEach(function(d) {
+    if (d.longitude && d.latitude && isFinite(String(d.longitude)) && isFinite(String(d.latitude))) {
+      languagesCoo.push(d);
+    }
+  });
+
+  g.selectAll("circle")
+  .data(languagesCoo)
+  .enter()
+    .append("circle")
+    .attr("cx", function(datum) {return projection([datum.longitude, datum.latitude])[0]})
+    .attr("cy", function(datum) {return projection([datum.longitude, datum.latitude])[1]})
+    .attr("r", 2)
+    .on("mouseover", function(datum) {console.log(datum.name)});
+});
 rescale();
 
 $(window).resize(rescale);
@@ -54,4 +64,8 @@ function rescale() {
 
   g.selectAll("path")
     .attr("d", geoPath);
+
+  g.selectAll("circle")
+    .attr("cx", function(datum) {return projection([datum.longitude, datum.latitude])[0]})
+    .attr("cy", function(datum) {return projection([datum.longitude, datum.latitude])[1]});
 }
