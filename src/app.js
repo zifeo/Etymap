@@ -21,9 +21,12 @@ const svg = d3.select("body")
 const g = svg.append("g");
 
 const projection = d3.geoNaturalEarth1()
-    .scale(100);
+  .scale(100);
 
 const geoPath = d3.geoPath().projection(projection);
+
+const lineGenerator = d3.line()
+  .curve(d3.curveCardinal);
 
 g.selectAll("path")
   .data(geojson.map.features)
@@ -31,25 +34,44 @@ g.selectAll("path")
     .append("path")
     .attr("fill", "#ffe3b7")
     .attr("stroke-width", "0")
-    .attr("d", geoPath);
+    .attr("d", geoPath)
+    .attr("class", "mapPath");
 
-let languagesCoo = [];
+let languagesCoo = {};
 d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/master/data/languages_coordinates.csv", function(data) { //don't know what path to use to load from the server
   data.forEach(function(d) {
-    if (d.longitude && d.latitude && isFinite(String(d.longitude)) && isFinite(String(d.latitude))) {
-      languagesCoo.push(d);
+    if (d.longitude && d.latitude && isFinite(String(d.longitude)) && isFinite(String(d.latitude)) && d.isocode) {
+      languagesCoo[d.isocode] = d;
     }
   });
 
+  addLine(['fra', 'deu', 'lat']);
+});
+
+function addLine(isocodes) {
+  let positionsGeo = [];
+  for (let i in isocodes) {
+    const isocode = isocodes[i];
+    positionsGeo.push([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]);
+  }
+
   g.selectAll("circle")
-  .data(languagesCoo)
+  .data(positionsGeo)
   .enter()
     .append("circle")
-    .attr("cx", function(datum) {return projection([datum.longitude, datum.latitude])[0]})
-    .attr("cy", function(datum) {return projection([datum.longitude, datum.latitude])[1]})
-    .attr("r", 2)
-    .on("mouseover", function(datum) {console.log(datum.name)});
-});
+      .attr("cx", function(posGeo) {return projection(posGeo)[0]})
+      .attr("cy", function(posGeo) {return projection(posGeo)[1]})
+      .attr("r", 2);
+
+
+  g.append("path")
+    .data([positionsGeo])
+    .attr('d', lineGenerator(positionsGeo.map(posGeo => projection(posGeo))))
+    .attr("fill-opacity", 0)
+    .attr("stroke", "black")
+    .attr("class", "languagePath");
+}
+
 rescale();
 
 $(window).resize(rescale);
@@ -62,10 +84,13 @@ function rescale() {
     .scale(width/7)
     .translate([width/2,height/2]);
 
-  g.selectAll("path")
+  g.selectAll(".mapPath")
     .attr("d", geoPath);
 
   g.selectAll("circle")
-    .attr("cx", function(datum) {return projection([datum.longitude, datum.latitude])[0]})
-    .attr("cy", function(datum) {return projection([datum.longitude, datum.latitude])[1]});
+    .attr("cx", function(posGeo) {return projection(posGeo)[0]})
+    .attr("cy", function(posGeo) {return projection(posGeo)[1]});
+
+  g.selectAll(".languagePath")
+    .attr('d', function(positionsGeo) { return lineGenerator(positionsGeo.map(posGeo => projection(posGeo))) });
 }
