@@ -78,7 +78,7 @@ module.exports = function(grunt) {
     },
     shell: {
       flask: {
-        command: 'export FLASK_APP=server/app.py && export FLASK_DEBUG=1 && (flask run || python3 -m flask run)',
+        command: 'export FLASK_APP=server/main.py && export FLASK_DEBUG=1 && (flask run || python3 -m flask run)',
         options: {
           async: true,
           stdout: true,
