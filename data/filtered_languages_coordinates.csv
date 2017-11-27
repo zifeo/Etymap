@@ -1,0 +1,350 @@
+,glottocode,name,isocode,level,macroarea,latitude,longitude
+124,adny1235,Adnyamathanha,adt,language,Australia,-30.1451,138.671
+157,afri1274,Afrikaans,afr,language,Africa,-22.0,30.0
+309,akka1240,Akkadian,akk,language,Eurasia,,
+341,alab1237,Alabama,akz,language,North America,30.76738,-94.62848000000001
+377,aleu1260,Aleut,ale,language,North America,52.1228,-174.29
+380,alge1239,Algerian Arabic,arq,language,Africa,35.4208,3.23033
+385,algo1255,Algonquin,alq,language,North America,47.3876,-77.5258
+476,ambo1250,Ambonese Malay,abs,language,Papunesia,-3.7134199999999997,128.184
+482,amda1238,Amdang,amj,language,Africa,14.7528,20.8912
+489,amer1248,American Sign Language,ase,language,North America,33.8117,-81.6121
+493,amha1245,Amharic,amh,language,Africa,11.708182,39.543456
+546,anci1242,Ancient Greek,grc,language,Eurasia,39.8155,21.9129
+556,anda1287,Andalusian Arabic,xaa,language,Eurasia,,
+596,angl1258,Anglo-Norman,xno,dialect,,,
+597,angl1239,Angloromani,rme,language,North America,39.0,-78.0
+710,arag1245,Aragonese,arg,language,Eurasia,42.4669,-0.00919
+791,nucl1235,Armenian,hye,language,Eurasia,40.0,45.0
+798,arom1237,Aromanian,rup,language,Eurasia,42.0646,22.6464
+803,fran1260,Arpitan,frp,language,Eurasia,45.8051,6.48152
+875,assy1241,Assyrian Neo-Aramaic,aii,language,Eurasia,36.75,43.0
+881,astu1245,Asturian,ast,language,Eurasia,42.4181,-6.02227
+973,avar1256,Avar,ava,language,Eurasia,41.7047,46.558
+981,aves1237,Avestan,ave,language,Eurasia,31.541,53.633
+1276,balt1258,Balti,bft,language,Eurasia,34.4491,77.2859
+1383,guar1293,Baniva de Maroa,gae,language,South America,1.80835,-66.922505
+1535,bash1264,Bashkir,bak,language,Eurasia,53.5967,56.5594
+1543,basq1248,Basque,eus,language,Eurasia,43.2787,-1.3162200000000002
+1620,bava1246,Bavarian,bar,language,Eurasia,47.9232,13.245999999999999
+1698,bela1254,Belarusian,bel,language,Eurasia,53.2307,25.6038
+1745,beng1280,Bengali,ben,language,Eurasia,24.0,90.0
+1936,bili1260,Bilin,byn,language,Africa,15.7833,38.3917
+2003,bisl1239,Bislama,bis,language,Papunesia,-15.4,166.89
+2288,bret1244,Breton,bre,language,Eurasia,48.2452,-3.78934
+2395,bulg1262,Bulgarian,bul,language,Eurasia,43.3646,25.046999999999997
+2477,nucl1310,Burmese,mya,language,Eurasia,20.7926,93.9665
+2587,caju1236,Cajun French,frc,language,North America,29.6869,-91.6133
+2602,calo1236,Caló,rmq,language,Eurasia,,
+2680,stan1289,Catalan,cat,language,Eurasia,41.453,1.569
+2683,cata1286,Catawba,chc,language,North America,34.9685,-80.8857
+2700,cebu1242,Cebuano,ceb,language,Papunesia,8.38799,124.367
+2704,celt1247,Celtiberian,xce,language,Eurasia,,
+2756,cent2041,Central Grebo,grv,language,Africa,4.880380000000001,-7.88667
+2771,cent1989,Central Khmer,khm,language,Eurasia,12.0515,105.015
+2801,cent2194,Central Moroccan Berber,tzm,language,Africa,32.7415,-2.40872
+2811,cent2126,Central Okinawan,ryu,language,Eurasia,26.14854,127.7816
+2824,cent2128,Central Siberian Yupik,ess,language,Eurasia,63.4308,-170.27200000000002
+2903,cham1318,Chamicuro,ccc,language,South America,-5.1149,-75.6778
+2904,cham1312,Chamorro,cha,language,Papunesia,15.233332999999998,145.75
+2956,chec1245,Chechen,che,language,Eurasia,43.5,45.5
+2975,cher1273,Cherokee,chr,language,North America,35.4664,-83.163
+3001,chic1270,Chickasaw,cic,language,North America,33.9452,-97.1301
+3084,choc1276,Choctaw,cho,language,North America,33.8993,-94.819
+3135,chur1257,Church Slavic,chu,language,Eurasia,43.7171,22.8442
+3174,clas1249,Classical Armenian,xcl,language,Eurasia,,
+3176,clas1250,Classical Nahuatl,nci,language,North America,19.72,-96.97
+3177,clas1251,Classical Quechua,qwc,language,South America,-9.999989999999999,-76.5
+3178,clas1252,Classical Syriac,syc,language,Eurasia,37.1129,42.1432
+3185,coas1294,Coastal Kadazan,kzj,language,Papunesia,5.77065,116.06299999999999
+3245,neap1235,Continental Southern Italian,nap,language,Eurasia,39.2288,16.4225
+3252,copt1239,Coptic,cop,language,Africa,29.471999999999998,31.2053
+3255,corn1251,Cornish,cor,language,Eurasia,50.5233,-4.18619
+3279,chin1272,Creolized Grand Ronde Chinook Jargon,chn,language,North America,55.0,-125.0
+3285,crim1257,Crimean Tatar,crh,language,Eurasia,45.0,34.08
+3332,czec1258,Czech,ces,language,Eurasia,49.873398,15.104370000000001
+3442,dani1285,Danish,dan,language,Eurasia,54.8655,9.36284
+3634,dhiv1236,Dhivehi,div,language,Eurasia,1.928498,73.54433
+3710,diti1235,Ditidaht,dtd,language,North America,,
+3944,dutc1256,Dutch,nld,language,Eurasia,52.0,5.0
+4009,east2544,Eastern Abenaki,aaq,language,North America,45.0112,-68.6617
+4028,east2534,Eastern Canadian Inuktitut,ike,language,North America,62.1735,-75.6139
+4086,nort2627,Eastern Low German,nds,language,Eurasia,50.771,6.0920000000000005
+4119,panj1256,Eastern Panjabi,pan,language,Eurasia,30.0368,75.6702
+4235,efik1245,Efik,efi,language,Africa,4.89379,8.381210000000001
+4250,egyp1246,Egyptian (Ancient),egy,language,Africa,28.381735,30.834959
+4251,egyp1253,Egyptian Arabic,arz,language,Africa,31.0,31.0
+4317,eman1238,Eman,emn,language,Africa,6.22923,9.70562
+4354,enge1239,Engenni,enn,language,Africa,5.11931,6.3733900000000006
+4357,stan1293,English,eng,language,Eurasia,53.0,-1.0
+4405,erzy1239,Erzya,myv,language,Eurasia,52.8548,45.3901
+4419,espe1235,Esperanto,epo,language,Eurasia,49.3273,2.81045
+4451,etru1241,Etruscan,ett,language,Eurasia,41.9,12.4833
+4461,even1259,Evenki,evn,language,Eurasia,53.85,108.626
+4465,ewee1241,Ewe,ewe,language,Africa,6.46061,0.814975
+4524,faro1244,Faroese,fao,language,Eurasia,62.0732,-6.88497
+4555,fiji1243,Fijian,fij,language,Papunesia,-18.0,178.33
+4556,fiji1242,Fiji Hindi,hif,language,Papunesia,-17.8148,177.77200000000002
+4567,finn1318,Finnish,fin,language,Eurasia,64.7628,25.5577
+4596,fonn1241,Fon,fon,language,Africa,7.154839999999999,1.66495
+4625,stan1290,French,fra,language,Eurasia,48.0,2.0
+4627,friu1240,Friulian,fur,language,Eurasia,46.1473,13.0493
+4719,gali1258,Galician,glg,language,Eurasia,42.2446,-7.5343
+4746,gami1243,Gamilaraay,kld,language,Australia,-29.9037,149.543
+4769,gand1255,Ganda,lug,language,Africa,0.66884,32.15153
+4925,geez1241,Geez,gez,language,Africa,10.1342,40.6821
+4949,nucl1302,Georgian,kat,language,Eurasia,41.850396999999994,43.78613
+4959,stan1295,German,deu,language,Eurasia,48.648999999999994,12.4676
+5012,gilb1244,Gilbertese,gil,language,Papunesia,-1.34,176.44
+5146,goth1244,Gothic,got,language,Eurasia,46.9304,29.9786
+5266,guja1252,Gujarati,guj,language,Eurasia,22.686999999999998,71.0962
+5344,gugu1255,Guugu Yimidhirr,kky,language,Australia,-14.9424,144.83100000000002
+5389,gwic1235,Gwich'in,gwi,language,North America,67.4307,-142.963
+5444,hait1244,Haitian,hat,language,North America,18.795135000000002,-72.136115
+5450,hakk1236,Hakka Chinese,hak,language,Eurasia,25.0,116.0
+5462,halk1245,Halkomelem,hur,language,North America,48.0751,-122.029
+5547,haus1257,Hausa,hau,language,Africa,11.1513,8.7804
+5558,hawa1245,Hawaiian,haw,language,Papunesia,19.6297,-155.43
+5637,hili1240,Hiligaynon,hil,language,Papunesia,10.4018,122.97399999999999
+5643,hind1269,Hindi,hin,language,Eurasia,25.0,77.0
+5656,hitt1242,Hittite,hit,language,Eurasia,,
+5700,ainu1240,Hokkaido Ainu,ain,language,Eurasia,43.633654,142.46167
+5728,hopi1249,Hopi,hop,language,North America,35.7653,-110.535
+5818,hung1274,Hungarian,hun,language,Eurasia,46.9068585714,19.6555271429
+5893,icel1247,Icelandic,isl,language,Eurasia,63.4837,-19.0212
+6061,indo1316,Indonesian,ind,language,Papunesia,-7.33458,109.71600000000001
+6063,indo1318,Indo-Portuguese,idb,language,Eurasia,7.25,80.67
+6070,ines1240,Ineseño,inz,language,North America,34.6169,-120.08
+6093,inte1239,Interlingua (International Auxiliary Language Association),ina,language,Eurasia,48.203,2.615
+6135,iris1253,Irish,gle,language,Eurasia,53.2186,-7.6150899999999995
+6188,isth1244,Isthmus Zapotec,zai,language,North America,16.4548,-94.8444
+6191,istr1245,Istro Romanian,ruo,language,Eurasia,45.433,14.2
+6196,ital1282,Italian,ita,language,Eurasia,43.0464,12.6489
+6314,jama1262,Jamaican Creole English,jam,language,North America,18.13,-77.2612
+6339,nucl1643,Japanese,jpn,language,Eurasia,35.0,135.0
+6365,java1254,Javanese,jav,language,Papunesia,-0.572307,110.885
+6570,kaba1278,Kabardian,kbd,language,Eurasia,43.5082,43.3918
+6719,kala1399,Kalaallisut,kal,language,Eurasia,69.3761,-52.864
+6763,kalo1256,Kalo Finnish Romani,rmf,language,Eurasia,60.45,24.43
+6897,nucl1305,Kannada,kan,language,Eurasia,13.5878,76.1198
+6992,kare1335,Karelian,krl,language,Eurasia,65.1691,30.8655
+7048,kash1280,Kashaya,kju,language,North America,38.5424,-123.08
+7052,kash1274,Kashubian,csb,language,Eurasia,54.2996,18.6163
+7113,kaur1267,Kaurna,zku,language,Australia,-34.34966141,138.4800794
+7132,kawi1241,Kawi,kaw,language,Papunesia,,
+7161,kaza1248,Kazakh,kaz,language,Eurasia,41.8729,65.7709
+7312,khak1248,Khakas,kjh,language,Eurasia,50.7393,107.169
+7445,kich1262,K'iche',quc,language,North America,14.5278,-91.1696
+7480,kimb1241,Kimbundu,kmb,language,Africa,-8.97835,14.8893
+7506,kiny1244,Kinyarwanda,kin,language,Africa,-1.56771,29.6441
+7523,kirg1245,Kirghiz,kir,language,Eurasia,42.0,74.0
+7677,kols1241,Kölsch,ksh,language,Eurasia,50.946999999999996,6.9270000000000005
+7754,konk1269,Konkomba,xon,language,Africa,9.822239999999999,0.2783
+7796,kore1280,Korean,kor,language,Eurasia,37.5,128.0
+7868,kott1239,Kott-Assan,zko,language,Eurasia,55.0,94.0
+7929,krio1253,Krio,kri,language,Africa,10.8811,-14.3204
+7931,krio1252,Kriol,rop,language,Australia,-18.135,137.66899999999998
+7954,kuan1248,Kuanua,ksd,language,Papunesia,-4.30986,152.114
+8064,kumy1244,Kumyk,kum,language,Eurasia,43.0,47.0
+8322,ladi1250,Ladin,lld,language,Eurasia,46.60651,11.89498
+8323,ladi1251,Ladino,lad,language,Eurasia,41.205,28.6632
+8380,lako1247,Lakota,lkt,language,North America,46.3699,-103.95
+8487,laoo1244,Lao,lao,language,Eurasia,16.0726,104.568
+8525,lati1261,Latin,lat,language,Eurasia,41.9026,12.4502
+8531,latv1249,Latvian,lav,language,Eurasia,56.826108,24.309117999999998
+8717,liby1240,Libyan Arabic,ayl,language,Africa,22.0032,15.0014
+8729,ligu1248,Ligurian,lij,language,Eurasia,44.0816,7.90522
+8759,limb1263,Limburgan,lim,language,Eurasia,51.015,5.87705
+8777,ling1263,Lingala,lin,language,Africa,1.40324,19.7829
+8809,lite1248,Literary Chinese,lzh,language,Eurasia,,
+8811,lith1251,Lithuanian,lit,language,Eurasia,55.1429,23.9601
+8824,livv1244,Liv,liv,language,Eurasia,57.566,22.0262
+8884,araw1276,Lokono,arw,language,South America,5.64295,-56.9243
+8910,lomb1257,Lombard,lmo,language,Eurasia,45.8817,9.39509
+9001,loui1240,Louisiana Creole French,lou,language,North America,30.0412,-90.7475
+9046,lowe1385,Lower Sorbian,dsb,language,Eurasia,51.6621,13.9407
+9076,luba1249,Luba-Lulua,lua,language,Africa,-5.72717,22.4422
+9140,luok1236,Luo (Kenya and Tanzania),luo,language,Africa,-0.93296,34.4896
+9170,luxe1241,Luxembourgish,ltz,language,Eurasia,49.6839,6.14931
+9212,mace1250,Macedonian,mkd,language,Eurasia,41.5957,21.7932
+9225,macu1259,Macushi,mbc,language,South America,4.31861,-60.2209
+9360,maka1311,Makasar,mak,language,Papunesia,-5.65551,119.838
+9435,mala1464,Malayalam,mal,language,Eurasia,9.592080000000001,76.7651
+9479,malt1254,Maltese,mlt,language,Eurasia,35.8884,14.4508
+9542,manc1252,Manchu,mnc,language,Eurasia,47.3122,126.557
+9557,mand1415,Mandarin Chinese,cmn,language,Eurasia,40.0209,116.228
+9562,mand1436,Mandinka,mnk,language,Africa,12.8165233333,-15.653946666700001
+9658,manx1243,Manx,glv,language,Eurasia,54.2604,-4.45437
+9674,maor1246,Maori,mri,language,Papunesia,-38.2881,176.541
+9687,mapu1245,Mapudungun,arn,language,South America,-38.7392,-71.277
+9720,mara1378,Marathi,mar,language,Eurasia,17.9344,76.6665
+9767,mari1424,Marithiel,mfr,language,Australia,-13.8818,130.237
+9793,mars1254,Marshallese,mah,language,Papunesia,8.72,167.73
+9799,mart1255,Martuthunira,vma,language,Australia,-20.9294,116.60700000000001
+9814,masa1300,Masai,mas,language,Africa,-3.1419,36.4573
+10028,mbon1252,Mbonga,xmb,language,Africa,5.7517,13.6471
+10076,ling1242,Mediterranean Lingua Franca,pml,language,Africa,33.8613,10.8531
+10162,meri1244,Meriam,ulk,language,Papunesia,-9.59575,143.773
+10227,midd1344,Middle Chinese,ltc,language,Eurasia,,
+10229,midd1321,Middle Dutch,dum,language,Eurasia,,
+10232,midd1317,Middle English,enm,language,Eurasia,,
+10234,midd1316,Middle French,frm,dialect,,,
+10235,midd1343,Middle High German,gmh,language,Eurasia,,
+10238,midd1318,Middle Low German,gml,language,Eurasia,,
+10239,midd1351,Middle Mongol,xng,language,Eurasia,,
+10268,mikm1235,Mi'kmaq,mic,language,North America,45.9941,-65.5766
+10290,mina1268,Minangkabau,min,language,Papunesia,4.17,96.25
+10333,mira1251,Mirandese,mwl,language,Eurasia,41.5375,-6.38371
+10405,mobi1236,Mobilian,mod,language,North America,30.47,-91.75
+10421,mode1248,Modern Greek,ell,language,Eurasia,42.3224,24.8699
+10422,hebr1245,Modern Hebrew,heb,language,Eurasia,31.1056,35.0179
+10440,moha1258,Mohawk,moh,language,North America,43.72,-74.66835999999999
+10538,mont1268,Montagnais,moe,language,North America,49.0533,-68.7376
+10584,moro1292,Moroccan Arabic,ary,language,Africa,32.5,-7.5
+10627,moza1249,Mozarabic,mxi,language,Eurasia,37.8763,-1.7972400000000002
+10748,muns1251,Munsee,umu,language,North America,42.5968,-81.9166
+10848,myce1241,Mycenaean Greek,gmy,language,Eurasia,,
+10953,nama1264,Nama (Namibia),naq,language,Africa,-25.0747,17.9767
+11042,narr1280,Narrangansett,xnt,dialect,North America,,
+11043,narr1259,Narrinyeri,nay,language,Australia,-36.2301,140.158
+11079,nava1243,Navajo,nav,language,North America,36.2106,-110.08200000000001
+11156,ndon1254,Ndonga,ndo,language,Africa,-17.6417,19.1631
+11778,lush1252,Northern Lushootseed,lut,language,North America,48.42,-122.529
+11822,nort2671,Northern Sami,sme,language,Eurasia,68.725,22.1113
+11960,norw1258,Norwegian,nor,language,Eurasia,59.92,10.71
+11961,norw1259,Norwegian Bokmål,nob,dialect,Eurasia,61.111999999999995,8.886000000000001
+11962,norw1262,Norwegian Nynorsk,nno,dialect,,,
+12530,nyun1247,Nyunga,nys,language,Australia,-33.1199,118.15100000000001
+12564,occi1239,Occitan,oci,language,Eurasia,44.1415,6.829789999999999
+12678,oldb1235,Old Burmese,obr,language,Eurasia,,
+12682,oldd1237,Old Dutch,odt,language,Eurasia,,
+12683,olde1238,Old English (ca. 450-1100),ang,language,Eurasia,,
+12685,fran1264,Old Frankish,frk,language,Eurasia,52.896,9.983880000000001
+12686,oldf1239,Old French (842-ca. 1400),fro,language,Eurasia,,
+12687,oldf1241,Old Frisian,ofs,language,Eurasia,,
+12688,oldg1234,Old Georgian,oge,language,Eurasia,,
+12689,oldh1241,Old High German (ca. 750-1050),goh,language,Eurasia,,
+12691,oldi1245,Old Irish (to 900),sga,language,Eurasia,,
+12700,oldn1244,Old Norse,non,language,Eurasia,,
+12704,oldp1254,Old Persian (ca. 600-400 B.C.),peo,language,Eurasia,,
+12705,oldp1253,Old Provençal,pro,language,Eurasia,,
+12706,prus1238,Old Prussian,prg,language,Eurasia,52.394,14.757
+12708,oldr1238,Old Russian,orv,language,Eurasia,,
+12710,olds1250,Old Saxon,osx,language,Eurasia,,
+12712,olds1249,Old Spanish,osp,language,Eurasia,,
+12715,oldt1247,Old Turkish,otk,language,Eurasia,,
+12718,oldw1239,Old Welsh,owl,language,Eurasia,,
+12829,orma1241,Orma,orc,language,Africa,-1.79489,39.607490000000006
+12870,osse1243,Ossetian,oss,language,Eurasia,41.7882,43.2674
+12977,pahl1241,Pahlavi,pal,language,Eurasia,,
+13022,pala1344,Palauan,pau,language,Papunesia,7.34138,134.476678
+13034,pali1273,Pali,pli,language,Eurasia,24.5271,82.251
+13150,papi1253,Papiamento,pap,language,North America,12.48485,-69.93988
+13162,para1311,Paraguayan Guaraní,gug,language,South America,-25.60551,-57.088159999999995
+13195,part1239,Parthian,xpr,language,Eurasia,,
+13366,phoe1239,Phoenician,phn,language,Africa,,
+13396,pica1241,Picard,pcd,language,Eurasia,50.2831,3.25085
+13404,pidg1246,Pidgin Delaware,dep,language,North America,38.569,-75.46300000000001
+13425,piji1239,Pijin,pis,language,Papunesia,-9.567,160.137
+13456,pipi1250,Pipil,ppl,language,North America,13.8931,-89.443
+13480,pitj1243,Pitjantjatjara,pjt,language,Australia,-26.9704,131.357
+13498,plau1238,Plautdietsch,pdt,language,North America,49.578028,-109.35386799999999
+13531,pola1255,Polabian,pox,language,Eurasia,52.0,14.0
+13539,poli1260,Polish,pol,language,Eurasia,51.8439,18.6255
+13584,port1283,Portuguese,por,language,Eurasia,39.91,-8.1
+13602,powh1243,Powhatan,pim,language,North America,36.99422,-77.20752
+13879,rapa1244,Rapanui,rap,language,Papunesia,-27.113000000000003,-109.34200000000001
+13989,tewa1260,Rio Grande Tewa,tew,language,North America,35.9053,-106.124
+14012,rohi1238,Rohingya,rhg,language,Eurasia,20.833082,92.393968
+14024,roma1327,Romanian,ron,language,Eurasia,46.3913,24.2256
+14029,roma1326,Romansh,roh,language,Eurasia,46.5538,9.92812
+14113,russ1263,Russian,rus,language,Eurasia,59.0,50.0
+14116,rusy1239,Rusyn,rue,language,Eurasia,48.7171,22.9579
+14293,samo1305,Samoan,smo,language,Papunesia,-13.92,-171.83
+14431,sans1269,Sanskrit,san,language,Eurasia,20.0,77.0
+14451,sant1410,Santali,sat,language,Eurasia,25.0317,87.8185
+14545,sars1236,Sarsi,srs,language,North America,50.8822,-114.301
+14563,sate1243,Sateré-Mawé,mav,language,South America,-3.6389699999999996,-56.8749
+14564,sate1242,Saterfriesisch,stq,language,Eurasia,53.117,7.721
+14609,scot1243,Scots,sco,language,Eurasia,55.886945,-3.7101330000000003
+14610,scot1245,Scottish Gaelic,gla,language,Eurasia,56.7574,-5.24366
+14612,gull1241,Sea Island Creole English,gul,language,North America,33.6632,-79.6036
+14713,sene1264,Seneca,see,language,North America,42.56,-77.53
+14756,seri1257,Seri,sei,language,North America,28.9877,-112.384
+14863,shel1236,Shelta,sth,language,Eurasia,53.7907,-7.73983
+14919,shon1251,Shona,sna,language,Africa,-17.20849,29.75725
+14926,shos1248,Shoshoni,shh,language,North America,41.0,-116.0
+14986,sici1248,Sicilian,scn,language,Eurasia,37.5735,14.0414
+15031,sile1253,Silesian,szl,language,Eurasia,,
+15082,sinh1246,Sinhala,sin,language,Eurasia,8.0,81.0
+15158,skol1241,Skolt Sami,sms,language,Eurasia,68.8326,29.7204
+15163,slov1269,Slovak,slk,language,Eurasia,48.545705,18.78479
+15165,slov1268,Slovenian,slv,language,Eurasia,46.2543,14.7766
+15218,soma1255,Somali,som,language,Africa,4.778704,45.152856
+15488,sout2807,Southern Sotho,sot,language,Africa,-30.4445,27.8951
+15623,stan1288,Spanish,spa,language,Eurasia,40.4414,-1.11788
+15630,sran1240,Sranan Tongo,srn,language,South America,5.83,-55.33
+15658,stan1306,Standard Malay,zsm,language,Eurasia,3.0889599999999997,101.699
+15741,sume1241,Sumerian,sux,language,Eurasia,31.3,45.6667
+15746,sund1252,Sundanese,sun,language,Papunesia,-6.89708,107.10600000000001
+15820,swed1254,Swedish,swe,language,Eurasia,59.800633999999995,17.389526
+15824,swis1247,Swiss German,gsw,language,Eurasia,47.0516,8.464189999999999
+15895,taga1270,Tagalog,tgl,language,Papunesia,14.06,121.74700000000001
+15911,tahi1242,Tahitian,tah,language,Papunesia,-17.6485,-149.45
+15939,tain1254,Taino,tnq,language,North America,18.2836,-66.8042
+15961,taji1245,Tajik,tgk,language,Eurasia,38.8213,68.5549
+16048,tami1289,Tamil,tam,language,Eurasia,10.520219,78.825989
+16135,nort1550,Taos Northern Tiwa,twf,language,North America,36.4277,-105.604
+16187,tata1255,Tatar,tat,language,Eurasia,55.0,50.0
+16308,telu1262,Telugu,tel,language,Eurasia,16.4529,78.7024
+16404,tetu1245,Tetum,tet,language,Papunesia,-9.112169999999999,125.52799999999999
+16426,thai1261,Thai,tha,language,Eurasia,14.192,100.671
+16487,tibe1272,Tibetan,bod,language,Eurasia,28.3681,90.1872
+16516,tigr1271,Tigrinya,tir,language,Africa,15.3359,38.9266
+16601,tivv1240,Tiv,tiv,language,Africa,6.880389999999999,9.26287
+16675,toho1245,Tohono O'odham,ood,language,North America,31.7973,-111.995
+16683,tokh1242,Tokharian A,xto,language,Eurasia,,
+16684,tokh1243,Tokharian B,txb,language,Eurasia,,
+16687,tokp1240,Tok Pisin,tpi,language,Papunesia,-9.41971,147.303
+16738,tong1325,Tonga (Tonga Islands),ton,language,Papunesia,-21.17,-175.25
+16779,torr1261,Torres Strait Creole,tcs,language,Australia,-11.065999999999999,142.692
+16815,tran1282,Transalpine Gaulish,xtg,language,Eurasia,,
+16833,trie1243,Trieng,stg,language,Eurasia,15.5002,107.515
+16902,tswa1253,Tswana,tsn,language,Africa,-24.368000000000002,24.7587
+16944,tulu1258,Tulu,tcy,language,Eurasia,12.8114,75.2651
+17002,tupi1274,Tupí,tpw,language,South America,-23.95,-46.38
+17017,nucl1301,Turkish,tur,language,Eurasia,39.8667,32.8667
+17019,turk1304,Turkmen,tuk,language,Eurasia,37.0872,59.1757
+17056,twii1234,Twi,twi,dialect,,,
+17117,ugar1238,Ugaritic,uga,language,Eurasia,,
+17125,uigh1240,Uighur,uig,language,Eurasia,43.67,79.75
+17147,ukra1253,Ukrainian,ukr,language,Eurasia,48.175841999999996,24.395785999999998
+17204,umbu1257,Umbundu,umb,language,Africa,-12.4763,14.4148
+17287,uppe1395,Upper Sorbian,hsb,language,Eurasia,51.2403,14.4098
+17313,urdu1245,Urdu,urd,language,Eurasia,25.0,67.0
+17415,vaii1241,Vai,vai,language,Africa,7.05085,-11.3262
+17481,vene1258,Venetian,vec,language,Eurasia,45.503581,12.214167
+17488,veps1250,Veps,vep,language,Eurasia,60.3353,34.7865
+17511,viet1252,Vietnamese,vie,language,Eurasia,20.681188,105.77407099999999
+17538,vlaa1240,Vlaams,vls,language,Eurasia,51.0754,3.11345
+17686,wall1255,Walloon,wln,language,Eurasia,50.2235,5.14509
+17704,wamp1249,Wampanoag,wam,language,North America,41.705,-73.3148
+17760,waor1240,Waorani,auc,language,South America,-1.1231200000000001,-76.683
+17874,wels1247,Welsh,cym,language,Eurasia,52.0,-4.0
+17924,west2630,Western Abenaki,abe,language,North America,46.1381,-72.6511
+17931,west2615,Western Apache,apw,language,North America,33.8574,-110.12299999999999
+17947,west2618,Western Canadian Inuktitut,ikt,language,North America,64.3486,-96.148
+17970,west2354,Western Frisian,fry,language,Eurasia,53.143,5.86091
+18190,wint1259,Wintu,wit,language,North America,39.7176,-122.445
+18195,wira1262,Wiradhuri,wrh,language,Australia,-34.0742,145.994
+18229,nucl1347,Wolof,wol,language,Africa,15.2534,-15.383
+18314,wymy1235,Wymysorys,wym,language,Eurasia,,
+18338,xhos1239,Xhosa,xho,language,Africa,-31.0389,28.0769
+18417,yaga1262,Yagara,yxg,dialect,,,
+18701,yola1237,Yola,yol,language,Eurasia,,
+18741,yoru1245,Yoruba,yor,language,Africa,7.15345,3.67225
+18762,yuca1254,Yucatec Maya,yua,language,North America,18.7757,-88.9567
+18771,yuec1235,Yue Chinese,yue,language,Eurasia,23.0,113.0
+18776,band1339,Yugambeh-Bandjalang,bdy,language,Australia,-28.3458,152.859
+18798,yuro1248,Yurok,yur,language,North America,41.3262,-123.824
+18958,zulu1248,Zulu,zul,language,Africa,-25.3305,31.3512
