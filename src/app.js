@@ -45,41 +45,47 @@ g.selectAll("path")
     .attr("class", "mapPath");
 
 let languagesCoo = {};
-const temp = [];
-d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/master/data/languages_coordinates.csv", function(data) { //don't know what path to use to load from the server
+const allLanguages = [];
+d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/frontend-demo/data/filtered_languages_coordinates.csv", function(data) { //don't know what path to use to load from the server
   data.forEach(function(d) {
     if (d.longitude && d.latitude && isFinite(String(d.longitude)) && isFinite(String(d.latitude)) && d.isocode) {
       languagesCoo[d.isocode] = d;
-      temp.push(d);
+      allLanguages.push(d);
     }
   });
 
-  addLine(['fra', 'deu', 'lat', 'acy']);
-  addLine(['fra', 'eng', 'gle']);
-  addLine(['fra', 'deu', 'hun', 'rus']);
+  addAllLanguagesPoints();
 });
 
-function addLine(isocodes) {
+const languagesRelations = {};
+d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/frontend-demo/data/relations.csv", function(data) { //still don't know what path to use to load from the server
+  data.forEach(function(d) {
+    if (d.src_lang !== d.to_lang) {
+      if (!languagesRelations[d.src_lang]) {
+        languagesRelations[d.src_lang] = [];
+      }
+      languagesRelations[d.src_lang].push({"lang" : d.to_lang, "count" : d.count});
+    }
+  });
+
+  addAllLanguagesPoints();
+});
+
+function addLine(isocodes, strokeWidth) {
   let positionsGeo = [];
   for (let i in isocodes) {
     const isocode = isocodes[i];
     positionsGeo.push([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]);
   }
 
-  g.selectAll("none") //Circles for each language
-   .data(positionsGeo)
-   .enter()
-    .append("circle")
-      .attr("cx", function(posGeo) {return projection(posGeo)[0]})
-      .attr("cy", function(posGeo) {return projection(posGeo)[1]})
-      .attr("r", 2);
-
 
   let path = g.append("path") //Path that goes through each language
     .data([positionsGeo])
     .attr('d', lineGenerator(positionsGeo.map(posGeo => projection(posGeo))))
-    .attr("fill-opacity", 0)
-    .attr("stroke", "black")
+    .attr("fill", "none")
+    .attr("stroke", "white")
+    .attr("stroke-width", strokeWidth)
+    .attr("pointer-events", "none")
     .attr("class", "languagePath");
 
   //We clone the path to create a mask, to animate the original path
@@ -97,16 +103,55 @@ function addLine(isocodes) {
   //We animate the mask
   d3.select("#" + cloneID + "Path")
     .data([positionsGeo])
-    .attr("class", "mask")
+    .attr("class", "maskLanguagePath")
     .attr("stroke", "white")
     .attr("stroke-dasharray", length + ' ' + length)
     .attr("stroke-dashoffset", length)
     .transition()
-        .duration(3000)
+        .duration(1000)
         .attr("stroke-dashoffset", 0);
-;
+
 
   path.attr("mask", "url(#" + cloneID + ")")
+}
+
+function removeAllLines() {
+  d3.selectAll(".languagePath").remove();
+  d3.selectAll(".maskLanguagePath").remove();
+}
+
+function addAllLanguagesPoints() {
+  g.selectAll("none") //Circles for each language
+   .data(allLanguages)
+   .enter()
+    .append("circle")
+      .attr("cx", function(d) {return projection([d.longitude, d.latitude])[0]})
+      .attr("cy", function(d) {return projection([d.longitude, d.latitude])[1]})
+      .attr("r", 2)
+      .attr("fill", "black")
+      .on("mouseover", function(d) {
+        removeAllLines();
+        console.log(d.isocode)
+        d3.select(this).transition()
+          .duration("200")
+          .attr("fill", "white")
+          .attr("r", 4);
+
+          if (d.isocode in languagesRelations) {
+            for (var i in languagesRelations[d.isocode]) {
+              var otherLang = languagesRelations[d.isocode][i].lang;
+              if (otherLang in languagesCoo) {
+                addLine([d.isocode, otherLang], 1 + Math.log(languagesRelations[d.isocode][i].count));
+              }
+            }
+          }
+      })
+      .on("mouseout", function(d) {
+        d3.select(this).transition()
+          .duration("200")
+          .attr("fill", "black")
+          .attr("r", 2);
+      });
 }
 
 rescale();
@@ -131,6 +176,6 @@ function rescale() {
   g.selectAll(".languagePath")
     .attr('d', function(positionsGeo) { return lineGenerator(positionsGeo.map(posGeo => projection(posGeo))) });
 
-  g.selectAll(".mask")
+  g.selectAll(".maskLanguagePath")
     .attr('d', function(positionsGeo) { return lineGenerator(positionsGeo.map(posGeo => projection(posGeo))) });
 }
