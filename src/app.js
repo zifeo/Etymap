@@ -49,7 +49,7 @@ g.selectAll("path")
 
 let languagesCoo = {};
 const allLanguages = [];
-d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/frontend-demo/data/filtered_languages_coordinates.csv", (data) => { // FIXME don't know what path to use to load from the server
+d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/master/data/filtered_languages_coordinates.csv", (data) => { // FIXME don't know what path to use to load from the server
   data.forEach((d) => {
     if (d.longitude && d.latitude && isFinite(String(d.longitude)) && isFinite(String(d.latitude)) && d.isocode) {
       languagesCoo[d.isocode] = d;
@@ -61,7 +61,7 @@ d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/frontend-demo/data/filter
 });
 
 const languagesRelations = {};
-d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/frontend-demo/data/relations.csv", (data) => { // FIXME still don't know what path to use to load from the server
+d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/master/data/relations.csv", (data) => { // FIXME still don't know what path to use to load from the server
   data.forEach((d) => {
     if (d.src_lang !== d.to_lang) {
       if (!languagesRelations[d.src_lang]) {
