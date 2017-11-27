@@ -1,0 +1,20 @@
+version: '3'
+
+networks:
+  front:
+    external:
+      name: front
+
+services:
+
+  etymap:
+    build: .
+    restart: unless-stopped
+    networks:
+      - front
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.frontend.rule=Host:etymap.xyz
+      - traefik.port=80
+      - traefik.docker.network=front
