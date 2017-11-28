@@ -1,5 +1,9 @@
 # Etymap
 
+## Live prototype
+
+A live prototype is available [here](https://etymap.xyz/).
+
 ## Getting started
 
 Install Livereload [extension](http://livereload.com/extensions/) and extract `data.zip`.
