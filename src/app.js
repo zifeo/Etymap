@@ -5,6 +5,39 @@ import 'babel-polyfill';
 import $ from 'jquery';
 import * as d3 from 'd3';
 
+var dummyData = {
+  "car" : {
+    syn: ["automobile"],
+    ant: ["radek"],
+    hom: ["kapoue"],
+    lang: ["eng", "fra", "deu", "lat"]
+  },
+  "automobile" : {
+    syn: ["car"],
+    ant: [],
+    hom: ["kapoue"],
+    lang: ["eng", "spa", "rus"]
+  },
+  "radek" : {
+    syn: ["cringe"],
+    ant: [],
+    hom: [],
+    lang: ["eng", "pol", "jpn"]
+  },
+  "kapoue" : {
+    syn: [],
+    ant: [],
+    hom: ["car"],
+    lang: ["eng", "fra", "jpn"]
+  },
+  "cringe" : {
+    syn: ["radek"],
+    ant: [],
+    hom: [],
+    lang: ["eng", "spa", "rus"]
+  }
+}
+
 
 const geojson = require('./world.geo');
 
@@ -58,6 +91,8 @@ d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/master/data/filtered_lang
   });
 
   addAllLanguagesPoints();
+
+  selectWord("car");
 });
 
 const languagesRelations = {};
@@ -70,11 +105,9 @@ d3.csv("https://raw.githubusercontent.com/zifeo/Etymap/master/data/relations.csv
       languagesRelations[d.src_lang].push({"lang" : d.to_lang, "count" : d.count});
     }
   });
-
-  addAllLanguagesPoints();
 });
 
-function addLine(isocodes, strokeWidth) {
+function addLine(isocodes, strokeWidth, color, strokeDasharray) {
   let positionsGeo = [];
   for (let i in isocodes) {
     const isocode = isocodes[i];
@@ -86,8 +119,9 @@ function addLine(isocodes, strokeWidth) {
     .data([positionsGeo])
     .attr('d', lineGenerator(positionsGeo.map(posGeo => projection(posGeo))))
     .attr("fill", "none")
-    .attr("stroke", "white")
+    .attr("stroke", color)
     .attr("stroke-width", strokeWidth)
+    .attr("stroke-dasharray", strokeDasharray)
     .attr("pointer-events", "none")
     .attr("class", "languagePath");
 
@@ -133,9 +167,11 @@ function addAllLanguagesPoints() {
     .attr("r", 2)
     .attr("fill", "black")
     .on("mouseover", function (d) {
-      removeAllLines();
+      /*removeAllLines();
       //console.log(d.isocode)
-      d3.select(this).transition()
+      d3.selectautomobile
+
+(this).transition()
         .duration("200")
         .attr("fill", "white")
         .attr("r", 4);
@@ -147,7 +183,7 @@ function addAllLanguagesPoints() {
             addLine([d.isocode, otherLang], 1 + Math.log(languagesRelations[d.isocode][i].count));
           }
         }
-      }
+      }*/
     })
     .on("mouseout", function(d) { // function as this-context needed
       d3.select(this).transition()
@@ -155,6 +191,64 @@ function addAllLanguagesPoints() {
         .attr("fill", "black")
         .attr("r", 2);
     });
+}
+
+function selectWord(word) {
+  removeAllLines();
+  $("#ui").html("");
+  let html = "<p class='selected-word'>" + word + "</p>";
+
+  const langCount = {};
+
+  addLine(dummyData[word].lang, 1, "white", "");
+  addToCount(langCount, dummyData[word].lang);
+
+  html += "<p class='category'>Synonyms:</p>";
+  for (let syn in dummyData[word].syn) {
+    const synonym = dummyData[word].syn[syn];
+    addLine(dummyData[synonym].lang, 1, "green", "2,2");
+    html += "<p class='other-word' id='word-" + synonym + "'>" + synonym + "</p>";
+    addToCount(langCount, dummyData[synonym].lang);
+  }
+
+  html += "<p class='category'>Antonyms:</p>";
+  for (let ant in dummyData[word].ant) {
+    const antonym = dummyData[word].ant[ant];
+    addLine(dummyData[antonym].lang, 1, "red", "2,2");
+    html += "<p class='other-word' id='word-" + antonym + "'>" + antonym + "</p>";
+    addToCount(langCount, dummyData[antonym].lang);
+  }
+
+  html += "<p class='category'>Homonyms:</p>";
+  for (let hom in dummyData[word].hom) {
+    const homonym = dummyData[word].hom[hom];
+    addLine(dummyData[homonym].lang, 1, "blue", "2,2");
+    html += "<p class='other-word' id='word-" + homonym + "'>" + homonym + "</p>";
+    addToCount(langCount, dummyData[homonym].lang);
+  }
+  
+  g.selectAll("circle")
+    .attr("fill-opacity", function(d) {
+      if (!langCount[d.isocode]) 
+        return 0;
+      else
+        return Math.min(langCount[d.isocode] / 2, 1);
+    });
+
+  $("#ui").html(html);
+
+  $(".other-word").click(function() {selectWord(this.id.replace("word-", ""))});
+}
+
+function addToCount(langCount, langs) {
+  for (let i in langs) {
+    if (langCount[langs[i]]) {
+      langCount[langs[i]] ++;
+    }
+    else {
+      langCount[langs[i]] = 1;
+    }
+  }
 }
 
 rescale();
@@ -173,8 +267,8 @@ function rescale() {
     .attr("d", geoPath);
 
   g.selectAll("circle")
-    .attr("cx", (posGeo) => projection(posGeo)[0])
-    .attr("cy", (posGeo) => projection(posGeo)[1]);
+    .attr("cx", (d) => projection([d.longitude, d.latitude])[0])
+    .attr("cy", (d) => projection([d.longitude, d.latitude])[1]);
 
   g.selectAll(".languagePath")
     .attr('d', (positionsGeo) => lineGenerator(positionsGeo.map(posGeo => projection(posGeo))) );
