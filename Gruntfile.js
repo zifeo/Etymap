@@ -74,7 +74,6 @@ module.exports = function(grunt) {
           browserifyOptions: {
             debug: true,
           },
-          //plugin: ['livereactload'],
         },
         files: {
           'build/app.js': 'src/app.js',
