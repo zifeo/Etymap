@@ -3,13 +3,36 @@
 import 'whatwg-fetch';
 import 'babel-polyfill';
 
-import $ from 'jquery';
+import $ from "jquery";
 import * as d3 from 'd3';
 
-//import './semantic.min';
+(() => {
+  // dirty hack avoiding babel to reorganise imports
+  // semantic require window.jQuery to set
+  window.jQuery = $;
+  require('semantic-ui-dist/dist/semantic.min');
+})();
 
+var content = [
+  {
+    title: 'Horse',
+    description: 'An Animal',
+  },
+  {
+    title: 'Cow',
+    description: 'Another Animal',
+  }
+];
 
-var dummyData = {
+$('.ui.search').search({
+  source : content,
+  searchFields   : [
+    'title'
+  ],
+  searchFullText: false
+});
+
+const dummyData = {
   "car" : {
     syn: ["automobile"],
     ant: ["radek"],
@@ -40,7 +63,7 @@ var dummyData = {
     hom: [],
     lang: ["eng", "spa", "rus"]
   }
-}
+};
 
 
 const geojson = require('./world.geo.json');
@@ -232,10 +255,10 @@ function selectWord(word) {
     html += "<p class='other-word' id='word-" + homonym + "'>" + homonym + "</p>";
     addToCount(langCount, dummyData[homonym].lang);
   }
-  
+
   g.selectAll("circle")
     .attr("fill-opacity", function(d) {
-      if (!langCount[d.isocode]) 
+      if (!langCount[d.isocode])
         return 0;
       else
         return Math.min(langCount[d.isocode] / 2, 1);

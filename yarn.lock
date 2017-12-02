@@ -4198,6 +4198,10 @@ safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@~5.1.0, 
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
 
+semantic-ui-dist@^2.2.10:
+  version "2.2.10"
+  resolved "https://registry.yarnpkg.com/semantic-ui-dist/-/semantic-ui-dist-2.2.10.tgz#e928d9f481f451ac464db3585b1a3023515e9676"
+
 "semver@2 || 3 || 4 || 5", semver@^5.3.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
