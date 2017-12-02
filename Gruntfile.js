@@ -70,7 +70,7 @@ module.exports = function(grunt) {
       dist: {
         options: {
           transform: ['babelify'],
-          watch: true,
+          watch: false,
           browserifyOptions: {
             debug: true,
           },

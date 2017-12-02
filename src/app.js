@@ -6,7 +6,8 @@ import 'babel-polyfill';
 import $ from 'jquery';
 import * as d3 from 'd3';
 
-import './semantic.min';
+//import './semantic.min';
+
 
 var dummyData = {
   "car" : {
@@ -42,7 +43,7 @@ var dummyData = {
 }
 
 
-const geojson = require('./world.geo');
+const geojson = require('./world.geo.json');
 
 let width = $(window).width();
 let height = $(window).height();
@@ -74,14 +75,16 @@ const geoPath = d3.geoPath().projection(projection);
 const lineGenerator = d3.line()
   .curve(d3.curveCardinal);
 
+
 g.selectAll("path")
-  .data(geojson.map.features)
+  .data(geojson.features)
   .enter()
   .append("path")
   .attr("fill", "#ffe3b7")
   .attr("stroke-width", "0")
   .attr("d", geoPath)
   .attr("class", "mapPath");
+
 
 let languagesCoo = {};
 const allLanguages = [];
