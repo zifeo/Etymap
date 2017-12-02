@@ -7,23 +7,22 @@ html, body, body > .grid {
   margin: 0;
 }
 
-body {
-  display: flex;
-}
-
 @panel-width: 250px;
 
 #viz {
+  position: fixed;
   height: 100%;
-  width: calc(~'100% - @{panel-width}');
-  flex: 1;
+  width: 100%;
 
   svg {
     height: 100%;
+    width: 100%;
   }
 }
 
 #panel {
+  position: fixed;
+  right: 0;
   height: 100%;
   width: @panel-width;
 

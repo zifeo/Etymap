@@ -82,14 +82,13 @@ const geojson = require('./world.geo.json');
 let width = $(window).width();
 let height = $(window).height();
 
-let maskID = 0;
+let pathID = 0;
 
 const viz = d3.select('#viz');
 
 const svg = viz
   .append('svg')
-  .style('background-color', '#b7d2ff')
-  .style('width', viz.style('width'));
+  .style('background-color', '#b7d2ff');
 
 const defs = svg
   .append('defs')
@@ -162,6 +161,10 @@ function addLine(isocodes, strokeWidth, color, strokeDasharray) {
     positionsGeo.push([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]);
   }
 
+  pathID++;
+
+  const languagePathID = `path${pathID}`;
+
   const path = g
     .append('path') // Path that goes through each language
     .data([positionsGeo])
@@ -171,10 +174,11 @@ function addLine(isocodes, strokeWidth, color, strokeDasharray) {
     .attr('stroke-width', strokeWidth)
     .attr('stroke-dasharray', strokeDasharray)
     .attr('pointer-events', 'none')
-    .attr('class', 'languagePath');
+    .attr('class', 'languagePath')
+    .attr('id', languagePathID);
 
   // We clone the path to create a mask, to animate the original path
-  const cloneID = `clone${maskID++}`;
+  const cloneID = `clone${pathID}`;
 
   const cloneMask = defs.append('mask').attr('id', cloneID);
 
@@ -194,10 +198,20 @@ function addLine(isocodes, strokeWidth, color, strokeDasharray) {
     .attr('stroke-dashoffset', length)
     .transition()
     .duration(1000)
-    .attr('stroke-dashoffset', 0);
+    .attr('stroke-dashoffset', 0)
+    .on('end', () => {
+      d3.select(`#${languagePathID}`)
+        .attr('mask', null);
+      d3.select(`#${cloneID}Path`).remove();
+    });
 
   path.attr('mask', `url(#${cloneID})`);
 }
+/*
+.each('end', function(){
+      path.attr('mask', null);
+      clone.remove();
+    })*/
 
 function removeAllLines() {
   d3.selectAll('.languagePath').remove();
