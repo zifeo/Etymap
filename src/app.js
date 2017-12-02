@@ -5,6 +5,8 @@ import 'babel-polyfill';
 
 import $ from 'jquery';
 import * as d3 from 'd3';
+import _ from 'lodash';
+import Api from './api';
 
 (() => {
   // dirty hack avoiding babel to reorganise imports
@@ -15,7 +17,7 @@ import * as d3 from 'd3';
 
 $('#search').search({
   apiSettings: {
-    url: '/word/{query}',
+    url: '/search/word/{query}',
   },
   fields: {
     description: 'lang',
@@ -23,10 +25,24 @@ $('#search').search({
   },
   cache: false,
   minCharacters: 2,
-  onSelect: (result, response) => {
+  onSelect: async (result, response) => {
     console.log(result, response);
+
+    const info = await Api.getDummyDataFor(result.word);
+    console.log(info);
   },
 });
+
+type WordInfo = {
+  syn: Array<string>,
+  ant: Array<string>,
+  hom: Array<string>,
+  lang: Array<string>,
+};
+
+function getDummyDataFor(word: string): Promise<WordInfo> {
+  fetch('');
+}
 
 const dummyData = {
   car: {
