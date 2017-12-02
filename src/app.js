@@ -13,21 +13,19 @@ import * as d3 from 'd3';
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
 })();
 
-const content = [
-  {
-    title: 'Horse',
-    description: 'An Animal',
-  },
-  {
-    title: 'Cow',
-    description: 'Another Animal',
-  },
-];
-
 $('.ui.search').search({
-  source: content,
-  searchFields: ['title'],
-  searchFullText: false,
+  apiSettings: {
+    url: '/word/{query}',
+  },
+  fields: {
+    description: 'lang',
+    title: 'word',
+  },
+  cache: false,
+  minCharacters: 2,
+  onSelect: (result, response) => {
+    console.log(result, response);
+  },
 });
 
 const dummyData = {
