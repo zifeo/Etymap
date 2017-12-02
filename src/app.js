@@ -13,7 +13,7 @@ import * as d3 from 'd3';
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
 })();
 
-$('.ui.search').search({
+$('#search').search({
   apiSettings: {
     url: '/word/{query}',
   },
@@ -68,19 +68,12 @@ let height = $(window).height();
 
 let maskID = 0;
 
-const svg = d3
-  .select('body')
+const viz = d3.select('#viz');
+
+const svg = viz
   .append('svg')
-  .attr('style', 'background-color:#b7d2ff;')
-  .call(
-    d3
-      .zoom()
-      .scaleExtent([1 / 2, 8])
-      .on('zoom', () => {
-        g.attr('transform', d3.event.transform);
-        defs.attr('transform', d3.event.transform);
-      })
-  );
+  .style('background-color', '#b7d2ff')
+  .style('width', viz.style('width'));
 
 const defs = svg
   .append('defs')
@@ -88,6 +81,16 @@ const defs = svg
   .attr('id', 'defs');
 
 const g = svg.append('g').attr('id', 'g');
+
+svg.call(
+  d3
+    .zoom()
+    .scaleExtent([1 / 2, 8])
+    .on('zoom', () => {
+      g.attr('transform', d3.event.transform);
+      defs.attr('transform', d3.event.transform);
+    })
+);
 
 const projection = d3.geoNaturalEarth1().scale(100);
 
@@ -107,6 +110,7 @@ g
 
 const languagesCoo = {};
 const allLanguages = [];
+
 d3.csv('https://raw.githubusercontent.com/zifeo/Etymap/master/data/filtered_languages_coordinates.csv', data => {
   // FIXME don't know what path to use to load from the server
   data.forEach(d => {
@@ -122,6 +126,7 @@ d3.csv('https://raw.githubusercontent.com/zifeo/Etymap/master/data/filtered_lang
 });
 
 const languagesRelations = {};
+
 d3.csv('https://raw.githubusercontent.com/zifeo/Etymap/master/data/relations.csv', data => {
   // FIXME still don't know what path to use to load from the server
   data.forEach(d => {
@@ -225,7 +230,10 @@ function addAllLanguagesPoints() {
 
 function selectWord(word) {
   removeAllLines();
-  $('#ui').html('');
+
+  const relations = $('#relations');
+
+  relations.html('');
   let html = `<p class='selected-word'>${word}</p>`;
 
   const langCount = {};
@@ -262,9 +270,9 @@ function selectWord(word) {
     return Math.min(langCount[d.isocode] / 2, 1);
   });
 
-  $('#ui').html(html);
+  relations.html(html);
 
-  $('.other-word').click(function() {
+  $('.other-word').click(() => {
     selectWord(this.id.replace('word-', ''));
   });
 }
@@ -272,7 +280,7 @@ function selectWord(word) {
 function addToCount(langCount, langs) {
   for (const i in langs) {
     if (langCount[langs[i]]) {
-      langCount[langs[i]]++;
+      langCount[langs[i]] += 1;
     } else {
       langCount[langs[i]] = 1;
     }
