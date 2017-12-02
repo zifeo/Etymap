@@ -1,5 +1,5 @@
 from flask import Flask, send_from_directory, jsonify
-from .data import word_lang_idx
+from .idx import langsFor
 
 app = Flask(__name__)
 
@@ -11,13 +11,26 @@ def index():
 def process_book():
     return send_from_directory('../build', 'process-book.html')
 
+@app.route('/search/word/<string:word>')
+def word_search(word):
+    word = word.lower()
+
+    ret = dict(
+        results=langsFor(word)
+    )
+    return jsonify(ret)
+
 @app.route('/word/<string:word>')
 def word_info(word):
-    res = []
     word = word.lower()
-    if word in word_lang_idx:
-        res = [dict(word=word, lang=lang) for lang in word_lang_idx[word]]
-    return jsonify(dict(results=res))
+
+    ret = dict(
+        syn=[],
+        ant=[],
+        hom=[],
+        lang=langsFor(word)
+    )
+    return jsonify(ret)
 
 @app.route('/<path:path>')
 def static_files(path):
