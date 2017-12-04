@@ -70,11 +70,10 @@ module.exports = function(grunt) {
       dist: {
         options: {
           transform: ['babelify'],
-          watch: true,
+          watch: false,
           browserifyOptions: {
             debug: true,
           },
-          //plugin: ['livereactload'],
         },
         files: {
           'build/app.js': 'src/app.js',
