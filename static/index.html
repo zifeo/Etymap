@@ -7,8 +7,20 @@
     <link href="/app.css" rel="stylesheet">
 </head>
 <body>
-<div id="viz"></div>
-<div id="panel">
+<div id="viz">
+    <div class="right-panel ui segment">
+        <div class="language-panel">
+            <h2 class="ui header language-panel-title"></h2>
+            <div class="languages-related-panel ui segments">
+                <div class="template ui segment">
+                    <button class="ui button other-language-button"></button>
+                    <button class="ui button relation-button"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div id="panel">
     <div class="ui search" id="search">
         <input class="prompt" type="text" placeholder="Dog, chien, Haus...">
         <div class="results"></div>
@@ -22,7 +34,7 @@
         <p class="category">Homonyms : </p>
         <p class="other-words">Kapoue</p>
     </div>
-</div>
+</div>-->
 <script src="/app.js"></script>
 </body>
 </html>

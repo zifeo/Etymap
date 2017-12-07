@@ -112,34 +112,35 @@ const lineGenerator = d3.line().curve(d3.curveCardinal);
 
 class Visu {
   constructor(parentSelector) {
+    this.parentSelector = parentSelector;
+
     this.setUpSVG();
     this.addGeoJson();
 
     this.mode = "languages";
+    this.hideRightPanel();
   }
 
   setUpSVG() {
-    this.svg = d3.select('#viz')
+    this.svg = d3.select(this.parentSelector)
       .append('svg')
-      .style('background-color', '#b7d2ff');
+      .style('background-color', 'black');
 
     this.g = this.svg.append('g')
       .attr('id', 'g');
 
-    this.svg.call(
-      d3
-        .zoom()
-        .scaleExtent([0.01, 16])
-        .on('zoom', () => {
-          this.g.attr('transform', d3.event.transform);
-        })
-    );
+    this.zoom = d3.zoom()
+      .scaleExtent([0.01, 16])
+      .on('zoom', () => this.g.attr('transform', d3.event.transform));
+
+    this.svg
+      .call(this.zoom)
   }
 
   addGeoJson() {
     this.projection = d3.geoNaturalEarth1()
-      .scale($(window).width()/7)
-      .translate([$(window).width() / 2, $(window).height() / 2]);
+      .scale(this.width/7)
+      .translate([this.width / 2, this.height / 2]);
 
     this.geoPath = d3.geoPath().projection(this.projection);
 
@@ -148,10 +149,19 @@ class Visu {
       .data(geojson.features)
       .enter()
         .append('path')
-        .attr('fill', '#ffe3b7')
-        .attr('stroke-width', '0')
+        .attr('fill', '#DDD')
+        .attr('stroke', '#DDD')
+        .attr('stroke-width', '1')
         .attr('d', this.geoPath)
         .attr('class', 'mapPath');
+  }
+
+  get width() {
+    return $(this.svg.node()).width();
+  }
+
+  get height() {
+    return $(this.svg.node()).height();
   }
 
   addAllLanguagesPoints() {
@@ -165,8 +175,8 @@ class Visu {
         .attr('r', 2)
         .attr('fill', 'black')
         .attr('id', d => `circle-${d.isocode}`)
-        .on('mouseover', d => this.addLanguageLines(d.isocode));
-        .on('mouseclick', d => this.addLanguageLines(d.isocode));
+        //.on('mouseover', d => this.selectLanguage(d.isocode))
+        .on('click', d => this.selectLanguage(d.isocode));
   }
 
   addLine(isocodes, strokeWidth, color) {
@@ -190,8 +200,33 @@ class Visu {
       .attr('stroke-dashoffset', 0);
   }
 
+  focusOn(isocodes) {
+    const positions = isocodes.map(isocode => this.projection([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]));
+
+    const minX = Math.min(...positions.map(p => p[0]));
+    const maxX = Math.max(...positions.map(p => p[0]));
+    const minY = Math.min(...positions.map(p => p[1]));
+    const maxY = Math.max(...positions.map(p => p[1]));
+
+    const boundingWidth = maxX - minX;
+    const boundingHeight = maxY - minY;
+
+    const scale = 0.8 / Math.max(boundingWidth / this.width, boundingHeight / this.height);
+    const translateX = this.width / 2 - scale * (maxX + minX) / 2;
+    const translateY = this.height / 2 - scale * (maxY + minY) / 2;
+
+    this.svg.transition()
+      .duration(1000)
+      .call(this.zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale));
+  }
+
   removeAllLines() {
     this.g.selectAll('.languagePath').remove();
+  }
+
+  selectLanguage(isocode) {
+    this.addLanguageLines(isocode);
+    this.setRightPanelInfoLanguage(isocode);
   }
 
   addLanguageLines(isocode) {
@@ -203,12 +238,60 @@ class Visu {
 
     this.removeAllLines();
 
+    let allIsocodesRelated = [isocode];
     languagesRelations[isocode].forEach(rel => {
       const otherLang = rel.lang;
       if (otherLang in languagesCoo) {
+        allIsocodesRelated.push(otherLang);
         this.addLine([isocode, otherLang], 1 + Math.log(rel.count), 'white');
       }
     });
+
+    if (allIsocodesRelated.length > 1) {
+      this.focusOn(allIsocodesRelated);
+    }
+  }
+
+  hideRightPanel() {
+    $(`${this.parentSelector} .right-panel`).hide();
+  }
+
+  showRightPanel() {
+    $(`${this.parentSelector} .right-panel`).show();
+  }
+
+  hideAllRightSubpanels() {
+    $(`${this.parentSelector} .language-panel`).hide();
+  }
+
+  setRightPanelInfoLanguage(isocode) {
+    this.hideAllRightSubpanels();
+    $(`${this.parentSelector} .language-panel`).show();
+
+    $(`${this.parentSelector} .right-panel .notTemplate`).remove();
+
+    $(`${this.parentSelector} .language-panel-title`).html(languagesCoo[isocode].name); //Title
+
+    //Languages that share at least 1 word
+    const languageRelationTemplate = $(`${this.parentSelector} .languages-related-panel .template`);
+
+    languagesRelations[isocode].forEach(rel => {
+      const otherLang = rel.lang;
+      if (otherLang in languagesCoo) {
+        const clone = languageRelationTemplate.clone();
+        clone.removeClass('template');
+        clone.addClass('notTemplate');
+
+        clone.find('.other-language-button').html(languagesCoo[otherLang].name);
+        clone.find('.other-language-button').click(() => this.selectLanguage(otherLang));
+
+        clone.find('.relation-button').html(`${languagesCoo[otherLang].name}-${languagesCoo[isocode].name}`);
+
+        $(`${this.parentSelector} .languages-related-panel`).append(clone);
+      }
+    });
+
+    this.showRightPanel();
   }
 }
 
