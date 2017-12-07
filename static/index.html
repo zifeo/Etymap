@@ -8,15 +8,45 @@
 </head>
 <body>
 <div id="viz">
-    <div class="right-panel ui segment">
+    <div class="ui segment right-panel">
         <div class="language-panel">
-            <h2 class="ui header language-panel-title"></h2>
+            <h2 class="panel-title ui header"></h2>
             <div class="languages-related-panel ui segments">
                 <div class="template ui segment">
-                    <button class="ui button other-language-button"></button>
-                    <button class="ui button relation-button"></button>
+                    <button class="other-language-button ui button"></button>
+                    <button class="relation-button ui button"></button>
                 </div>
             </div>
+        </div>
+        <div class="language-pair-panel">
+            <h2 class="panel-title ui header"></h2>
+            <div class="both-languages ui segment">
+                <button class="first-language-button ui button"></button>
+                <button class="second-language-button ui button"></button>
+            </div>
+            <h4 class="small-title ui header">Sample words</h4>
+            <div class="words-language-pair-panel ui segments">
+                <div class="template ui segment">
+                    <button class="word-language-pair-button ui button"></button>
+                </div>
+            </div>
+        </div>
+        <div class="word-panel">
+            <h2 class="panel-title ui header"></h2>
+            <div class="languages-button-panel ui segment">
+                <button class="ui button template"></button>
+                <div class="languages-button ui vertical buttons"></div>
+            </div>
+            <h4 class=" small-title ui header">Synonyms</h4>
+            <div class="synonyms-panel ui segments">
+                <div class="template ui segment">
+                    <button class="word-button ui button"></button>
+                </div>
+            </div>
+            <h4 class=" small-title ui header">Antonyms</h4>
+            <div class="antonyms-panel ui segments"></div>
+            <h4 class=" small-title ui header">Homonyms</h4>
+            <div class="homonyms-panel ui segments"></div>
         </div>
     </div>
 </div>
@@ -24,15 +54,6 @@
     <div class="ui search" id="search">
         <input class="prompt" type="text" placeholder="Dog, chien, Haus...">
         <div class="results"></div>
-    </div>
-    <div id="relations">
-        <p class="selected-word">Car</p>
-        <p class="category">Synonyms : </p>
-        <p class="other-words">Automobile</p>
-        <p class="category">Antonyms : </p>
-        <p class="other-words">Radek</p>
-        <p class="category">Homonyms : </p>
-        <p class="other-words">Kapoue</p>
     </div>
 </div>-->
 <script src="/app.js"></script>

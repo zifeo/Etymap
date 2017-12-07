@@ -64,7 +64,7 @@ const dummyData = {
     lang: ['eng', 'pol', 'jpn'],
   },
   kapoue: {
-    syn: [],
+    syn: ['radek'],
     ant: [],
     hom: ['car'],
     lang: ['eng', 'fra', 'jpn'],
@@ -117,7 +117,6 @@ class Visu {
     this.setUpSVG();
     this.addGeoJson();
 
-    this.mode = "languages";
     this.hideRightPanel();
   }
 
@@ -179,18 +178,23 @@ class Visu {
         .on('click', d => this.selectLanguage(d.isocode));
   }
 
-  addLine(isocodes, strokeWidth, color) {
+  addLine(isocodes, strokeWidth, color, opacity, clickFct) {
     const positionsGeo = isocodes.map(isocode => [languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]);
 
     const path = this.g
       .append('path') // Path that goes through each language
       .datum(positionsGeo)
       .attr('d', lineGenerator(positionsGeo.map(posGeo => this.projection(posGeo))))
+      .attr('fill', 'none')
       .attr('stroke', color)
-      .attr('stroke-opacity', 0.5)
+      .attr('stroke-opacity', opacity)
       .attr('stroke-width', strokeWidth)
       .attr('class', 'languagePath');
 
+    if (clickFct) {
+      path.on('click', clickFct);
+    }
+      
     const length = Math.ceil(path.node().getTotalLength());
 
     path.attr('stroke-dasharray', `${length} ${length}`)
@@ -211,7 +215,7 @@ class Visu {
     const boundingWidth = maxX - minX;
     const boundingHeight = maxY - minY;
 
-    const scale = 0.8 / Math.max(boundingWidth / this.width, boundingHeight / this.height);
+    const scale = 1 / Math.max(boundingWidth / (0.58 * this.width), boundingHeight / (0.9 * this.height));
     const translateX = this.width / 2 - scale * (maxX + minX) / 2;
     const translateY = this.height / 2 - scale * (maxY + minY) / 2;
 
@@ -224,15 +228,14 @@ class Visu {
     this.g.selectAll('.languagePath').remove();
   }
 
+  /*Single Language*/
+
   selectLanguage(isocode) {
     this.addLanguageLines(isocode);
     this.setRightPanelInfoLanguage(isocode);
   }
 
   addLanguageLines(isocode) {
-    if (this.mode !== "languages")
-      return;
-
     if (!(isocode in languagesRelations))
       return;
 
@@ -243,7 +246,7 @@ class Visu {
       const otherLang = rel.lang;
       if (otherLang in languagesCoo) {
         allIsocodesRelated.push(otherLang);
-        this.addLine([isocode, otherLang], 1 + Math.log(rel.count), 'white');
+        this.addLine([isocode, otherLang], 1 + Math.log(rel.count), 'white', 0.5, () => this.selectLanguagePair(isocode, otherLang));
       }
     });
 
@@ -251,6 +254,63 @@ class Visu {
       this.focusOn(allIsocodesRelated);
     }
   }
+
+  /*Language pair*/
+
+  selectLanguagePair(iso1, iso2) {
+    this.addLanguagePairLines(iso1, iso2);
+    this.focusOn([iso1, iso2]);
+    this.setRightPanelInfoLanguagePair(iso1, iso2);
+  }
+
+  addLanguagePairLines(iso1, iso2) {
+    if (!(iso1 in languagesRelations) || !(iso2 in languagesRelations))
+      return;
+
+    this.removeAllLines();
+
+    const filteredRelations = languagesRelations[iso1].filter(rel => rel.lang === iso2);
+
+    if (filteredRelations.length === 0)
+      return;
+
+    const count = filteredRelations[0].count;
+    this.addLine([iso1, iso2], 1 + Math.log(count), 'white', 0.7);
+  }
+
+  /*Single word*/
+
+  selectWord(word) {
+    this.addWordLines(word);
+    this.setRightPanelInfoWord(word);
+  }
+
+  addWordLines(word) {
+    this.removeAllLines();
+
+    const allIso = [];
+    this.addLine(dummyData[word].lang, 2, 'white', 1);
+    dummyData[word].lang.forEach(iso => allIso.push(iso));
+
+    dummyData[word].syn.forEach(w => {
+      this.addLine(dummyData[w].lang, 1, 'blue', 0.7);
+      dummyData[w].lang.forEach(iso => allIso.push(iso));
+    });
+
+    dummyData[word].ant.forEach(w => {
+      this.addLine(dummyData[w].lang, 1, 'red', 0.7);
+      dummyData[w].lang.forEach(iso => allIso.push(iso));
+    });
+
+    dummyData[word].hom.forEach(w => {
+      this.addLine(dummyData[w].lang, 1, 'green', 0.7);
+      dummyData[w].lang.forEach(iso => allIso.push(iso));
+    });
+
+    this.focusOn(allIso);
+  }
+
+  /*Right Panel*/
 
   hideRightPanel() {
     $(`${this.parentSelector} .right-panel`).hide();
@@ -262,6 +322,8 @@ class Visu {
 
   hideAllRightSubpanels() {
     $(`${this.parentSelector} .language-panel`).hide();
+    $(`${this.parentSelector} .language-pair-panel`).hide();
+    $(`${this.parentSelector} .word-panel`).hide();
   }
 
   setRightPanelInfoLanguage(isocode) {
@@ -270,7 +332,7 @@ class Visu {
 
     $(`${this.parentSelector} .right-panel .notTemplate`).remove();
 
-    $(`${this.parentSelector} .language-panel-title`).html(languagesCoo[isocode].name); //Title
+    $(`${this.parentSelector} .panel-title`).html(languagesCoo[isocode].name); //Title
 
     //Languages that share at least 1 word
     const languageRelationTemplate = $(`${this.parentSelector} .languages-related-panel .template`);
@@ -278,14 +340,13 @@ class Visu {
     languagesRelations[isocode].forEach(rel => {
       const otherLang = rel.lang;
       if (otherLang in languagesCoo) {
-        const clone = languageRelationTemplate.clone();
-        clone.removeClass('template');
-        clone.addClass('notTemplate');
+        const clone = cloneTemplate(languageRelationTemplate);
 
         clone.find('.other-language-button').html(languagesCoo[otherLang].name);
         clone.find('.other-language-button').click(() => this.selectLanguage(otherLang));
 
-        clone.find('.relation-button').html(`${languagesCoo[otherLang].name}-${languagesCoo[isocode].name}`);
+        clone.find('.relation-button').html(`${languagesCoo[isocode].name}-${languagesCoo[otherLang].name}`);
+        clone.find('.relation-button').click(() => this.selectLanguagePair(isocode, otherLang));
 
         $(`${this.parentSelector} .languages-related-panel`).append(clone);
       }
@@ -293,67 +354,86 @@ class Visu {
 
     this.showRightPanel();
   }
+
+  setRightPanelInfoLanguagePair(iso1, iso2) {
+    this.hideAllRightSubpanels();
+    $(`${this.parentSelector} .language-pair-panel`).show();
+
+    $(`${this.parentSelector} .right-panel .notTemplate`).remove();
+
+    $(`${this.parentSelector} .panel-title`).html(`${languagesCoo[iso1].name}-${languagesCoo[iso2].name}`); //Title
+
+    $(`${this.parentSelector} .first-language-button`).html(languagesCoo[iso1].name);
+    $(`${this.parentSelector} .first-language-button`).click(() => this.selectLanguage(iso1));
+    $(`${this.parentSelector} .second-language-button`).html(languagesCoo[iso2].name);
+    $(`${this.parentSelector} .second-language-button`).click(() => this.selectLanguage(iso2));
+
+    const dummyWords = ["kapoue", "car", "automobile", "radek", "cringe"];
+
+    const wordPairTemplate = $(`${this.parentSelector} .words-language-pair-panel .template`);
+
+    dummyWords.forEach(word => {
+      const clone = cloneTemplate(wordPairTemplate);
+
+      clone.find('.word-language-pair-button').html(word);
+      clone.find('.word-language-pair-button').click(() => this.selectWord(word));
+
+      $(`${this.parentSelector} .words-language-pair-panel`).append(clone);
+    });
+
+    this.showRightPanel();
+  }
+
+  setRightPanelInfoWord(word) {
+    this.hideAllRightSubpanels();
+    $(`${this.parentSelector} .word-panel`).show();
+
+    $(`${this.parentSelector} .right-panel .notTemplate`).remove();
+
+    $(`${this.parentSelector} .panel-title`).html(word); //Title
+
+    const buttonTemplate = $(`${this.parentSelector} .languages-button-panel .template`); //Languages button
+    buttonTemplate.hide();
+
+    dummyData[word].lang.forEach(iso => {
+      const clone = cloneTemplate(buttonTemplate);
+
+      clone.html(languagesCoo[iso].name);
+      clone.click(() => this.selectLanguage(iso));
+
+      $(`${this.parentSelector} .languages-button`).append(clone);
+    });
+
+    const dummyWords = ["kapoue", "car", "automobile", "radek", "cringe"];
+
+    const wordTemplate = $(`${this.parentSelector} .synonyms-panel .template`);
+
+    this.addToWordsPanel(dummyData[word].syn, 'synonyms-panel', wordTemplate);
+    this.addToWordsPanel(dummyData[word].ant, 'antonyms-panel', wordTemplate);
+    this.addToWordsPanel(dummyData[word].hom, 'homonyms-panel', wordTemplate);
+
+    this.showRightPanel();
+  }
+
+  addToWordsPanel(list, panelClass, wordTemplate) {
+    list.forEach(word => {
+      const clone = cloneTemplate(wordTemplate);
+
+      clone.find('.word-button').html(word);
+      clone.find('.word-button').click(() => this.selectWord(word));
+
+      $(`${this.parentSelector} .${panelClass}`).append(clone);
+    });
+  }
 }
 
 const allVisu = [new Visu("#viz")];
 
-/*
+function cloneTemplate(element) {
+  const clone = element.clone();
+  clone.removeClass('template');
+  clone.addClass('notTemplate');
+  clone.show();
 
-function selectWord(word) {
-  removeAllLines();
-
-  const relations = $('#relations');
-
-  relations.html('');
-  let html = `<p class='selected-word'>${word}</p>`;
-
-  const langCount = {};
-
-  addLine(dummyData[word].lang, 1, 'white', '');
-  addToCount(langCount, dummyData[word].lang);
-
-  html += "<p class='category'>Synonyms:</p>";
-  for (const syn in dummyData[word].syn) {
-    const synonym = dummyData[word].syn[syn];
-    addLine(dummyData[synonym].lang, 1, 'green', '2,2');
-    html += `<p class='other-word' id='word-${synonym}'>${synonym}</p>`;
-    addToCount(langCount, dummyData[synonym].lang);
-  }
-
-  html += "<p class='category'>Antonyms:</p>";
-  for (const ant in dummyData[word].ant) {
-    const antonym = dummyData[word].ant[ant];
-    addLine(dummyData[antonym].lang, 1, 'red', '2,2');
-    html += `<p class='other-word' id='word-${antonym}'>${antonym}</p>`;
-    addToCount(langCount, dummyData[antonym].lang);
-  }
-
-  html += "<p class='category'>Homonyms:</p>";
-  for (const hom in dummyData[word].hom) {
-    const homonym = dummyData[word].hom[hom];
-    addLine(dummyData[homonym].lang, 1, 'blue', '2,2');
-    html += `<p class='other-word' id='word-${homonym}'>${homonym}</p>`;
-    addToCount(langCount, dummyData[homonym].lang);
-  }
-
-  g.selectAll('circle').attr('fill-opacity', d => {
-    if (!langCount[d.isocode]) return 0;
-    return Math.min(langCount[d.isocode] / 2, 1);
-  });
-
-  relations.html(html);
-
-  $('.other-word').click(() => {
-    selectWord(this.id.replace('word-', ''));
-  });
+  return clone;
 }
-
-function addToCount(langCount, langs) {
-  for (const i in langs) {
-    if (langCount[langs[i]]) {
-      langCount[langs[i]] += 1;
-    } else {
-      langCount[langs[i]] = 1;
-    }
-  }
-}*/
