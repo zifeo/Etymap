@@ -5,7 +5,7 @@ current_dir = os.path.dirname(__file__)
 
 
 def open_data(name):
-    return open(os.path.join(current_dir, '../data', name), 'r')
+    return open(os.path.join(current_dir, '../data', name), 'r', encoding='utf-8')
 
 
 with open_data('word_lang.json') as f:
@@ -16,4 +16,7 @@ with open_data('network_from.json') as f:
 
 with open_data('network_to.json') as f:
     network_to_idx = json.load(f)
+
+with open_data('syns.json') as f:
+    syns_idx = json.load(f)
 

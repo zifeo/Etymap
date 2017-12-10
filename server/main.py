@@ -1,9 +1,10 @@
 from flask import Flask, send_from_directory, jsonify
 
 from server.data import network_from_idx, network_to_idx
-from .idx import langsFor
+from .idx import langsFor, synsFor
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 
 @app.route('/')
@@ -31,8 +32,7 @@ def word_info(word):
     word = word.lower()
 
     ret = dict(
-        syn=[],
-        ant=[],
+        syn=synsFor(word),
         hom=[],
         lang=langsFor(word)
     )
