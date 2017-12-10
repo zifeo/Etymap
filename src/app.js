@@ -12,6 +12,7 @@ import Api from './api';
   // dirty hack avoiding babel to reorganise imports
   // semantic require window.jQuery to set
   window.jQuery = $;
+  global.jQuery = $;
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
 })();
 

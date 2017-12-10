@@ -7,6 +7,9 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 
+# Static pages
+
+
 @app.route('/')
 def index():
     return send_from_directory('../build', 'index.html')
@@ -15,6 +18,14 @@ def index():
 @app.route('/process-book')
 def process_book():
     return send_from_directory('../build', 'process-book.html')
+
+
+@app.route('/story')
+def story():
+    return send_from_directory('../build', 'story.html')
+
+
+# Viz api
 
 
 @app.route('/search/word/<string:word>')
@@ -47,6 +58,9 @@ def network_from():
 @app.route('/network/to')
 def network_to():
     return jsonify(network_to_idx)
+
+
+# Static files
 
 
 @app.route('/<path:path>')
