@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 
 def langsFor(word: str) -> List[Dict[str, str]]:
-    return word_lang_idx.get(word)
+    return word_lang_idx.get(word, [])
 
 
 def synonymsFor(word: str) -> List[Tuple[str, str]]:
