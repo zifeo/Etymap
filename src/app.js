@@ -16,24 +16,6 @@ import Api from './api';
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
 })();
 
-$('#search').search({
-  apiSettings: {
-    url: '/search/word/{query}',
-  },
-  fields: {
-    description: 'lang',
-    title: 'word',
-  },
-  cache: false,
-  minCharacters: 2,
-  onSelect: async (result, response) => {
-    console.log(result, response);
-
-    const info = await Api.getDummyDataFor(result.word);
-    console.log(info);
-  },
-});
-
 type WordInfo = {
   syn: Array<string>,
   ant: Array<string>,
@@ -42,7 +24,7 @@ type WordInfo = {
 };
 
 function getDummyDataFor(word: string): Promise<WordInfo> {
-  fetch('');
+  fetch(word);
 }
 
 const dummyData = {
@@ -119,6 +101,8 @@ class Visu {
     this.addGeoJson();
 
     this.hideRightPanel();
+
+    this.setupSearch();
   }
 
   setUpSVG() {
@@ -154,6 +138,23 @@ class Visu {
         .attr('stroke-width', '1')
         .attr('d', this.geoPath)
         .attr('class', 'mapPath');
+  }
+
+  setupSearch() {
+  	$('.search').search({
+  	  apiSettings: {
+  	    url: '/search/word/{query}',
+  	  },
+      fields: {
+        description: 'lang',
+        title: 'word',
+      },
+  	  cache: false,
+  	  minCharacters: 2,
+  	  onSelect: async (result, response) => {
+  	    this.asyncSelectWord(result['word'], result['lang']);
+  	  }
+	  });
   }
 
   get width() {
@@ -206,6 +207,9 @@ class Visu {
   }
 
   focusOn(isocodes) {
+    if (isocodes.length < 2)
+      return;
+    
     const positions = isocodes.map(isocode => this.projection([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]));
 
     const minX = Math.min(...positions.map(p => p[0]));
@@ -216,7 +220,7 @@ class Visu {
     const boundingWidth = maxX - minX;
     const boundingHeight = maxY - minY;
 
-    const scale = 1 / Math.max(boundingWidth / (0.58 * this.width), boundingHeight / (0.9 * this.height));
+    const scale = 1 / Math.max(boundingWidth / (0.58 * this.width), boundingHeight / (0.8 * this.height));
     const translateX = this.width / 2 - scale * (maxX + minX) / 2;
     const translateY = this.height / 2 - scale * (maxY + minY) / 2;
 
@@ -281,19 +285,30 @@ class Visu {
 
   /*Single word*/
 
-  selectWord(word) {
-    this.addWordLines(word);
-    this.setRightPanelInfoWord(word);
+  async asyncSelectWord(word, lang) {
+    const info = await Api.getWordData(word, lang);
+    this.selectWord(info);
   }
 
-  addWordLines(word) {
+  selectWord(wordInfo) {
+    this.addWordLines(wordInfo);
+    this.setRightPanelInfoWord(wordInfo);
+  }
+
+  addWordLines(wordInfo) {
     this.removeAllLines();
 
-    const allIso = [];
-    this.addLine(dummyData[word].lang, 2, 'white', 1);
-    dummyData[word].lang.forEach(iso => allIso.push(iso));
+    const allIso = new Set([wordInfo.lang]);
+    for (const i in wordInfo.parents) {
+      this.recursiveAddWordLines(allIso, [wordInfo.lang], wordInfo.parents[i]);
+    }
+    
+    //const allIso = [];
+    //const wordLang = wordInfo.lang.map(d => d[0]).filter(iso => languagesCoo[iso]); //TODO Add all languages (eg: old french is missing in coordinates)
+    //this.addLine(wordLang, 2, 'white', 1);
+    //wordLang.forEach(iso => allIso.push(iso));
 
-    dummyData[word].syn.forEach(w => {
+    /*wordInfo.syn.forEach(w => {
       this.addLine(dummyData[w].lang, 1, 'blue', 0.7);
       dummyData[w].lang.forEach(iso => allIso.push(iso));
     });
@@ -306,9 +321,31 @@ class Visu {
     dummyData[word].hom.forEach(w => {
       this.addLine(dummyData[w].lang, 1, 'green', 0.7);
       dummyData[w].lang.forEach(iso => allIso.push(iso));
-    });
+    });*/
 
-    this.focusOn(allIso);
+    this.focusOn(Array.from(allIso));
+  }
+
+  recursiveAddWordLines(allIso, previousLangs, obj) {
+    let lang = obj[0][0];
+    const word = obj[0][1];
+    const parents = obj[1];
+
+    if (!(lang in languagesCoo)) {
+      lang = 'por'; //temporary, only for testing
+    }
+
+    const previousLangsCopy = previousLangs.slice(0);
+    previousLangsCopy.push(lang);
+
+    allIso.add(lang);
+
+    if (parents.length === 0) { //no more ancestors
+      this.addLine(previousLangsCopy, 2, 'white', 1);
+    }
+    for (const i in parents) {
+      this.recursiveAddWordLines(allIso, previousLangsCopy, parents[i]);
+    }
   }
 
   /*Right Panel*/
@@ -377,7 +414,7 @@ class Visu {
       const clone = cloneTemplate(wordPairTemplate);
 
       clone.find('.word-language-pair-button').html(word);
-      clone.find('.word-language-pair-button').click(() => this.selectWord(word));
+      //clone.find('.word-language-pair-button').click(() => this.selectWord(word));
 
       $(`${this.parentSelector} .words-language-pair-panel`).append(clone);
     });
@@ -385,45 +422,50 @@ class Visu {
     this.showRightPanel();
   }
 
-  setRightPanelInfoWord(word) {
+  setRightPanelInfoWord(wordInfo) {
     this.hideAllRightSubpanels();
     $(`${this.parentSelector} .word-panel`).show();
 
     $(`${this.parentSelector} .right-panel .notTemplate`).remove();
 
-    $(`${this.parentSelector} .panel-title`).html(word); //Title
+    $(`${this.parentSelector} .panel-title`).html(wordInfo.word); //Title
 
     const buttonTemplate = $(`${this.parentSelector} .languages-button-panel .template`); //Languages button
     buttonTemplate.hide();
 
-    dummyData[word].lang.forEach(iso => {
-      const clone = cloneTemplate(buttonTemplate);
+    const clone = cloneTemplate(buttonTemplate);
 
-      clone.html(languagesCoo[iso].name);
-      clone.click(() => this.selectLanguage(iso));
+    clone.html(languagesCoo[wordInfo.lang].name);
+    clone.click(() => this.selectLanguage(wordInfo.lang));
 
-      $(`${this.parentSelector} .languages-button`).append(clone);
-    });
+    $(`${this.parentSelector} .languages-button`).append(clone);
 
-    const dummyWords = ["kapoue", "car", "automobile", "radek", "cringe"];
 
     const wordTemplate = $(`${this.parentSelector} .synonyms-panel .template`);
 
-    this.addToWordsPanel(dummyData[word].syn, 'synonyms-panel', wordTemplate);
-    this.addToWordsPanel(dummyData[word].ant, 'antonyms-panel', wordTemplate);
-    this.addToWordsPanel(dummyData[word].hom, 'homonyms-panel', wordTemplate);
+    this.addToWordsPanel(wordInfo.synonyms, 'synonyms-panel', wordTemplate);
+    /*this.addToWordsPanel(dummyData[word].ant, 'antonyms-panel', wordTemplate);
+    this.addToWordsPanel(dummyData[word].hom, 'homonyms-panel', wordTemplate);*/
 
     this.showRightPanel();
   }
 
   addToWordsPanel(list, panelClass, wordTemplate) {
-    list.forEach(word => {
+    list.forEach(pair => {
+      const lang = pair[0];
+      const word = pair[1];
+
       const clone = cloneTemplate(wordTemplate);
 
       clone.find('.word-button').html(word);
-      clone.find('.word-button').click(() => this.selectWord(word));
+      clone.find('.word-button').click(() => this.asyncSelectWord(word, lang));
+
+      clone.find('.lang-button').html(languagesCoo[lang] ? languagesCoo[lang].name : lang);
+      clone.find('.lang-button').click(() => this.selectLanguage(lang));
 
       $(`${this.parentSelector} .${panelClass}`).append(clone);
+
+
     });
   }
 }

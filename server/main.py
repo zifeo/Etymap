@@ -32,11 +32,14 @@ def story():
 def word_search(word):
     word = word.lower()
 
+    results = []
+    for lang in langsFor(word):
+        results.append(dict(word=word, lang=lang))
+
     ret = dict(
-        results=langsFor(word)
+        results=results
     )
     return jsonify(ret)
-
 
 @app.route('/word/<string:word>')
 def word_info(word):
