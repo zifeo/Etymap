@@ -18,5 +18,8 @@ with open_data('network_to.json') as f:
     network_to_idx = json.load(f)
 
 with open_data('syns.json') as f:
-    syns_idx = json.load(f)
+    synonyms_idx = json.load(f)
+
+with open_data('parents.json') as f:
+    parents_idx = json.load(f)
 
