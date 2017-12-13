@@ -8,18 +8,12 @@ def open_data(name):
     return open(os.path.join(current_dir, '../data', name), 'r', encoding='utf-8')
 
 
-with open_data('word_lang.json') as f:
-    word_lang_idx = json.load(f)
+with open_data('word_langs.json') as f:
+    word_langs_idx = json.load(f)
 
-with open_data('network_from.json') as f:
-    network_from_idx = json.load(f)
+with open_data('word_meanings.json') as f:
+    word_meanings_idx = json.load(f)
 
-with open_data('network_to.json') as f:
-    network_to_idx = json.load(f)
-
-with open_data('syns.json') as f:
-    synonyms_idx = json.load(f)
-
-with open_data('parents.json') as f:
-    parents_idx = json.load(f)
+with open_data('word_parents.json') as f:
+    word_parents_idx = json.load(f)
 

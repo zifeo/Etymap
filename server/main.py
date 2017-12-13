@@ -41,6 +41,7 @@ def word_search(word):
     )
     return jsonify(ret)
 
+
 @app.route('/word/<string:word>')
 def word_info(word):
     word = word.lower()
@@ -65,16 +66,6 @@ def word_lang_info(word, lang):
         parents=parentsFor(lang, word),
     )
     return jsonify(ret)
-
-
-@app.route('/network/from')
-def network_from():
-    return jsonify(network_from_idx)
-
-
-@app.route('/network/to')
-def network_to():
-    return jsonify(network_to_idx)
 
 
 # Static files
