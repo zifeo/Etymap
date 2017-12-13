@@ -1,0 +1,7 @@
+After some feedback...
+
+
+The goal is to now incorporate "synonyms" into our visualization. The quotes are used here to actually describe all words share a same meaning, they can therefore span across different languages. You could consider them as traditional synonyms and translations.
+These would particulary be interesting to visualize since it could show if there are languages which do not have a specific word for something. They could also be used to see if all the synonyms and translations of a word share parts of their respective etymological tree. For example we could see if all the "synonyms" of "flat" have "πλατύς" in Ancient Greek as their etymoligcal origin.
+
+The way this would be visualized is at the word level of our described wireframe. As previously discussed, the visualization would have a list which would allow the user to pick synonyms of the current selected word. The user would still have to go back and forth between synonyms to see if they share parts of their etymological tree. Given this inconvenience, we are currently prototyping a version where synonms would have different colored edges. The overlapping parts of their trees would be highlighted and weighted accordingly. Most of these decisions will be made once we have a clearer idea of how occuring these cases are.
