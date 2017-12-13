@@ -7,16 +7,17 @@ html, body, body > .grid {
   margin: 0;
 }
 
-@panel-width: 250px;
-
 #viz {
   position: fixed;
   height: 100%;
   width: 100%;
 
-  svg {
+  .main-map {
+    position: absolute;
+    left: 0%;
+
     height: 100%;
-    width: 100%;
+    width: 50%;
   }
 
   .right-panel {
@@ -24,11 +25,10 @@ html, body, body > .grid {
     padding: 0;
 
     position: absolute;
-    right: 0;
-    top: 10%;
+    right: 0%;
 
-    width: 20%;
-    max-height: 80%;
+    width: 50%;
+    height: 100%;
     
     overflow-y: auto;
     border-right: none;
@@ -42,12 +42,18 @@ html, body, body > .grid {
     .small-title {
       margin-top: 0;
     }
+
+    .column {
+      margin: 0;
+    }
   }
 
   .search {
     position: absolute;
-    right: 40%;
+    left: 30%;
     top: 3%;
+
+    z-index: 1000;
   }
 }
 
