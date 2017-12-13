@@ -27,6 +27,10 @@ function getDummyDataFor(word: string): Promise<WordInfo> {
   fetch(word);
 }
 
+$('.ui.accordion').accordion({
+    exclusive: false
+});
+
 const dummyData = {
   car: {
     syn: ['automobile'],
@@ -380,7 +384,7 @@ class Visu {
       const clone = cloneTemplate(sampleTemplate);
 
       clone.find('.word-button').html(word);
-      //clone.find('.word-button').click(() => this.selectWord(word));
+      clone.find('.word-button').click(() => this.asyncSelectWord(word, isocode));
 
       $(`${this.parentSelector} .sample-panel`).append(clone);
     });
@@ -628,6 +632,10 @@ class Visu {
 
     const maxSum = Math.max(fromCumSum, toCumSum);
 
+    const color = d3.scaleLinear()
+     .domain([0, 1])
+     .range(['#76B5DE', '#075486']);
+
     const svgAlluvial = d3.select(`${this.parentSelector} ${selector}`)
       .append('svg')
       .attr('width', width)
@@ -674,7 +682,7 @@ class Visu {
        .data(isocodes)
        .enter()
         .append('text')
-        .attr('fill', 'steelblue')
+        .attr('fill', 'black')
         .attr('x', isFrom ? nodeWidth + 5 : -5)
         .attr('y', (d, i) => (dataCum[i] + data[i] / 2 + i * margin) * height / maxSum + 5)
         .attr('text-anchor', isFrom ? 'start' : 'end')
@@ -718,23 +726,24 @@ class Visu {
        .data(paths)
        .enter()
         .append('path')
+        .attr('class', (d, i) => `path-${baseID}-${i}`)
         .attr('fill', 'none')
-        .attr('stroke', '#666')
-        .attr('stroke-opacity', 0.5)
+        .attr('initial-stroke', (d,i) => d3.rgb(color(i / (data.length-1) )))
+        .attr('stroke', (d, i) => d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'))
+        .attr('stroke-opacity', 0.8)
         .attr('stroke-width', (d, i) => data[i] * height / maxSum)
         .attr('d', lineGeneratorAlluvial)
-        .attr('class', (d, i) => `path-${baseID}-${i}`)
         .on('mouseover', (d, i) => {
           d3.select(`${selector} .path-${baseID}-${i}`)
             .transition()
              .duration(300)
-             .attr('stroke', 'red')
+             .attr('stroke', '#F66')
         })
         .on('mouseout', (d, i) => {
           d3.select(`${selector} .path-${baseID}-${i}`)
             .transition()
              .duration(300)
-             .attr('stroke', '#666')
+             .attr('stroke', d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'))
         })
         .on('click', (d, i) => {
           if (isFrom) {
@@ -758,43 +767,151 @@ class Visu {
 
     $(`${this.parentSelector} .panel-title`).html(wordInfo.word); //Title
 
-    const buttonTemplate = $(`${this.parentSelector} .languages-button-panel .template`); //Languages button
-    buttonTemplate.hide();
-
-    const clone = cloneTemplate(buttonTemplate);
-
-    clone.html(languagesCoo[wordInfo.lang].name);
-    clone.click(() => this.selectLanguage(wordInfo.lang));
-
-    $(`${this.parentSelector} .languages-button`).append(clone);
-
-
     const wordTemplate = $(`${this.parentSelector} .synonyms-panel .template`);
 
-    this.addToWordsPanel(wordInfo.synonyms, 'synonyms-panel', wordTemplate);
-    /*this.addToWordsPanel(dummyData[word].ant, 'antonyms-panel', wordTemplate);
-    this.addToWordsPanel(dummyData[word].hom, 'homonyms-panel', wordTemplate);*/
+    function addToWordsPanel(list, panelClass, visu) {
+      list.forEach(pair => {
+        const lang = pair[0];
+        const word = pair[1];
+
+        const clone = cloneTemplate(wordTemplate);
+
+        clone.find('.word-button').html(word);
+        clone.find('.word-button').click(() => visu.asyncSelectWord(word, lang));
+
+        clone.find('.lang-button').html(languagesCoo[lang] ? languagesCoo[lang].name : lang);
+        clone.find('.lang-button').click(() => visu.selectLanguage(lang));
+
+        $(`${visu.parentSelector} .${panelClass}`).append(clone);
+      });
+    }
+
+    addToWordsPanel(wordInfo.synonyms.filter(pair => pair[0] === wordInfo.lang), 'synonyms-panel', this);
+    addToWordsPanel(wordInfo.synonyms.filter(pair => pair[0] !== wordInfo.lang), 'translations-panel', this);
+
+    //Graph
+    $(`${this.parentSelector} .word-panel .svg-container .panel-title`).html(`Etymology of ${wordInfo.word}`); //Title of the graph
 
     this.showRightPanel();
-  }
+    const width = $(`${this.parentSelector} .word-panel`).width() * 0.8;
+    const height = width;
 
-  addToWordsPanel(list, panelClass, wordTemplate) {
-    list.forEach(pair => {
-      const lang = pair[0];
-      const word = pair[1];
+    d3.select(`${this.parentSelector} .word-panel .svg-container .svg-tree`).remove();
 
-      const clone = cloneTemplate(wordTemplate);
+    let maxDepth = 0;
+    function recursiveCreateData(obj, newDepth) {
+      let lang = obj[0][0];
+      const word = obj[0][1];
+      const parents = obj[1];
 
-      clone.find('.word-button').html(word);
-      clone.find('.word-button').click(() => this.asyncSelectWord(word, lang));
+      if (maxDepth < newDepth) {
+        maxDepth = newDepth;
+      }
 
-      clone.find('.lang-button').html(languagesCoo[lang] ? languagesCoo[lang].name : lang);
-      clone.find('.lang-button').click(() => this.selectLanguage(lang));
+      const recursiveData = {
+        name: word,
+        lang: lang
+      };
 
-      $(`${this.parentSelector} .${panelClass}`).append(clone);
+      if (parents.length > 0) { //more ancestors
+        const dataParents = [];
+        for (const i in parents) {
+          dataParents.push(recursiveCreateData(parents[i], newDepth + 1));
+        }
+        recursiveData.parents = dataParents;
+      }
 
+      return recursiveData;
+    }
 
-    });
+    const data = {
+      name: wordInfo.word,
+      lang: wordInfo.lang
+    }
+
+    if (wordInfo.parents.length > 0) {
+      const parents = [];
+      for (const i in wordInfo.parents) {
+        parents.push(recursiveCreateData(wordInfo.parents[i], 1));
+      }
+      data.parents = parents;
+    }
+
+    const svgTree = d3.select(`${this.parentSelector} .word-panel .svg-container`)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('class', 'svg-tree');
+
+    const gPaths = svgTree.append('g')
+      .attr('transform', 'translate(50,0)');
+
+    const gNodes = svgTree.append('g')
+      .attr('transform', 'translate(50,0)');
+
+    const tree = d3.tree()
+      .size([height, width]);
+
+    const root = d3.hierarchy(data, d => d.parents);
+
+    const descendants = tree(root).descendants();
+
+    const dataNodes = descendants;
+    const dataLinks = descendants.slice(1);
+
+    dataNodes.forEach(d => {d.y = d.depth * width / (maxDepth + 1)});
+
+    let i = 0;
+    const nodes = gNodes.selectAll('none')
+      .data(dataNodes, d => (d.id = ++i))
+      .enter()
+       .append('g')
+        .attr('transform', d => `translate(${d.y},${d.x})`);
+
+    nodes.append('circle')
+      .attr('r', 10)
+      .attr('fill', '#76B5DE')
+      .attr('stroke', '#075486')
+      .attr('stroke-width', 2)
+      .attr('class', (d, i) => `circle${i}`)
+      .on('mouseover', (d, i) => {
+        d3.select(`${this.parentSelector} .word-panel .svg-container .circle${i}`)
+          .transition()
+           .duration(300)
+           .attr('fill', '#F66')
+           .attr('stroke', '#F00')
+      })
+      .on('mouseout', (d, i) => {
+        d3.select(`${this.parentSelector} .word-panel .svg-container .circle${i}`)
+          .transition()
+           .duration(300)
+           .attr('fill', '#76B5DE')
+           .attr('stroke', '#075486')
+      })
+      .on('click', d => this.asyncSelectWord(d.data.name, d.data.lang));
+
+    nodes.append('text')
+      .attr('dy', '-15px')
+      .attr('text-anchor', 'middle')
+      .text(d => d.data.name);
+
+    nodes.append('text')
+      .attr('dy', '23px')
+      .attr('text-anchor', 'middle')
+      .text(d => d.data.lang);
+
+    const links = gPaths.selectAll('none')
+      .data(dataLinks, d => d.id)
+      .enter()
+      .append('path')
+        .attr('fill', 'none')
+        .attr('stroke', '#AAA')
+        .attr('stroke-width', 3)
+        .attr('d', d3.linkHorizontal()
+          .source(d => d)
+          .target(d => d.parent)
+          .x(d => d.y) //reversed as the tree is horizontal
+          .y(d => d.x));
   }
 }
 
