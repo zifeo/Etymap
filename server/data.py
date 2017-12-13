@@ -5,7 +5,7 @@ current_dir = os.path.dirname(__file__)
 
 
 def open_data(name):
-    return open(os.path.join(current_dir, '../data', name), 'r', encoding='utf-8')
+    return open(os.path.join(current_dir, '../data/out.{}'.format(name)), 'r', encoding='utf-8')
 
 
 with open_data('word_langs.json') as f:

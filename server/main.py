@@ -1,7 +1,6 @@
 from flask import Flask, send_from_directory, jsonify
 
-from server.data import network_from_idx, network_to_idx
-from .idx import langsFor, synonymsFor, parentsFor
+from .idx import langs_for, meanings_for, parents_for
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -33,7 +32,7 @@ def word_search(word):
     word = word.lower()
 
     results = []
-    for lang in langsFor(word):
+    for lang in langs_for(word):
         results.append(dict(word=word, lang=lang))
 
     ret = dict(
@@ -48,7 +47,7 @@ def word_info(word):
 
     ret = dict(
         word=word,
-        langs=langsFor(word),
+        langs=langs_for(word),
     )
     return jsonify(ret)
 
@@ -58,12 +57,22 @@ def word_lang_info(word, lang):
     word = word.lower()
     lang = lang.lower()
 
+    langs = langs_for(word)
+
+    if lang not in langs:
+        return jsonify({}), 404
+
+    meanings = meanings_for(lang, word)
+    translations = [[l, w] for l, w in meanings if l != lang]
+    synonyms = [[l, w] for l, w in meanings if l == lang]
+
     ret = dict(
         word=word,
         lang=lang,
-        synonyms=synonymsFor(word),
-        langs=langsFor(word),
-        parents=parentsFor(lang, word),
+        synonyms=synonyms,
+        translations=translations,
+        langs=langs,
+        parents=parents_for(lang, word),
     )
     return jsonify(ret)
 
