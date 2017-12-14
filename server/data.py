@@ -17,3 +17,11 @@ with open_data('word_meanings.json') as f:
 with open_data('word_parents.json') as f:
     word_parents_idx = json.load(f)
 
+with open_data('word_children.json') as f:
+    word_children_idx = json.load(f)
+
+with open_data('lang_samples.json') as f:
+    lang_samples_idx = json.load(f)
+
+with open_data('relation_samples.json') as f:
+    relation_samples_idx = json.load(f)

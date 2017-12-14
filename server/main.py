@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, jsonify
 
-from .idx import langs_for, meanings_for, parents_for
+from .idx import langs_for, meanings_for, parents_for, relation_samples_for, lang_samples_for, children_for
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -41,6 +41,30 @@ def word_search(word):
     return jsonify(ret)
 
 
+@app.route('/lang/<string:lang>')
+def lang_info(lang):
+    lang = lang.lower()
+
+    ret = dict(
+        lang=lang,
+        samples=lang_samples_for(lang),
+    )
+    return jsonify(ret)
+
+
+@app.route('/relation/<string:lang_src>/<string:lang_to>')
+def relation_info(lang_src, lang_to):
+    lang_src = lang_src.lower()
+    lang_to = lang_to.lower()
+
+    ret = dict(
+        lang_src=lang_src,
+        lang_to=lang_to,
+        samples=relation_samples_for(lang_src, lang_to),
+    )
+    return jsonify(ret)
+
+
 @app.route('/word/<string:word>')
 def word_info(word):
     word = word.lower()
@@ -73,6 +97,7 @@ def word_lang_info(word, lang):
         translations=translations,
         langs=langs,
         parents=parents_for(lang, word),
+        children=children_for(lang, word),
     )
     return jsonify(ret)
 
