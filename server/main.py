@@ -1,7 +1,6 @@
 from flask import Flask, send_from_directory, jsonify
 
-from server.data import langs
-from .idx import langs_for, meanings_for, parents_for, relation_samples_for, lang_samples_for, children_for
+from .idx import *
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -36,11 +35,11 @@ def search(term):
     lang_results = set()
 
     for lang in langs_for(term):
-        word_results.append(dict(title=term, description=lang, id='{}:{}'.format(lang, term), type='word'))
+        word_results.append(dict(title=term, description=lang_name(lang), lang=lang, word=term, id='{}:{}'.format(lang, term)))
         lang_results.add(lang)
 
-    lang_results.update([l for l in langs if l.startswith(term)])
-    lang_results = [dict(title=l, description='', id=l, type='lang') for l in lang_results]
+    lang_results.update(lang_name_fuzzy(term))
+    lang_results = [dict(title=lang_name(l), description='', id=l, lang=l, word=None) for l in lang_results]
 
     ret = dict(
         results=dict(
@@ -64,6 +63,7 @@ def lang_info(lang):
 
     ret = dict(
         lang=lang,
+        lang_name=lang_name(lang),
         samples=lang_samples_for(lang),
     )
     return jsonify(ret)
@@ -77,6 +77,8 @@ def relation_info(lang_src, lang_to):
     ret = dict(
         lang_src=lang_src,
         lang_to=lang_to,
+        lang_src_name=lang_name(lang_src),
+        lang_to_name=lang_name(lang_to),
         samples=relation_samples_for(lang_src, lang_to),
     )
     return jsonify(ret)
@@ -110,6 +112,7 @@ def word_lang_info(word, lang):
     ret = dict(
         word=word,
         lang=lang,
+        lang_name=lang_name(lang),
         synonyms=synonyms,
         translations=translations,
         langs=langs,

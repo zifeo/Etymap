@@ -111,14 +111,11 @@ class Visu {
   	  cache: false,
   	  minCharacters: 1,
   	  onSelect: (result) => {
-  	    const { type, title, description } = result;
-  	    if (type === 'word') {
-  	      const lang = description;
-  	      const word = title;
+  	    const { word, lang } = result;
+  	    if (word) {
           this.asyncSelectWord(word, lang);
         } else {
-  	      const lang = title;
-  	      // FIXME lang
+  	      this.asyncSelectLanguage(lang)
         }
   	  }
   	});

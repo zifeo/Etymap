@@ -34,7 +34,7 @@ module.exports = function(grunt) {
           {
             expand: true,
             cwd: 'static',
-            src: ['fonts/**/*', 'img/**/*', '**/*.css'],
+            src: ['fonts/**/*', 'img/**/*', '**/*.css', 'themes/**/*'],
             dest: 'build',
           },
         ],
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
         tasks: 'htmlmin',
       },
       files: {
-        files: ['static/fonts/**/*', 'static/img/**/*', 'static/**/*.css'],
+        files: ['static/fonts/**/*', 'static/img/**/*', 'static/**/*.css', 'themes/**/*'],
         tasks: 'copy',
       },
       flask: {
@@ -63,7 +63,7 @@ module.exports = function(grunt) {
       browserify: {
         files: 'src/**/*.js',
         tasks: 'browserify',
-      }
+      },
     },
     clean: ['build'],
     browserify: {

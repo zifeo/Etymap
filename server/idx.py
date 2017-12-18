@@ -1,6 +1,5 @@
-from .data import word_langs_idx, word_meanings_idx, word_parents_idx, word_children_idx, lang_samples_idx, \
-    relation_samples_idx
-from typing import Dict, List, Tuple
+from .data import *
+from typing import Dict, List, Tuple, Optional
 
 
 def langs_for(word: str) -> List[Dict[str, str]]:
@@ -41,3 +40,14 @@ def recurse(lang_word, mapping, seen=None):
     seen.add(lang_word)
     ps = mapping.get(lang_word, [])
     return [(p.split(':'), recurse(p, mapping, seen.copy())) for p in ps]
+
+
+def lang_name(lang: str) -> Optional[str]:
+    lang = langs_idx.get(lang)
+    if lang:
+        lang = lang['name']
+    return lang
+
+
+def lang_name_fuzzy(lang: str) -> List[Tuple[str, str]]:
+    return [iso for iso, l in langs_idx.items() if l['name'].startswith(lang)]

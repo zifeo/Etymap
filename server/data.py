@@ -22,7 +22,9 @@ with open_data('word_children.json') as f:
 
 with open_data('lang_samples.json') as f:
     lang_samples_idx = json.load(f)
-    langs = list(lang_samples_idx.keys())
 
 with open_data('relation_samples.json') as f:
     relation_samples_idx = json.load(f)
+
+with open_data('lang_network.json') as f:
+    langs_idx = json.load(f)['locations']
