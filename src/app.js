@@ -105,18 +105,23 @@ class Visu {
   setupSearch() {
   	$('.search').search({
   	  apiSettings: {
-  	    url: '/search/word/{query}',
+  	    url: '/search/{query}',
   	  },
-      fields: {
-        description: 'lang',
-        title: 'word',
-      },
+      type: 'category',
   	  cache: false,
   	  minCharacters: 1,
-  	  onSelect: async (result, response) => {
-  	    this.asyncSelectWord(result['word'], result['lang']);
+  	  onSelect: (result) => {
+  	    const { type, title, description } = result;
+  	    if (type === 'word') {
+  	      const lang = description;
+  	      const word = title;
+          this.asyncSelectWord(word, lang);
+        } else {
+  	      const lang = title;
+  	      // FIXME lang
+        }
   	  }
-	  });
+  	});
   }
 
   get width() {

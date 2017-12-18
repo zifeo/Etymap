@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory, jsonify
 
+from server.data import langs
 from .idx import langs_for, meanings_for, parents_for, relation_samples_for, lang_samples_for, children_for
 
 app = Flask(__name__)
@@ -27,16 +28,32 @@ def story():
 # Viz api
 
 
-@app.route('/search/word/<string:word>')
-def word_search(word):
-    word = word.lower()
+@app.route('/search/<string:term>')
+def search(term):
+    term = term.lower()
 
-    results = []
-    for lang in langs_for(word):
-        results.append(dict(word=word, lang=lang))
+    word_results = []
+    lang_results = set()
+
+    for lang in langs_for(term):
+        word_results.append(dict(title=term, description=lang, id='{}:{}'.format(lang, term), type='word'))
+        lang_results.add(lang)
+
+    lang_results.update([l for l in langs if l.startswith(term)])
+    lang_results = [dict(title=l, description='', id=l, type='lang') for l in lang_results]
 
     ret = dict(
-        results=results
+        results=dict(
+            langs=dict(
+                name='langs',
+                results=lang_results
+            ),
+            words=dict(
+                name='words',
+                results=word_results
+            )
+        ),
+        success=True,
     )
     return jsonify(ret)
 
