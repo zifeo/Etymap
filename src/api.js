@@ -28,6 +28,15 @@ class Api {
 
     return fetch(`${word_info_url}/${word}`, config).then(res => res.json());
   }
+
+  static async getWordData(word, lang): Promise<WordInfo> {
+    const config = {
+      ...defaultConfig,
+      method: 'GET',
+    };
+
+    return fetch(`${word_info_url}/${word}/${lang}`, config).then(res => res.json());
+  }
 }
 
 export default Api;
