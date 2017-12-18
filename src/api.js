@@ -5,6 +5,8 @@ type WordInfo = {
   lang: Array<string>,
 };
 
+const lang_info_url = '/lang';
+const lang_pair_info_url = '/relation';
 const word_info_url = '/word';
 
 const defaultConfig = {
@@ -37,6 +39,25 @@ class Api {
 
     return fetch(`${word_info_url}/${word}/${lang}`, config).then(res => res.json());
   }
+
+  static async getLangData(isocode) {
+    const config = {
+      ...defaultConfig,
+      method: 'GET',
+    };
+
+    return fetch(`${lang_info_url}/${isocode}`, config).then(res => res.json());
+  }
+
+  static async getLangPairData(iso1, iso2) {
+    const config = {
+      ...defaultConfig,
+      method: 'GET',
+    };
+
+    return fetch(`${lang_pair_info_url}/${iso1}/${iso2}`, config).then(res => res.json());
+  }
+
 }
 
 export default Api;

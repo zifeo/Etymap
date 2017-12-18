@@ -34,6 +34,20 @@ $('.ui.accordion').accordion({
 const geojson = require('./world.geo.json');
 const langNetwork = require('./lang_network.json');
 
+langNetwork.fromProportion = langNetwork.from;
+Object.keys(langNetwork.fromProportion).forEach(key => {
+  const filtered = langNetwork.fromProportion[key].filter(pair => pair[0] !== key);
+  const size = _.sum(filtered.map(pair => pair[1]))
+  langNetwork.fromProportion[key] = _.sortBy(filtered.map(pair => [pair[0], pair[1] / size]), pair => -pair[1]);
+});
+
+langNetwork.toProportion = langNetwork.to;
+Object.keys(langNetwork.toProportion).forEach(key => {
+  const filtered = langNetwork.toProportion[key].filter(pair => pair[0] !== key);
+  const size = _.sum(filtered.map(pair => pair[1]))
+  langNetwork.toProportion[key] = _.sortBy(filtered.map(pair => [pair[0], pair[1] / size]), pair => -pair[1]);
+});
+
 const languagesCoo = langNetwork.locations;
 const allLanguages = Object.keys(languagesCoo); 
 
@@ -98,7 +112,7 @@ class Visu {
         title: 'word',
       },
   	  cache: false,
-  	  minCharacters: 2,
+  	  minCharacters: 1,
   	  onSelect: async (result, response) => {
   	    this.asyncSelectWord(result['word'], result['lang']);
   	  }
@@ -124,7 +138,7 @@ class Visu {
         .attr('r', 2)
         .attr('fill', 'white')
         .attr('id', iso => `circle-${iso}`)
-        .on('click', iso => this.selectLanguage(iso));
+        .on('click', iso => this.asyncSelectLanguage(iso));
   }
 
   addLine(isocodes, strokeWidth, color, opacity, clickFct) {
@@ -182,12 +196,18 @@ class Visu {
 
   /*Single Language*/
 
-  selectLanguage(isocode) {
-    this.addLanguageLines(isocode);
-    this.setRightPanelInfoLanguage(isocode);
+  async asyncSelectLanguage(isocode) {
+    const info = await Api.getLangData(isocode);
+    this.selectLanguage(info);
   }
 
-  addLanguageLines(isocode) {
+  selectLanguage(langInfo) {
+    this.addLanguageLines(langInfo);
+    this.setRightPanelInfoLanguage(langInfo);
+  }
+
+  addLanguageLines(langInfo) {
+    const isocode = langInfo.lang;
     this.removeAllLines();
 
     let allIsocodesRelated = [isocode];
@@ -196,7 +216,7 @@ class Visu {
       const value = rel[1];
       
       allIsocodesRelated.push(otherLang);
-      this.addLine([isocode, otherLang], 0.5 + value, 'white', 0.5, () => this.selectLanguagePair(isocode, otherLang));
+      this.addLine([isocode, otherLang], 0.5 + value, 'white', 0.5, () => this.asyncSelectLanguagePair(isocode, otherLang));
     });
 
     if (allIsocodesRelated.length > 1) {
@@ -206,13 +226,22 @@ class Visu {
 
   /*Language pair*/
 
-  selectLanguagePair(iso1, iso2) {
-    this.addLanguagePairLines(iso1, iso2);
-    this.focusOn([iso1, iso2]);
-    this.setRightPanelInfoLanguagePair(iso1, iso2);
+  async asyncSelectLanguagePair(iso1, iso2) {
+    const info1To2 = await Api.getLangPairData(iso1, iso2);
+    const info2To1 = await Api.getLangPairData(iso2, iso1);
+    this.selectLanguagePair(info1To2, info2To1);
   }
 
-  addLanguagePairLines(iso1, iso2) {
+  selectLanguagePair(info1To2, info2To1) {
+    this.addLanguagePairLines(info1To2, info2To1);
+    this.focusOn([info1To2.lang_src, info1To2.lang_to]);
+    this.setRightPanelInfoLanguagePair(info1To2, info2To1);
+  }
+
+  addLanguagePairLines(info1To2, info2To1) {
+    const iso1 = info1To2.lang_src;
+    const iso2 = info1To2.lang_to;
+
     const values = langNetwork.from[iso1].filter(pair => pair[0] === iso2);
     if (values.length === 0 || values[0] === 0) {
       console.error(`No relation between ${iso1} and ${iso2}`)
@@ -303,7 +332,9 @@ class Visu {
     $(`${this.parentSelector} .word-panel`).hide();
   }
 
-  setRightPanelInfoLanguage(isocode) {
+  setRightPanelInfoLanguage(langInfo) {
+    const isocode = langInfo.lang;
+
     this.hideAllRightSubpanels();
     $(`${this.parentSelector} .language-panel`).show();
 
@@ -313,7 +344,7 @@ class Visu {
 
     const sampleTemplate = $(`${this.parentSelector} .sample-panel .template`);
 
-    ["kapoue", "test", "radek"].forEach(word => {
+    _.take(langInfo.samples, 6).forEach(word => {
       const clone = cloneTemplate(sampleTemplate);
 
       clone.find('.word-button').html(word);
@@ -324,24 +355,24 @@ class Visu {
 
     const influenceTemplate = $(`${this.parentSelector} .influence-from-panel .template`); //Influences
 
-    const influencing = _.take(_.sortBy(langNetwork.to[isocode].filter(pair => pair[0] !== isocode), [pair => -pair[1]]), 5); //only takes the 5 more influencing languages
+    const influencing = _.take(langNetwork.fromProportion[isocode], 5); //only takes the 5 more influencing languages
     influencing.forEach(pair => {
       const clone = cloneTemplate(influenceTemplate);
 
       clone.find('.lang-button').html(languagesCoo[pair[0]].name);
-      clone.find('.lang-button').click(() => this.selectLanguage(pair[0]));
+      clone.find('.lang-button').click(() => this.asyncSelectLanguage(pair[0]));
 
       clone.find('p').html(`(${Math.floor(pair[1] * 100)} %)`);
 
       $(`${this.parentSelector} .influence-from-panel`).append(clone);
     });
 
-    const influenced = _.take(_.sortBy(langNetwork.from[isocode].filter(pair => pair[0] !== isocode), [pair => -pair[1]]), 5); //only takes the 5 more influenced languages
+    const influenced = _.take(langNetwork.toProportion[isocode], 5); //only takes the 5 more influenced languages
     influenced.forEach(pair => {
       const clone = cloneTemplate(influenceTemplate);
 
       clone.find('.lang-button').html(languagesCoo[pair[0]].name);
-      clone.find('.lang-button').click(() => this.selectLanguage(pair[0]));
+      clone.find('.lang-button').click(() => this.asyncSelectLanguage(pair[0]));
 
       clone.find('p').html(`(${Math.floor(pair[1] * 100)} %)`);
 
@@ -363,7 +394,6 @@ class Visu {
         let value = 0;
 
         if (i !== j && isocodes[i] in langNetwork.from) {
-          console.log(isocodes[i], isocodes[j])
           const values = langNetwork.from[isocodes[i]].filter(pair => pair[0] === isocodes[j])
           if (values.length > 0) {
             value = values[0][1];
@@ -374,10 +404,6 @@ class Visu {
       }
       matrixRelations.push(arr);
     }
-
-    console.log(matrixRelations)
-
-    
 
     this.showRightPanel();
 
@@ -442,7 +468,7 @@ class Visu {
              .duration(300)
              .style('fill-opacity', '0.7')
         })
-       .on('click', d => this.selectLanguage(isocodes[d.index]));
+       .on('click', d => this.asyncSelectLanguage(isocodes[d.index]));
 
     function getXY(d, cosOrSin) {
       return innerRadius * cosOrSin((d.startAngle + d.endAngle) / 2 - Math.PI / 2);
@@ -490,7 +516,7 @@ class Visu {
              .duration(300)
              .style('fill-opacity', '0.7')
         })
-       .on('click', d => this.selectLanguagePair(isocodes[d.source.index], isocodes[d.target.index]));
+       .on('click', d => this.asyncSelectLanguagePair(isocodes[d.source.index], isocodes[d.target.index]));
 
     groups.append("text")
      .attr("dy", ".35em")
@@ -502,7 +528,10 @@ class Visu {
      .text(d => languagesCoo[isocodes[d.index]].name);
   }
 
-  setRightPanelInfoLanguagePair(iso1, iso2) {
+  setRightPanelInfoLanguagePair(info1To2, info2To1) {
+    const iso1 = info1To2.lang_src;
+    const iso2 = info1To2.lang_to;
+
     this.hideAllRightSubpanels();
     $(`${this.parentSelector} .language-pair-panel`).show();
 
@@ -514,8 +543,8 @@ class Visu {
     this.setRightPanelInfoLanguagePairStats(iso1, iso2, '.first-direction .stats');
     this.setRightPanelInfoLanguagePairStats(iso2, iso1, '.second-direction .stats');
 
-    this.setRightPanelInfoLanguagePairSample(iso1, iso2, '.first-direction .samples');
-    this.setRightPanelInfoLanguagePairSample(iso2, iso1, '.second-direction .samples');
+    this.setRightPanelInfoLanguagePairSample(iso1, iso2, info1To2, '.first-direction .samples');
+    this.setRightPanelInfoLanguagePairSample(iso2, iso1, info2To1, '.second-direction .samples');
 
     d3.selectAll('.svg-alluvial').remove();
 
@@ -529,7 +558,7 @@ class Visu {
     $(`${this.parentSelector} ${selector} .panel-title`).html(`From ${languagesCoo[from].name} to ${languagesCoo[to].name}`); //Title
 
     $(`${this.parentSelector} ${selector} .language-button`).html(languagesCoo[from].name);
-    $(`${this.parentSelector} ${selector} .language-button`).click(() => this.selectLanguage(from));
+    $(`${this.parentSelector} ${selector} .language-button`).click(() => this.asyncSelectLanguage(from));
   }
 
   setRightPanelInfoLanguagePairStats(from, to, selector) {
@@ -539,16 +568,16 @@ class Visu {
     $(`${this.parentSelector} ${selector} .proportion`).html(`That is ${53.2} % of ${languagesCoo[to].name}'s words.`);
   }
 
-  setRightPanelInfoLanguagePairSample(from, to, selector) {
+  setRightPanelInfoLanguagePairSample(from, to, info, selector) {
     $(`${this.parentSelector} ${selector} .panel-title`).html('Sample words'); //Title
 
     const template = $(`${this.parentSelector} ${selector} .template`); //Word button
 
-    ['Kapoue', 'Radek', 'Cringe'].forEach(word => {
+    _.take(info.samples, 6).forEach(word => {
       const clone = cloneTemplate(template);
 
       clone.find('.word-button').html(word);
-      //clone.find('.word-button').click(() => this.asyncSelectWord(word, lang));
+      clone.find('.word-button').click(() => this.asyncSelectWord(word, from));
 
       $(`${this.parentSelector} ${selector} .segments`).append(clone);
     });
@@ -559,10 +588,25 @@ class Visu {
 
     //Template for alluvial Diagram
 
-    const dataFrom = [0.1, 0.3, 0.6];
+    const influencing = _.takeWhile(langNetwork.fromProportion[from], pair => pair[1] > 0.1); //only takes the influencing languages, which account for at least 10% of the words
+    const influenced = _.takeWhile(langNetwork.toProportion[from], pair => pair[1] > 0.1); //only takes the influenced languages, which account for at least 10% of the words
+    /*
+const dataFrom = [0.1, 0.3, 0.6];
     const isocodesFrom = ['fra', 'eng', 'por'];
     const dataTo = [0.2, 0.2, 0.3, 0.2, 0.1];
     const isocodesTo = ['fra', 'eng', 'por', 'eng', 'por'];
+    */
+
+    const dataFromNotNormalized = influencing.map(pair => pair[1]);
+    const dataToNotNormalized = influenced.map(pair => pair[1]);
+
+    const fromSum = dataFromNotNormalized.length > 0 ? dataFromNotNormalized.reduce((total, value) => total + value) : 1;
+    const toSum = dataToNotNormalized.length > 0 ? dataToNotNormalized.reduce((total, value) => total + value) : 1;
+    
+    const dataFrom = dataFromNotNormalized.map(value => value / fromSum);
+    const isocodesFrom = influencing.map(pair => pair[0]);
+    const dataTo = dataToNotNormalized.map(value => value / toSum);
+    const isocodesTo = influenced.map(pair => pair[0]);
 
     const width = $(`${this.parentSelector} ${selector} `).width() * 0.8;
     const height = width;
@@ -631,7 +675,7 @@ class Visu {
              .attr('fill', 'black')
         })
         .on('click', (d, i) => {
-          visu.selectLanguage(isocodes[i]);
+          visu.asyncSelectLanguage(isocodes[i]);
         });
 
      group.selectAll('none')
@@ -684,7 +728,7 @@ class Visu {
         .append('path')
         .attr('class', (d, i) => `path-${baseID}-${i}`)
         .attr('fill', 'none')
-        .attr('initial-stroke', (d,i) => d3.rgb(color(i / (data.length-1) )))
+        .attr('initial-stroke', (d,i) => d3.rgb(color(i / (data.length) )))
         .attr('stroke', (d, i) => d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'))
         .attr('stroke-opacity', 0.8)
         .attr('stroke-width', (d, i) => data[i] * height / maxSum)
@@ -703,10 +747,10 @@ class Visu {
         })
         .on('click', (d, i) => {
           if (isFrom) {
-            visu.selectLanguagePair(from, isocodes[i]);
+            visu.asyncSelectLanguagePair(from, isocodes[i]);
           }
           else {
-            visu.selectLanguagePair(isocodes[i], from);
+            visu.asyncSelectLanguagePair(isocodes[i], from);
           }
         });
     }
@@ -736,7 +780,7 @@ class Visu {
         clone.find('.word-button').click(() => visu.asyncSelectWord(word, lang));
 
         clone.find('.lang-button').html(languagesCoo[lang] ? languagesCoo[lang].name : lang);
-        clone.find('.lang-button').click(() => visu.selectLanguage(lang));
+        clone.find('.lang-button').click(() => visu.asyncSelectLanguage(lang));
 
         $(`${visu.parentSelector} .${panelClass}`).append(clone);
       });
@@ -800,10 +844,10 @@ class Visu {
       .attr('class', 'svg-tree');
 
     const gPaths = svgTree.append('g')
-      .attr('transform', 'translate(50,0)');
+      .attr('transform', 'translate(0,0)');
 
     const gNodes = svgTree.append('g')
-      .attr('transform', 'translate(50,0)');
+      .attr('transform', 'translate(0,0)');
 
     const tree = d3.tree()
       .size([height, width]);
@@ -815,7 +859,7 @@ class Visu {
     const dataNodes = descendants;
     const dataLinks = descendants.slice(1);
 
-    dataNodes.forEach(d => {d.y = d.depth * width / (maxDepth + 1)});
+    dataNodes.forEach(d => {d.y = (1 + d.depth) * width / (maxDepth + 2)});
 
     let i = 0;
     const nodes = gNodes.selectAll('none')
@@ -854,7 +898,9 @@ class Visu {
     nodes.append('text')
       .attr('dy', '23px')
       .attr('text-anchor', 'middle')
-      .text(d => d.data.lang);
+      .attr('style', 'cursor:pointer;')
+      .text(d => languagesCoo[d.data.lang].name)
+      .on('click', d => this.asyncSelectLanguage(d.data.lang));
 
     const links = gPaths.selectAll('none')
       .data(dataLinks, d => d.id)
