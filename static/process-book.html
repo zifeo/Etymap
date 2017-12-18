@@ -16,16 +16,131 @@
     <br>
     <p class="subtitle">Words & etymologies interactive visualization</p>
     <section>
+        <h2 id="Proposal">Proposal</h2>
         <p>
-            Process book and sketches to come
-            <label for="sn-soon" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-soon" class="margin-toggle"/><span class="sidenote"><em>Soon.</em></span>
-            .
-            <figure class="fullwidth">
-                <img src="img/napoleons-march.png" alt="Figurative map of the successive losses of the French Army in the Russian campaign, 1812-1813" />
-            </figure>
+            We are planning to build an interactive map which illustrates the etymology of words. Etymology is a subject which spans across time and space, and therefore creates a challenging and interesting problem to visualize.
+        </p>
+
+        <p>
+            In short, the main feature will allow the user to pick a word (or a group of words) and see its etymology as an insight (paths, directions, ancestors, periods, etc.) on the map. There are other interesting opportunities, for example, we could show words with different meanings which share a part of their etymology or other relations with them (synonyms, antonyms, homonyms).
+        </p>
+
+        <p>
+            The target audience would be linguists, historians and more generally anyone curious about the words we use everyday.
+        </p>
+
+        <p>
+            Some similar work can be found on the "etymology maps" subreddit (https://www.reddit.com/r/etymologymaps/). However most the visualization are not interactive and only project one aspect of the data.
         </p>
     </section>
+    <section>
+        <h2 id="initial_wireframe">Initial wireframe</h2>
 
+        <p>
+            As part of the process book, we will now describe and discuss our initial wireframe and the motivations behind each decision that went into making it. Of course, this only serves as a starting point. The closer we will get to a functional prototype, the more we will learn and understand about our dataset and how our visualization shows its features. The future insights we will gain, will therefore most likely change the visulaization from the wireframe we describe here.
+        </p>
+        <p>
+            There are two main aspects of the data that we want to show. The first one being how languages relate to eachother at etymologically, and the second one is at a finer grain, namely the etymological tree of specific words. This already plays nicely into the "context and detail" principle, since it allows the user to see these two different levels of the data.
+        </p>
+        <p>
+            The core component of our visualization is a map. This has the added value of giving geographical information for these relationships. It could therefore potentially show how languages moved with time. The other obvious approach would be a graph, however it would make it much harder for the end-user to search for a specific language/word. There are a  few downfalls of the map, namely the fact that certain areas have a much higher density of languages than others, hence making the vizulation possibly cluttered. Additionaly, certain languages may be spoken across several disjoint areas making the georaphical information either hard to read or ambiguous.
+            <br>
+            We decided on using a map as it gives an initial structure to the underlying graph and can be removed if the previous mentionned pitfalls, or those to come, are clearly detrimental to the visualization.
+        </p>
+        <p>
+            As described earlier we want to have have two levels of visualization. We will informally call them the "language level" and the "word level" respectively from now on.
+            <br>
+            We will now describe them individually and the interactions which allow the user to switch between them.
+        </p>
+        <figure>
+            <label for="mn-exports-imports" class="margin-toggle">⊕</label><input type="checkbox" id="mn-exports-imports" class="margin-toggle"><span class="marginnote">Wireframe for language level.</span>
+            <img src="img/languageLevel.png" alt="Wireframe of language level">
+        </figure>
+        <p>
+            For the language level, there will be bundeled edges between languages which are assigned to areas on the map. The edges will represent the relations between words of the linked languages. Above each language area there will be the name of the language assigned to it, it will also highlight the area when hovering on it. These names will be clickable and allow the user to select a language. By selecting a language, a pannel to the left of the map will appear which holds a Sankey diagram of the incoming and outgoing relations (per language) to the selected language. Hovering on this diagram will give additional numerical information to the user. Of course, the underlying map will have all the usual interactions one can expect from a map, namely dragging and zooming.
+            <br>
+            We have chosen to use bundeled edges as we are only interested in the distribution of relations per language at this level. For the same reason, the Sankey diagram is an appropriate visualization to have. The reason we want both to be shown at the same time is because it will allow the user to isolate a language. It also allows for easier comparisons between languages, because two languages might have similar distributions but could be geographically quite different - which will make it hard for the user to compare them. This Sankey diagram proposes a sort of "standard" representation of these relationships.
+        </p>
+        <p>
+            In order to switch to the word level, we are not quite sure what is the best/most approriate interaction. We are currently considering a double-click on the language or the bundeled edges. We could also have an interaction on the Sankey diagram and not only the map.
+        </p>
+        <figure>
+            <label for="mn-exports-imports" class="margin-toggle">⊕</label><input type="checkbox" id="mn-exports-imports" class="margin-toggle"><span class="marginnote">Wireframe for word level.</span>
+            <img src="img/wordLevel.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <p>
+            Once the user entered the word level, he will have the exact same interactions with the map as previously. The languages will still have the same interactions too (highliting areas, etc.). Upon first entering the word level, a random word will be selected. There will now be edges on the map which represent the etymological tree of this word. On the right side, there will be a panel allowing the user to search for a specific word, or pick among suggested words to examin. Whereas on the left there will be some statistics about the etymological trees of the current languague : max depth of trees, mean depth, histogram of related languages.
+        </p>
+    </section>
+    <section>
+        <h2 id="etymwn_dataset">Etymwn dataset</h2>
+        <p>
+            The core dataset on which our data visualization will rely is the <a href="http://www1.icsi.berkeley.edu/~demelo/etymwn/">Etymological Wordnet</a> abbreviated Etymwn from here on. This dataset is a great starting point as it describes the etymological relations between words which is the foundation of what we are trying to show.
+        </p>
+        <p>
+            The Etymwn dataset is built on data available from <a href="https://www.wiktionary.org/">Wikitionary</a>.
+            <br>
+            The entire dataset compromises about 2.5m unique words which are used in 6m different relations.
+            <br>
+            Given the nature of the source on which it is built on, we exepct some bias (in completness) towards North American and European languages. This will also be something to show on the data vizualtion: How for example African languages are less documented and hence less represented on the visualization.
+        </p>
+        <p>
+            In order to better understand the data at hand, we started by doing a simple exploration of it.
+            <br>
+            The goal is to see how large each one of our main features is and to already gain insights as to what would be particulary interesting to highlight in our visualization.
+            <br>
+            By "main" features, we mean: the number of unique words per language, the number of languages, how many languages are related to a given language and the etymological tree of a given word.
+        </p>
+        <p>
+            The dataset has eight different relations possible between two words. We are only intereseted in certain of them, as other might be ambiguous or not add any information to the etymoligcal origins of words (i.e knowing that "nicely" is a derived form of "nice"). By performing this initial filter, we practically cut the dataset into half, having 2.7m relations remaining.
+        </p>
+        <figure>
+            <img src="img/figure1.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <p>
+            The first insight is about the number of words per language. The dataset only holds words which have an etymological relationship, hence all other words are discarded. On Figure 1, we can see that due to this there are languages that have very few words. This could also be the result of a poorly documented language on wikitionary. Either way, we will have to deal with the tail of the distribution in the visualization.
+        </p>
+        <figure>
+            <img src="img/figure2.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <p>
+            The depth of the etymological tree for a given word is a very important aspect in our visualization. Depending on this depth the tree might be very large and hence given a sense of clutter which we will have to deal with. Figure 2 illustrates the depth of the tree for 250 words sampled uniformly from the whole dataset. The main insight we gain from this is that these trees are realtively shallow, and will therefore not be computationally difficult to draw. This could potentially allow us to draw trees of multiple words at the same time to gain other insights about the data.
+        </p>
+        <figure>
+            <img src="img/figure3_1.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <figure>
+            <img src="img/figure3_2.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <p>
+            Finally, we explored the relationships for two languages in particular : German and French. Figure 3 illustrates the languages to which these are related (directly or indirectly) by sampling 250 words from the language and constructing their etymological tree. As described in our wireframe, we would have only wanted to plot this feature for directly related languages and not using the full tree as it is currently done in this figure. Given that there are not that many languages related even indirectly to a given language, we could adapt our visualization to show this feature instead or add it in.
+        </p>
+        <p>
+            TL;DR:
+            <br>
+            We use the <a href="http://www1.icsi.berkeley.edu/~demelo/etymwn/">Etymological Wordnet</a> dataset. From a simple exploration of it's data we understood that certain languages will have very few words, and that more generally the graph of related lnaguages or the etymoloigcal tress of words are pretty shallow allowing us to potentially draw more of these simultaneously than we had planned.
+        </p>
+    </section>
+    <section>
+        <h2 id="towards_synonyms">Towards synonyms</h2>
+        <p>
+            After some feedback...
+        </p>
+        <p>
+            The goal is to now incorporate "synonyms" into our visualization. The quotes are used here to actually describe all words share a same meaning, they can therefore span across different languages. You could consider them as traditional synonyms and translations.
+            <br>
+            These would particulary be interesting to visualize since it could show if there are languages which do not have a specific word for something. They could also be used to see if all the synonyms and translations of a word share parts of their respective etymological tree. For example we could see if all the "synonyms" of "flat" have "πλατύς" in Ancient Greek as their etymoligcal origin.
+        </p>
+        <p>
+            The way this would be visualized is at the word level of our described wireframe. As previously discussed, the visualization would have a list which would allow the user to pick synonyms of the current selected word. The user would still have to go back and forth between synonyms to see if they share parts of their etymological tree. Given this inconvenience, we are currently prototyping a version where synonyms would have different colored edges. The overlapping parts of their trees would be highlighted and weighted accordingly. Most of these decisions will be made once we have a clear idea of how often these cases occure.
+        </p>
+        <p>
+            The most relevant and complete dataset we found is the <a href="https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/uwn/">UWN / MENTA dataset</a>. It is based on <a href="http://wordnet.princeton.edu/">WordNet</a> which groups words into cognitive synonyms. The UWN dataset does the same, but additionally incorporates other languages - not only english. There are a few particularites about this dataset, namely the fact that each pair of words which share a meaning have a weight assigned to their link. This weight defines how close the meanings are toeachother. We are not truly interested in this aspect of the data, we therefore entirely dropped this aspect of the data and assumed that as long as there is a relationship it should be considered a synonym or translation.
+        </p>
+        <p>
+            We have not yet done a in-depth data exploration of this dataset. However, we have checked that the languages documented in the Etymwn overlap with this set. It is indeed the case. We do still want to check if they both suffer from the same skew - if some languages have significantly more data than others.
+        </p>
+    </section>
     <section>
         <h2 id="epilogue">Inspiration & references</h2>
         <ol>
