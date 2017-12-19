@@ -30,7 +30,7 @@ class Viz {
     this.svg = d3
       .select(this.parentSelector)
       .append('svg')
-      .style('background-color', 'black')
+      .style('background-color', '#a4c0d1')
       .attr('class', 'main-map');
 
     this.g = this.svg.append('g').attr('id', 'g');
