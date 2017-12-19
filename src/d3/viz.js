@@ -23,7 +23,6 @@ class Viz {
     this.setUpSVG();
     this.addGeoJson();
     this.addAllLanguagesPoints();
-    this.hideRightPanel();
   }
 
   setUpSVG() {
@@ -263,14 +262,6 @@ class Viz {
 
   /* Right Panel */
 
-  hideRightPanel() {
-    // $(`${this.parentSelector} .right-panel`).hide();
-  }
-
-  showRightPanel() {
-    // $(`${this.parentSelector} .right-panel`).show();
-  }
-
   hideAllRightSubpanels() {
     $(`.right-panel .language-panel`).hide();
     $(`.right-panel .language-pair-panel`).hide();
@@ -314,8 +305,6 @@ class Viz {
     const isocodesFrom = influencing.map(pair => pair[0]);
     const dataTo = dataToNotNormalized.map(value => value / toSum);
     const isocodesTo = influenced.map(pair => pair[0]);
-
-    this.showRightPanel();
 
     recreateAlluvial(this, isocode, `.language-panel .svg-container`, dataFrom, isocodesFrom, dataTo, isocodesTo);
 
@@ -369,7 +358,6 @@ class Viz {
     this.setRightPanelInfoLanguagePairDiagram(iso1, '.first-direction .svg-container');
     this.setRightPanelInfoLanguagePairDiagram(iso2, '.second-direction .svg-container');
 
-    this.showRightPanel();
   }
 
   setRightPanelInfoLanguagePairTitle(from, to, selector) {
@@ -461,9 +449,9 @@ class Viz {
     addToWordsPanel(wordInfo.synonyms.filter(pair => pair[0] !== wordInfo.lang), 'translations-panel', this);
 
     // Graph
+
     $(`.right-panel .word-panel .svg-container .panel-title`).html(`Etymology of ${wordInfo.word}`); // Title of the graph
 
-    this.showRightPanel();
     const width = $(`.right-panel .word-panel`).width() * 0.8;
     const height = width;
 
