@@ -57,7 +57,6 @@ class Api {
 
     return fetch(`${lang_pair_info_url}/${iso1}/${iso2}`, config).then(res => res.json());
   }
-
 }
 
 export default Api;
