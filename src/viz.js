@@ -2,8 +2,8 @@
 
 import * as d3 from 'd3';
 import $ from 'jquery';
-import Api from './api';
 import _ from 'lodash';
+import Api from './api';
 import { langNetwork, geojson } from './data';
 
 const languagesCoo = langNetwork.locations;
@@ -24,11 +24,13 @@ function cloneTemplate(element) {
 class Viz {
   constructor(parentSelector) {
     this.parentSelector = parentSelector;
+  }
 
+  show() {
     this.setUpSVG();
     this.addGeoJson();
+    this.addAllLanguagesPoints();
     this.hideRightPanel();
-    this.setupSearch();
   }
 
   setUpSVG() {
@@ -68,25 +70,6 @@ class Viz {
       .attr('class', 'mapPath');
   }
 
-  setupSearch() {
-    $('.search').search({
-      apiSettings: {
-        url: '/search/{query}',
-      },
-      type: 'category',
-      cache: false,
-      minCharacters: 1,
-      onSelect: result => {
-        const { word, lang } = result;
-        if (word) {
-          this.asyncSelectWord(word, lang);
-        } else {
-          this.asyncSelectLanguage(lang);
-        }
-      },
-    });
-  }
-
   get width() {
     return $(this.svg.node()).width();
   }
@@ -115,7 +98,7 @@ class Viz {
     const positionsGeo = isocodes.map(isocode => [languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]);
 
     const positionsGeoMiddle = [];
-    for (let i = 0; i < positionsGeo.length - 1; i++) {
+    for (let i = 0; i < positionsGeo.length - 1; i += 1) {
       positionsGeoMiddle.push(positionsGeo[i]);
       positionsGeoMiddle.push([
         (positionsGeo[i][0] + positionsGeo[i + 1][0]) / 2,
@@ -319,8 +302,10 @@ class Viz {
       $(`${this.parentSelector} .sample-panel`).append(clone);
     });
 
-    const influencing = _.takeWhile(langNetwork.fromProportion[isocode], pair => pair[1] > 0.1); // only takes the influencing languages, which account for at least 10% of the words
-    const influenced = _.takeWhile(langNetwork.toProportion[isocode], pair => pair[1] > 0.1); // only takes the influenced languages, which account for at least 10% of the words
+    // only takes the influencing languages, which account for at least 10% of the words
+    const influencing = _.takeWhile(langNetwork.fromProportion[isocode], pair => pair[1] > 0.1);
+    // only takes the influenced languages, which account for at least 10% of the words
+    const influenced = _.takeWhile(langNetwork.toProportion[isocode], pair => pair[1] > 0.1);
 
     const dataFromNotNormalized = influencing.map(pair => pair[1]);
     const dataToNotNormalized = influenced.map(pair => pair[1]);

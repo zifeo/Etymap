@@ -14,9 +14,26 @@ import Viz from './viz';
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
 })();
 
+const viz = new Viz('#viz');
+viz.show();
+
 $('.ui.accordion').accordion({
   exclusive: false,
 });
 
-const allVisu = [new Viz('#viz')];
-allVisu.forEach(v => v.addAllLanguagesPoints());
+$('.search').search({
+  apiSettings: {
+    url: '/search/{query}',
+  },
+  type: 'category',
+  cache: false,
+  minCharacters: 1,
+  onSelect: result => {
+    const { word, lang } = result;
+    if (word) {
+      viz.asyncSelectWord(word, lang);
+    } else {
+      viz.asyncSelectLanguage(lang);
+    }
+  },
+});

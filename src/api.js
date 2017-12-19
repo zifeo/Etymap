@@ -17,22 +17,13 @@ const defaultConfig = {
     'Accept-Charset': 'utf-8',
     'Cache-Control': 'no-cache', // chrome don't support fetch cache yet
   },
-  cache: 'no-store', // to avoid Navigator caching errors
+  cache: 'no-store', // to avoid caching errors
   mode: 'cors', // allow cross-origin
   credentials: 'omit',
   compress: true,
 };
 
 class Api {
-  static async getDummyDataFor(word): Promise<WordInfo> {
-    const config = {
-      ...defaultConfig,
-      method: 'GET',
-    };
-
-    return fetch(`${wordInfoUrl}/${word}`, config).then(res => res.json());
-  }
-
   static async getWordData(word, lang): Promise<WordInfo> {
     const config = {
       ...defaultConfig,
