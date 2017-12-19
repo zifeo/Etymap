@@ -34,18 +34,28 @@ $('.ui.accordion').accordion({
 const geojson = require('./world.geo.json');
 const langNetwork = require('./lang_network.json');
 
-langNetwork.fromProportion = langNetwork.from;
-Object.keys(langNetwork.fromProportion).forEach(key => {
-  const filtered = langNetwork.fromProportion[key].filter(pair => pair[0] !== key);
-  const size = _.sum(filtered.map(pair => pair[1]))
-  langNetwork.fromProportion[key] = _.sortBy(filtered.map(pair => [pair[0], pair[1] / size]), pair => -pair[1]);
+
+
+Object.keys(langNetwork.from).forEach(key => {
+  const filtered = langNetwork.from[key].filter(pair => pair[0] !== key);
+  langNetwork.from[key] = _.sortBy(filtered, pair => -pair[1]);
 });
 
-langNetwork.toProportion = langNetwork.to;
+langNetwork.fromProportion = Object.assign({}, langNetwork.from);
+Object.keys(langNetwork.fromProportion).forEach(key => {
+  const size = _.sum(langNetwork.fromProportion[key].map(pair => pair[1]))
+  langNetwork.fromProportion[key] = langNetwork.fromProportion[key].map(pair => [pair[0], pair[1] / size]);
+});
+
+Object.keys(langNetwork.to).forEach(key => {
+  const filtered = langNetwork.to[key].filter(pair => pair[0] !== key);
+  langNetwork.to[key] = _.sortBy(filtered, pair => -pair[1]);
+});
+
+langNetwork.toProportion = Object.assign({}, langNetwork.to);
 Object.keys(langNetwork.toProportion).forEach(key => {
-  const filtered = langNetwork.toProportion[key].filter(pair => pair[0] !== key);
-  const size = _.sum(filtered.map(pair => pair[1]))
-  langNetwork.toProportion[key] = _.sortBy(filtered.map(pair => [pair[0], pair[1] / size]), pair => -pair[1]);
+  const size = _.sum(langNetwork.toProportion[key].map(pair => pair[1]))
+  langNetwork.toProportion[key] = langNetwork.toProportion[key].map(pair => [pair[0], pair[1] / size]);
 });
 
 const languagesCoo = langNetwork.locations;
@@ -76,7 +86,7 @@ class Visu {
       .attr('id', 'g');
 
     this.zoom = d3.zoom()
-      .scaleExtent([0.01, 16])
+      .scaleExtent([1, 30])
       .on('zoom', () => this.g.attr('transform', d3.event.transform));
 
     this.svg
@@ -137,8 +147,10 @@ class Visu {
         .append('circle')
         .attr('cx', iso => this.projection([languagesCoo[iso].longitude, languagesCoo[iso].latitude])[0])
         .attr('cy', iso => this.projection([languagesCoo[iso].longitude, languagesCoo[iso].latitude])[1])
-        .attr('r', 2)
+        .attr('r', 1)
+        .attr('stroke-width', 0.2)
         .attr('fill', 'white')
+        .attr('stroke', 'blue')
         .attr('id', iso => `circle-${iso}`)
         .on('click', iso => this.asyncSelectLanguage(iso));
   }
@@ -213,7 +225,7 @@ class Visu {
     this.removeAllLines();
 
     let allIsocodesRelated = [isocode];
-    langNetwork.from[isocode].forEach(rel => {
+    langNetwork.fromProportion[isocode].forEach(rel => {
       const otherLang = rel[0];
       const value = rel[1];
       
@@ -244,7 +256,7 @@ class Visu {
     const iso1 = info1To2.lang_src;
     const iso2 = info1To2.lang_to;
 
-    const values = langNetwork.from[iso1].filter(pair => pair[0] === iso2);
+    const values = langNetwork.fromProportion[iso1].filter(pair => pair[0] === iso2);
     if (values.length === 0 || values[0] === 0) {
       console.error(`No relation between ${iso1} and ${iso2}`)
     }
@@ -311,7 +323,7 @@ class Visu {
     allIso.add(lang);
 
     if (parents.length === 0) { //no more ancestors
-      this.addLine(previousLangsCopy, 2, 'white', 1);
+      this.addLine(previousLangsCopy, 1, 'white', 1);
     }
     for (const i in parents) {
       this.recursiveAddWordLines(allIso, previousLangsCopy, parents[i]);
@@ -564,9 +576,15 @@ class Visu {
   }
 
   setRightPanelInfoLanguagePairStats(from, to, selector) {
+    console.log(langNetwork.stats[from])
     $(`${this.parentSelector} ${selector} .panel-title`).html('Stats'); //Title
 
-    $(`${this.parentSelector} ${selector} .absolute`).html(`${123} words come from ${languagesCoo[from].name} to ${languagesCoo[to].name}.`);
+    console.log(langNetwork.from)
+
+    const values = langNetwork.from[from] ? langNetwork.from[from].filter(pair => pair[0] === to) : [];
+    const numWords = values.length > 0 ? values[0][1] : 0;
+
+    $(`${this.parentSelector} ${selector} .absolute`).html(`${numWords} words come from ${languagesCoo[from].name} to ${languagesCoo[to].name}.`);
     $(`${this.parentSelector} ${selector} .proportion`).html(`That is ${53.2} % of ${languagesCoo[to].name}'s words.`);
   }
 
@@ -613,7 +631,7 @@ const dataFrom = [0.1, 0.3, 0.6];
     const width = $(`${this.parentSelector} ${selector} `).width() * 0.8;
     const height = width;
 
-    const nodeWidth = width / 10;
+    const nodeWidth = width / 20;
     const margin = 0.05;
 
     const dataFromCum = [];
