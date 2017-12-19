@@ -2,8 +2,8 @@
 
 import _ from 'lodash';
 
-const geojson = require('./json/world.geo.json');
-const langNetwork = require('./json/lang_network.json');
+const geojson = require('./world.geo.json');
+const langNetwork = require('./lang_network.json');
 
 Object.keys(langNetwork.from).forEach(key => {
   const filtered = langNetwork.from[key].filter(pair => pair[0] !== key);

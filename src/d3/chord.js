@@ -1,8 +1,8 @@
 // @flow
 
-import $ from "jquery";
-import * as d3 from "d3";
-import {langNetwork} from "./data";
+import $ from 'jquery';
+import * as d3 from 'd3';
+import { langNetwork } from '../json/data';
 
 const languagesCoo = langNetwork.locations;
 
@@ -148,4 +148,3 @@ function recreateChord(viz, matrix, isocodes, selectedLanguageIndex) {
 }
 
 export { recreateChord };
-

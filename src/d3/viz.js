@@ -3,17 +3,16 @@
 import * as d3 from 'd3';
 import $ from 'jquery';
 import _ from 'lodash';
-import Api from './api';
-import {geojson, langNetwork} from './data';
-import { cloneTemplate, closePanel, openPanel } from "./utils";
+import Api from '../api';
+import { geojson, langNetwork } from '../json/data';
+import { cloneTemplate, openPanel } from '../utils';
 import { recreateChord } from './chord';
+import { recreateAlluvial } from './alluvial';
 
 const languagesCoo = langNetwork.locations;
 const allLanguages = Object.keys(languagesCoo);
 
 const lineGenerator = d3.line().curve(d3.curveCardinal);
-const lineGeneratorAlluvial = d3.line().curve(d3.curveMonotoneX);
-
 
 class Viz {
   constructor(parentSelector) {
@@ -265,11 +264,11 @@ class Viz {
   /* Right Panel */
 
   hideRightPanel() {
-    //$(`${this.parentSelector} .right-panel`).hide();
+    // $(`${this.parentSelector} .right-panel`).hide();
   }
 
   showRightPanel() {
-    //$(`${this.parentSelector} .right-panel`).show();
+    // $(`${this.parentSelector} .right-panel`).show();
   }
 
   hideAllRightSubpanels() {
@@ -318,8 +317,7 @@ class Viz {
 
     this.showRightPanel();
 
-    d3.selectAll('.svg-alluvial').remove();
-    this.alluvialHelper(isocode, `.language-panel .svg-container`, dataFrom, isocodesFrom, dataTo, isocodesTo);
+    recreateAlluvial(this, isocode, `.language-panel .svg-container`, dataFrom, isocodesFrom, dataTo, isocodesTo);
 
     // Template for chord Diagram
 
@@ -346,7 +344,6 @@ class Viz {
     }
 
     recreateChord(this, matrixRelations, isocodes, selectedLanguageIndex);
-
   }
 
   setRightPanelInfoLanguagePair(info1To2, info2To1) {
@@ -376,9 +373,7 @@ class Viz {
   }
 
   setRightPanelInfoLanguagePairTitle(from, to, selector) {
-    $(`.right-panel ${selector} .panel-title`).html(
-      `From ${languagesCoo[from].name} to ${languagesCoo[to].name}`
-    ); // Title
+    $(`.right-panel ${selector} .panel-title`).html(`From ${languagesCoo[from].name} to ${languagesCoo[to].name}`); // Title
 
     $(`.right-panel ${selector} .language-button`)
       .html(languagesCoo[from].name)
@@ -432,7 +427,7 @@ class Viz {
     const dataTo = dataToNotNormalized.map(value => value / toSum);
     const isocodesTo = influenced.map(pair => pair[0]);
 
-    this.alluvialHelper(from, selector, dataFrom, isocodesFrom, dataTo, isocodesTo);
+    recreateAlluvial(this, from, selector, dataFrom, isocodesFrom, dataTo, isocodesTo);
   }
 
   setRightPanelInfoWord(wordInfo) {
@@ -603,165 +598,6 @@ class Viz {
           .x(d => d.y) // reversed as the tree is horizontal
           .y(d => d.x)
       );
-  }
-
-  alluvialHelper(from, selector, dataFrom, isocodesFrom, dataTo, isocodesTo) {
-    const width = $(`.right-panel ${selector} `).width() * 0.8;
-    const height = width;
-
-    const nodeWidth = width / 20;
-    const margin = 0.05;
-
-    const dataFromCum = [];
-    let curr = 0;
-    for (const i in dataFrom) {
-      dataFromCum.push(curr);
-      curr += dataFrom[i];
-    }
-    const fromCumSum = 1 + margin * (dataFrom.length - 1);
-
-    const dataToCum = [];
-    curr = 0;
-    for (const i in dataTo) {
-      dataToCum.push(curr);
-      curr += dataTo[i];
-    }
-    const toCumSum = 1 + margin * (dataTo.length - 1);
-
-    const maxSum = Math.max(fromCumSum, toCumSum);
-
-    const color = d3
-      .scaleLinear()
-      .domain([0, 1])
-      .range(['#76B5DE', '#075486']);
-
-    const svgAlluvial = d3
-      .select(`.right-panel ${selector}`)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .attr('class', 'svg-alluvial');
-
-    const gPaths = svgAlluvial.append('g');
-    const gNodes = svgAlluvial.append('g');
-
-    const gFrom = gNodes.append('g');
-
-    const gTo = gNodes.append('g').attr('transform', `translate(${width - nodeWidth})`);
-
-    // Nodes & text
-    function addNodes(data, dataCum, isocodes, group, isFrom, visu) {
-      const baseID = isFrom ? 0 : 1;
-      group
-        .selectAll('none')
-        .data(dataCum)
-        .enter()
-        .append('rect')
-        .attr('fill', 'black')
-        .attr('width', nodeWidth)
-        .attr('height', (d, i) => data[i] * height / maxSum)
-        .attr('y', (d, i) => (d + i * margin) * height / maxSum)
-        .attr('class', (d, i) => `node-${baseID}-${i}`)
-        .on('mouseover', (d, i) => {
-          d3
-            .select(`${selector} .node-${baseID}-${i}`)
-            .transition()
-            .duration(300)
-            .attr('fill', '#F66');
-        })
-        .on('mouseout', (d, i) => {
-          d3
-            .select(`${selector} .node-${baseID}-${i}`)
-            .transition()
-            .duration(300)
-            .attr('fill', 'black');
-        })
-        .on('click', (d, i) => {
-          visu.asyncSelectLanguage(isocodes[i]);
-        });
-
-      group
-        .selectAll('none')
-        .data(isocodes)
-        .enter()
-        .append('text')
-        .attr('fill', 'black')
-        .attr('x', isFrom ? nodeWidth + 5 : -5)
-        .attr('y', (d, i) => (dataCum[i] + data[i] / 2 + i * margin) * height / maxSum + 5)
-        .attr('text-anchor', isFrom ? 'start' : 'end')
-        .text(d => languagesCoo[d].name);
-    }
-
-    addNodes(dataFrom, dataFromCum, isocodesFrom, gFrom, true, this);
-    addNodes(dataTo, dataToCum, isocodesTo, gTo, false, this);
-
-    gNodes
-      .append('rect') // Central node
-      .attr('width', nodeWidth)
-      .attr('height', height / maxSum)
-      .attr('x', width / 2 - nodeWidth / 2)
-      .attr('y', 0);
-
-    // Links
-    const fromPaths = [];
-    for (const i in dataFrom) {
-      const newPath = [];
-      newPath.push([0, (dataFromCum[i] + i * margin + dataFrom[i] / 2) * height / maxSum]);
-      newPath.push([nodeWidth, (dataFromCum[i] + i * margin + dataFrom[i] / 2) * height / maxSum]);
-      newPath.push([width / 2 - nodeWidth / 2, (dataFromCum[i] + dataFrom[i] / 2) * height / maxSum]);
-      newPath.push([width / 2 + nodeWidth / 2, (dataFromCum[i] + dataFrom[i] / 2) * height / maxSum]);
-      fromPaths.push(newPath);
-    }
-
-    const toPaths = [];
-    for (const i in dataTo) {
-      const newPath = [];
-      newPath.push([width / 2 - nodeWidth / 2, (dataToCum[i] + dataTo[i] / 2) * height / maxSum]);
-      newPath.push([width / 2 + nodeWidth / 2, (dataToCum[i] + dataTo[i] / 2) * height / maxSum]);
-      newPath.push([width - nodeWidth, (dataToCum[i] + i * margin + dataTo[i] / 2) * height / maxSum]);
-      newPath.push([width, (dataToCum[i] + i * margin + dataTo[i] / 2) * height / maxSum]);
-      toPaths.push(newPath);
-    }
-
-    function addPaths(paths, data, isocodes, visu, isFrom) {
-      const baseID = isFrom ? 0 : 1;
-      gPaths
-        .selectAll('none')
-        .data(paths)
-        .enter()
-        .append('path')
-        .attr('class', (d, i) => `path-${baseID}-${i}`)
-        .attr('fill', 'none')
-        .attr('initial-stroke', (d, i) => d3.rgb(color(i / data.length)))
-        .attr('stroke', (d, i) => d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'))
-        .attr('stroke-opacity', 0.8)
-        .attr('stroke-width', (d, i) => data[i] * height / maxSum)
-        .attr('d', lineGeneratorAlluvial)
-        .on('mouseover', (d, i) => {
-          d3
-            .select(`${selector} .path-${baseID}-${i}`)
-            .transition()
-            .duration(300)
-            .attr('stroke', '#F66');
-        })
-        .on('mouseout', (d, i) => {
-          d3
-            .select(`${selector} .path-${baseID}-${i}`)
-            .transition()
-            .duration(300)
-            .attr('stroke', d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'));
-        })
-        .on('click', (d, i) => {
-          if (isFrom) {
-            visu.asyncSelectLanguagePair(from, isocodes[i]);
-          } else {
-            visu.asyncSelectLanguagePair(isocodes[i], from);
-          }
-        });
-    }
-
-    addPaths(fromPaths, dataFrom, isocodesFrom, this, true);
-    addPaths(toPaths, dataTo, isocodesTo, this, false);
   }
 }
 

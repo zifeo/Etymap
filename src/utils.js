@@ -1,6 +1,6 @@
 // @flow
 
-import $ from "jquery";
+import $ from 'jquery';
 
 function cloneTemplate(element) {
   const clone = element.clone();
@@ -18,8 +18,7 @@ function openPanel() {
 }
 
 function closePanel() {
-  $('.ui.sidebar')
-    .sidebar('hide');
+  $('.ui.sidebar').sidebar('hide');
 }
 
 export { cloneTemplate, openPanel, closePanel };

@@ -4,7 +4,7 @@ import 'whatwg-fetch';
 import 'babel-polyfill';
 
 import $ from 'jquery';
-import Viz from './viz';
+import Viz from './d3/viz';
 
 (() => {
   // dirty hack avoiding babel to reorganise imports
