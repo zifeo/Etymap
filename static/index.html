@@ -7,13 +7,8 @@
     <link href="/app.css" rel="stylesheet">
 </head>
 <body>
-<div id="viz">
-    <div class="ui category search">
-        <input class="prompt" type="text" placeholder="Dog, chien, Haus...">
-        <div class="results"></div>
-    </div>
-    <div class="ui segment right-panel">
-
+<div class="ui very wide right sidebar">
+    <div class="right-panel">
 
         <div class="language-panel">
             <h2 class="panel-title ui header"></h2>
@@ -33,50 +28,50 @@
 
         <div class="language-pair-panel">
             <div class="title-columns ui two column grid">
-              <div class="first-direction column">
-                <div class="title ui segment">
-                    <h2 class="panel-title ui header">Test</h2>
-                    <button class="language-button ui button"></button>
-                </div>
-                <div class="stats ui segment">
-                    <h4 class="panel-title ui header">Stats</h4>
-                    <p class="absolute">123</p>
-                    <p class="proportion">22%</p>
-                </div>
-                <div class="samples ui segment">
-                    <h4 class="panel-title ui header">Samples</h4>
-                    <div class="ui segments">
-                        <div class="template ui segment">
-                            <button class="word-button ui button"></button>
+                <div class="first-direction column">
+                    <div class="title ui segment">
+                        <h2 class="panel-title ui header">Test</h2>
+                        <button class="language-button ui button"></button>
+                    </div>
+                    <div class="stats ui segment">
+                        <h4 class="panel-title ui header">Stats</h4>
+                        <p class="absolute">123</p>
+                        <p class="proportion">22%</p>
+                    </div>
+                    <div class="samples ui segment">
+                        <h4 class="panel-title ui header">Samples</h4>
+                        <div class="ui segments">
+                            <div class="template ui segment">
+                                <button class="word-button ui button"></button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="svg-container ui segment">
-                    <h4 class="panel-title ui header">Samples</h4>
-                </div>
-              </div>
-              <div class="second-direction column">
-                <div class="title ui segment">
-                    <h2 class="panel-title ui header">Test</h2>
-                    <button class="language-button ui button"></button>
-                </div>
-                <div class="stats ui segment">
-                    <h4 class="panel-title ui header">Stats</h4>
-                    <p class="absolute">123</p>
-                    <p class="proportion">22%</p>
-                </div>
-                <div class="samples ui segment">
-                    <h4 class="panel-title ui header">Samples</h4>
-                    <div class="ui segments">
-                        <div class="template ui segment">
-                            <button class="word-button ui button"></button>
-                        </div>
+                    <div class="svg-container ui segment">
+                        <h4 class="panel-title ui header">Samples</h4>
                     </div>
                 </div>
-                <div class="svg-container ui segment">
-                    <h4 class="panel-title ui header">SVG</h4>
+                <div class="second-direction column">
+                    <div class="title ui segment">
+                        <h2 class="panel-title ui header">Test</h2>
+                        <button class="language-button ui button"></button>
+                    </div>
+                    <div class="stats ui segment">
+                        <h4 class="panel-title ui header">Stats</h4>
+                        <p class="absolute">123</p>
+                        <p class="proportion">22%</p>
+                    </div>
+                    <div class="samples ui segment">
+                        <h4 class="panel-title ui header">Samples</h4>
+                        <div class="ui segments">
+                            <div class="template ui segment">
+                                <button class="word-button ui button"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="svg-container ui segment">
+                        <h4 class="panel-title ui header">SVG</h4>
+                    </div>
                 </div>
-              </div>
             </div>
         </div>
 
@@ -84,23 +79,31 @@
         <div class="word-panel">
             <h2 class="panel-title ui header"></h2>
             <div class="ui styled fluid accordion">
-              <div class="active title"><i class="dropdown icon"></i>Synonyms</div>
-              <div class="active content">
-                <div class="synonyms-panel ui segments">
-                    <div class="template ui segment">
-                        <button class="word-button ui button"></button>
-                        <button class="lang-button ui button"></button>
+                <div class="active title"><i class="dropdown icon"></i>Synonyms</div>
+                <div class="active content">
+                    <div class="synonyms-panel ui segments">
+                        <div class="template ui segment">
+                            <button class="word-button ui button"></button>
+                            <button class="lang-button ui button"></button>
+                        </div>
                     </div>
                 </div>
-              </div>
-              <div class="title"><i class="dropdown icon"></i>Translations</div>
-              <div class="content">
-                <div class="translations-panel ui segments"></div>
-              </div>
+                <div class="title"><i class="dropdown icon"></i>Translations</div>
+                <div class="content">
+                    <div class="translations-panel ui segments"></div>
+                </div>
             </div>
             <div class="svg-container ui segment">
                 <h4 class="panel-title ui header">Etymology</h4>
             </div>
+        </div>
+    </div>
+</div>
+<div class="pusher">
+    <div id="viz">
+        <div class="ui category search">
+            <input class="prompt" type="text" placeholder="Dog, chien, Haus...">
+            <div class="results"></div>
         </div>
     </div>
 </div>

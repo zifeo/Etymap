@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import $ from 'jquery';
 import _ from 'lodash';
 import Api from './api';
-import { langNetwork, geojson } from './data';
+import {geojson, langNetwork} from './data';
 
 const languagesCoo = langNetwork.locations;
 const allLanguages = Object.keys(languagesCoo);
@@ -19,6 +19,17 @@ function cloneTemplate(element) {
   clone.show();
 
   return clone;
+}
+
+function openPanel() {
+  $('.ui.sidebar')
+    .sidebar('setting', 'transition', 'overlay')
+    .sidebar('show');
+}
+
+function closePanel() {
+  $('.ui.sidebar')
+    .sidebar('hide');
 }
 
 class Viz {
@@ -168,6 +179,7 @@ class Viz {
   }
 
   selectLanguage(langInfo) {
+    openPanel();
     this.addLanguageLines(langInfo);
     this.setRightPanelInfoLanguage(langInfo);
   }
@@ -201,6 +213,7 @@ class Viz {
   }
 
   selectLanguagePair(info1To2, info2To1) {
+    openPanel();
     this.addLanguagePairLines(info1To2, info2To1);
     this.focusOn([info1To2.lang_src, info1To2.lang_to]);
     this.setRightPanelInfoLanguagePair(info1To2, info2To1);
@@ -227,6 +240,7 @@ class Viz {
   }
 
   selectWord(wordInfo) {
+    openPanel();
     this.addWordLines(wordInfo);
     this.setRightPanelInfoWord(wordInfo);
   }
@@ -268,30 +282,31 @@ class Viz {
   /* Right Panel */
 
   hideRightPanel() {
-    $(`${this.parentSelector} .right-panel`).hide();
+    //$(`${this.parentSelector} .right-panel`).hide();
   }
 
   showRightPanel() {
-    $(`${this.parentSelector} .right-panel`).show();
+    //$(`${this.parentSelector} .right-panel`).show();
   }
 
   hideAllRightSubpanels() {
-    $(`${this.parentSelector} .language-panel`).hide();
-    $(`${this.parentSelector} .language-pair-panel`).hide();
-    $(`${this.parentSelector} .word-panel`).hide();
+    $(`.right-panel .language-panel`).hide();
+    $(`.right-panel .language-pair-panel`).hide();
+    $(`.right-panel .word-panel`).hide();
+    console.log('hide');
   }
 
   setRightPanelInfoLanguage(langInfo) {
     const isocode = langInfo.lang;
 
     this.hideAllRightSubpanels();
-    $(`${this.parentSelector} .language-panel`).show();
+    $(`.right-panel .language-panel`).show();
 
-    $(`${this.parentSelector} .right-panel .notTemplate`).remove();
+    $(`.right-panel .right-panel .notTemplate`).remove();
 
-    $(`${this.parentSelector} .panel-title`).html(languagesCoo[isocode].name); // Title
+    $(`.right-panel .panel-title`).html(languagesCoo[isocode].name); // Title
 
-    const sampleTemplate = $(`${this.parentSelector} .sample-panel .template`);
+    const sampleTemplate = $(`.right-panel .sample-panel .template`);
 
     _.take(langInfo.samples, 6).forEach(word => {
       const clone = cloneTemplate(sampleTemplate);
@@ -299,7 +314,7 @@ class Viz {
       clone.find('.word-button').html(word);
       clone.find('.word-button').click(() => this.asyncSelectWord(word, isocode));
 
-      $(`${this.parentSelector} .sample-panel`).append(clone);
+      $(`.right-panel .sample-panel`).append(clone);
     });
 
     // only takes the influencing languages, which account for at least 10% of the words
@@ -348,7 +363,7 @@ class Viz {
       matrixRelations.push(arr);
     }
 
-    const width = $(`${this.parentSelector} .language-panel`).width() * 0.8;
+    const width = $(`.right-panel .language-panel`).width() * 0.8;
     const height = width * 1.2;
 
     const outerRadius = width / 2.5;
@@ -357,7 +372,7 @@ class Viz {
     d3.selectAll('.svg-chord').remove();
 
     const svgChord = d3
-      .select(`${this.parentSelector} .svg-chord-container`)
+      .select(`.right-panel .svg-chord-container`)
       .append('svg')
       .attr('width', width)
       .attr('height', height)
@@ -493,9 +508,9 @@ class Viz {
     const iso2 = info1To2.lang_to;
 
     this.hideAllRightSubpanels();
-    $(`${this.parentSelector} .language-pair-panel`).show();
+    $(`.right-panel .language-pair-panel`).show();
 
-    $(`${this.parentSelector} .right-panel .notTemplate`).remove();
+    $(`.right-panel .right-panel .notTemplate`).remove();
 
     this.setRightPanelInfoLanguagePairTitle(iso1, iso2, '.first-direction .title');
     this.setRightPanelInfoLanguagePairTitle(iso2, iso1, '.second-direction .title');
@@ -515,30 +530,31 @@ class Viz {
   }
 
   setRightPanelInfoLanguagePairTitle(from, to, selector) {
-    $(`${this.parentSelector} ${selector} .panel-title`).html(
+    $(`.right-panel ${selector} .panel-title`).html(
       `From ${languagesCoo[from].name} to ${languagesCoo[to].name}`
     ); // Title
 
-    $(`${this.parentSelector} ${selector} .language-button`).html(languagesCoo[from].name);
-    $(`${this.parentSelector} ${selector} .language-button`).click(() => this.asyncSelectLanguage(from));
+    $(`.right-panel ${selector} .language-button`)
+      .html(languagesCoo[from].name)
+      .click(() => this.asyncSelectLanguage(from));
   }
 
   setRightPanelInfoLanguagePairStats(from, to, selector) {
-    $(`${this.parentSelector} ${selector} .panel-title`).html('Stats'); // Title
+    $(`.right-panel ${selector} .panel-title`).html('Stats'); // Title
 
     const values = langNetwork.from[from] ? langNetwork.from[from].filter(pair => pair[0] === to) : [];
     const numWords = values.length > 0 ? values[0][1] : 0;
 
-    $(`${this.parentSelector} ${selector} .absolute`).html(
+    $(`.right-panel ${selector} .absolute`).html(
       `${numWords} words come from ${languagesCoo[from].name} to ${languagesCoo[to].name}.`
     );
-    $(`${this.parentSelector} ${selector} .proportion`).html(`That is ${53.2} % of ${languagesCoo[to].name}'s words.`);
+    $(`.right-panel ${selector} .proportion`).html(`That is ${53.2} % of ${languagesCoo[to].name}'s words.`);
   }
 
   setRightPanelInfoLanguagePairSample(from, to, info, selector) {
-    $(`${this.parentSelector} ${selector} .panel-title`).html('Sample words'); // Title
+    $(`.right-panel ${selector} .panel-title`).html('Sample words'); // Title
 
-    const template = $(`${this.parentSelector} ${selector} .template`); // Word button
+    const template = $(`.right-panel ${selector} .template`); // Word button
 
     _.take(info.samples, 6).forEach(word => {
       const clone = cloneTemplate(template);
@@ -546,12 +562,12 @@ class Viz {
       clone.find('.word-button').html(word);
       clone.find('.word-button').click(() => this.asyncSelectWord(word, from));
 
-      $(`${this.parentSelector} ${selector} .segments`).append(clone);
+      $(`.right-panel ${selector} .segments`).append(clone);
     });
   }
 
   setRightPanelInfoLanguagePairDiagram(from, selector) {
-    $(`${this.parentSelector} ${selector} .panel-title`).html(`Other relations for ${languagesCoo[from].name}`); // Title
+    $(`.right-panel ${selector} .panel-title`).html(`Other relations for ${languagesCoo[from].name}`); // Title
 
     // Template for alluvial Diagram
 
@@ -575,13 +591,13 @@ class Viz {
 
   setRightPanelInfoWord(wordInfo) {
     this.hideAllRightSubpanels();
-    $(`${this.parentSelector} .word-panel`).show();
+    $(`.right-panel .word-panel`).show();
 
-    $(`${this.parentSelector} .right-panel .notTemplate`).remove();
+    $(`.right-panel .right-panel .notTemplate`).remove();
 
-    $(`${this.parentSelector} .panel-title`).html(wordInfo.word); // Title
+    $(`.right-panel .panel-title`).html(wordInfo.word); // Title
 
-    const wordTemplate = $(`${this.parentSelector} .synonyms-panel .template`);
+    const wordTemplate = $(`.right-panel .synonyms-panel .template`);
 
     function addToWordsPanel(list, panelClass, visu) {
       list.forEach(pair => {
@@ -596,7 +612,7 @@ class Viz {
         clone.find('.lang-button').html(languagesCoo[lang] ? languagesCoo[lang].name : lang);
         clone.find('.lang-button').click(() => visu.asyncSelectLanguage(lang));
 
-        $(`${visu.parentSelector} .${panelClass}`).append(clone);
+        $(`.right-panel .${panelClass}`).append(clone);
       });
     }
 
@@ -604,13 +620,13 @@ class Viz {
     addToWordsPanel(wordInfo.synonyms.filter(pair => pair[0] !== wordInfo.lang), 'translations-panel', this);
 
     // Graph
-    $(`${this.parentSelector} .word-panel .svg-container .panel-title`).html(`Etymology of ${wordInfo.word}`); // Title of the graph
+    $(`.right-panel .word-panel .svg-container .panel-title`).html(`Etymology of ${wordInfo.word}`); // Title of the graph
 
     this.showRightPanel();
-    const width = $(`${this.parentSelector} .word-panel`).width() * 0.8;
+    const width = $(`.right-panel .word-panel`).width() * 0.8;
     const height = width;
 
-    d3.select(`${this.parentSelector} .word-panel .svg-container .svg-tree`).remove();
+    d3.select(`.right-panel .word-panel .svg-container .svg-tree`).remove();
 
     let maxDepth = 0;
 
@@ -654,7 +670,7 @@ class Viz {
     }
 
     const svgTree = d3
-      .select(`${this.parentSelector} .word-panel .svg-container`)
+      .select(`.right-panel .word-panel .svg-container`)
       .append('svg')
       .attr('width', width)
       .attr('height', height)
@@ -694,7 +710,7 @@ class Viz {
       .attr('class', (d, i) => `circle${i}`)
       .on('mouseover', (d, i) => {
         d3
-          .select(`${this.parentSelector} .word-panel .svg-container .circle${i}`)
+          .select(`.right-panel .word-panel .svg-container .circle${i}`)
           .transition()
           .duration(300)
           .attr('fill', '#F66')
@@ -702,7 +718,7 @@ class Viz {
       })
       .on('mouseout', (d, i) => {
         d3
-          .select(`${this.parentSelector} .word-panel .svg-container .circle${i}`)
+          .select(`.right-panel .word-panel .svg-container .circle${i}`)
           .transition()
           .duration(300)
           .attr('fill', '#76B5DE')
@@ -744,7 +760,7 @@ class Viz {
   }
 
   alluvialHelper(from, selector, dataFrom, isocodesFrom, dataTo, isocodesTo) {
-    const width = $(`${this.parentSelector} ${selector} `).width() * 0.8;
+    const width = $(`.right-panel ${selector} `).width() * 0.8;
     const height = width;
 
     const nodeWidth = width / 20;
@@ -774,7 +790,7 @@ class Viz {
       .range(['#76B5DE', '#075486']);
 
     const svgAlluvial = d3
-      .select(`${this.parentSelector} ${selector}`)
+      .select(`.right-panel ${selector}`)
       .append('svg')
       .attr('width', width)
       .attr('height', height)

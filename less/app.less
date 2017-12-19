@@ -7,32 +7,17 @@ html, body, body > .grid {
   margin: 0;
 }
 
-#viz {
-  position: fixed;
+.pusher {
   height: 100%;
-  width: 100%;
+}
 
-  .main-map {
-    position: absolute;
-    left: 0%;
+.sidebar {
 
-    height: 100%;
-    width: 50%;
-  }
+  background-color: rgba(255, 255, 255, 0.8);
 
   .right-panel {
-    margin: 0;
-    padding: 0;
-
-    position: absolute;
-    right: 0%;
-
-    width: 50%;
-    height: 100%;
-    
     overflow-y: auto;
     border-right: none;
-
     text-align: center;
 
     .panel-title {
@@ -47,13 +32,28 @@ html, body, body > .grid {
       margin: 0;
     }
   }
+}
+
+#viz {
+  position: relative;
+  height: 100%;
+
+  .main-map {
+    height: 100%;
+    width: 100%;
+  }
+
 
   .search {
     position: absolute;
-    left: 30%;
+    left: 50%;
     top: 3%;
-
     z-index: 1000;
+    margin-left: -100px;
+
+    input {
+      width: 200px;
+    }
   }
 }
 
