@@ -1,3 +1,5 @@
+// @flow
+
 type WordInfo = {
   syn: Array<string>,
   ant: Array<string>,
@@ -5,9 +7,9 @@ type WordInfo = {
   lang: Array<string>,
 };
 
-const lang_info_url = '/lang';
-const lang_pair_info_url = '/relation';
-const word_info_url = '/word';
+const langInfoUrl = '/lang';
+const langPairInfoUrl = '/relation';
+const wordInfoUrl = '/word';
 
 const defaultConfig = {
   headers: {
@@ -28,7 +30,7 @@ class Api {
       method: 'GET',
     };
 
-    return fetch(`${word_info_url}/${word}`, config).then(res => res.json());
+    return fetch(`${wordInfoUrl}/${word}`, config).then(res => res.json());
   }
 
   static async getWordData(word, lang): Promise<WordInfo> {
@@ -37,7 +39,7 @@ class Api {
       method: 'GET',
     };
 
-    return fetch(`${word_info_url}/${word}/${lang}`, config).then(res => res.json());
+    return fetch(`${wordInfoUrl}/${word}/${lang}`, config).then(res => res.json());
   }
 
   static async getLangData(isocode) {
@@ -46,7 +48,7 @@ class Api {
       method: 'GET',
     };
 
-    return fetch(`${lang_info_url}/${isocode}`, config).then(res => res.json());
+    return fetch(`${langInfoUrl}/${isocode}`, config).then(res => res.json());
   }
 
   static async getLangPairData(iso1, iso2) {
@@ -55,7 +57,7 @@ class Api {
       method: 'GET',
     };
 
-    return fetch(`${lang_pair_info_url}/${iso1}/${iso2}`, config).then(res => res.json());
+    return fetch(`${langPairInfoUrl}/${iso1}/${iso2}`, config).then(res => res.json());
   }
 }
 
