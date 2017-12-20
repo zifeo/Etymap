@@ -4,14 +4,13 @@ import * as d3 from 'd3';
 import $ from 'jquery';
 import _ from 'lodash';
 import Api from '../api';
-import { geojson, langNetwork } from '../json/data';
+import { geojson, langNetwork, allLanguages} from '../json/data';
 import { cloneTemplate, openPanel } from '../utils';
 import { recreateChord } from './chord';
 import { recreateAlluvial } from './alluvial';
 import { recreateEtymology } from './etymology';
 
 const languagesCoo = langNetwork.locations;
-const allLanguages = Object.keys(languagesCoo);
 
 const lineGenerator = d3.line().curve(d3.curveCardinal);
 
@@ -37,10 +36,13 @@ class Viz {
 
     this.zoom = d3
       .zoom()
+      .translateExtent([[0, 0],[2000, 1000]]) 
       .scaleExtent([1, 30])
       .on('zoom', () => this.g.attr('transform', d3.event.transform));
 
-    this.svg.call(this.zoom);
+
+    this.svg.call(this.zoom)
+      .on("dblclick.zoom", null);
   }
 
   addGeoJson() {
@@ -60,7 +62,8 @@ class Viz {
       .attr('stroke', '#DDD')
       .attr('stroke-width', '0')
       .attr('d', this.geoPath)
-      .attr('class', 'mapPath');
+      .attr('class', 'mapPath')
+      .attr('id', d => `country-${d.properties.iso_a3}`);
   }
 
   get width() {
@@ -83,6 +86,7 @@ class Viz {
       .attr('stroke-width', 0.2)
       .attr('fill', 'white')
       .attr('stroke', 'blue')
+      .attr('class', 'languageCircle')
       .attr('id', iso => `circle-${iso}`)
       .on('click', iso => this.asyncSelectLanguage(iso));
   }
@@ -153,6 +157,38 @@ class Viz {
     this.g.selectAll('.languagePath').remove();
   }
 
+  setCountryColors(isocode, color) {
+    const countryIDs = langNetwork.spoken[languagesCoo[isocode].name];
+    if (!countryIDs) //this language in no longer spoken
+      return;
+
+    countryIDs.forEach(countryID => {
+      d3.select(`#country-${countryID}`).transition()
+       .duration(400)
+       .attr('fill', color)
+       .attr('stroke', color)
+    });
+  }
+
+  highlightLanguages(isocodes) {
+    this.g.selectAll('.languageCircle')
+     .attr('opacity', 0.2);
+
+    isocodes.forEach(iso => {
+      this.g.select(`#circle-${iso}`)
+       .attr('opacity', 1);
+    });
+  }
+
+  resetHighlights() {
+    this.g.selectAll('.mapPath')
+     .attr('fill', '#DDD')
+     .attr('stroke', '#DDD');
+
+    this.g.selectAll('.languageCircle')
+     .attr('opacity', 1);
+  }
+
   /* Single Language */
 
   async asyncSelectLanguage(isocode) {
@@ -162,7 +198,14 @@ class Viz {
 
   selectLanguage(langInfo) {
     openPanel();
+    this.resetHighlights();
     this.addLanguageLines(langInfo);
+    this.setCountryColors(langInfo.lang, '#ffa293');
+
+    const allIso = Object.keys(langNetwork.relation[langInfo.lang]);
+    allIso.push(lang);
+    this.highlightLanguages(allIso);
+    
     this.setRightPanelInfoLanguage(langInfo);
   }
 
@@ -171,9 +214,8 @@ class Viz {
     this.removeAllLines();
 
     const allIsocodesRelated = [isocode];
-    langNetwork.fromProportion[isocode].forEach(rel => {
-      const otherLang = rel[0];
-      const value = rel[1];
+    Object.keys(langNetwork.relationProportion[isocode]).forEach(otherLang => {
+      const value = langNetwork.relationProportion[isocode][otherLang];
 
       allIsocodesRelated.push(otherLang);
       this.addLine([isocode, otherLang], 0.5 + value, 'white', 0.5, () =>
@@ -196,8 +238,12 @@ class Viz {
 
   selectLanguagePair(info1To2, info2To1) {
     openPanel();
+    this.resetHighlights();
     this.addLanguagePairLines(info1To2, info2To1);
     this.focusOn([info1To2.lang_src, info1To2.lang_to]);
+    this.highlightLanguages([info1To2.lang_src, info2To1.lang_src]);
+    this.setCountryColors(info1To2.lang_src, '#ffa293');
+    this.setCountryColors(info2To1.lang_src, '#89ffbe');
     this.setRightPanelInfoLanguagePair(info1To2, info2To1);
   }
 
@@ -223,6 +269,7 @@ class Viz {
 
   selectWord(wordInfo) {
     openPanel();
+    this.resetHighlights();
     this.addWordLines(wordInfo);
     this.setRightPanelInfoWord(wordInfo);
   }
@@ -236,6 +283,7 @@ class Viz {
     }
 
     this.focusOn(Array.from(allIso));
+    this.highlightLanguages(allIso);
   }
 
   recursiveAddWordLines(allIso, previousLangs, obj) {
@@ -275,7 +323,7 @@ class Viz {
     this.hideAllRightSubpanels();
     $(`.right-panel .language-panel`).show();
 
-    $(`.right-panel .right-panel .notTemplate`).remove();
+    $(`.right-panel .notTemplate`).remove();
 
     $(`.right-panel .panel-title`).html(languagesCoo[isocode].name); // Title
 
@@ -311,29 +359,24 @@ class Viz {
 
     // Template for chord Diagram
 
-    const isocodes = ['fra', 'por', 'spa', 'eng', 'rus']; // temporary
+    const isocodesNotFiltered = Object.keys(langNetwork.relation[isocode]);
+    const tempArray = isocodesNotFiltered.map(iso => [iso, langNetwork.relation[isocode][iso]]);
+    const isocodes = _.take(_.sortBy(tempArray, pair => -pair[1]), 6).map(pair => pair[0]);
     isocodes.push(isocode);
-    const selectedLanguageIndex = isocodes.length - 1; // temporary
 
     const matrixRelations = [];
-    for (const i in isocodes) {
+    isocodes.forEach(first => {
       const arr = [];
-      for (const j in isocodes) {
-        let value = 0;
 
-        if (i !== j && isocodes[i] in langNetwork.from) {
-          const values = langNetwork.from[isocodes[i]].filter(pair => pair[0] === isocodes[j]);
-          if (values.length > 0) {
-            value = values[0][1];
-          }
-        }
-
+      isocodes.forEach(second => {
+        const value = langNetwork.relation[first][second] || 0;
         arr.push(value);
-      }
-      matrixRelations.push(arr);
-    }
+      });
 
-    recreateChord(this, matrixRelations, isocodes, selectedLanguageIndex);
+      matrixRelations.push(arr);
+    })
+
+    recreateChord(this, matrixRelations, isocodes);
   }
 
   setRightPanelInfoLanguagePair(info1To2, info2To1) {
@@ -343,7 +386,7 @@ class Viz {
     this.hideAllRightSubpanels();
     $(`.right-panel .language-pair-panel`).show();
 
-    $(`.right-panel .right-panel .notTemplate`).remove();
+    $(`.right-panel .notTemplate`).remove();
 
     this.setRightPanelInfoLanguagePairTitle(iso1, iso2, '.first-direction .title');
     this.setRightPanelInfoLanguagePairTitle(iso2, iso1, '.second-direction .title');
@@ -422,7 +465,7 @@ class Viz {
     this.hideAllRightSubpanels();
     $(`.right-panel .word-panel`).show();
 
-    $(`.right-panel .right-panel .notTemplate`).remove();
+    $(`.right-panel .notTemplate`).remove();
 
     $(`.right-panel .panel-title`).html(wordInfo.word); // Title
 

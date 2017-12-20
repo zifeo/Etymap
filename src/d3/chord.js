@@ -6,7 +6,8 @@ import { langNetwork } from '../json/data';
 
 const languagesCoo = langNetwork.locations;
 
-function recreateChord(viz, matrix, isocodes, selectedLanguageIndex) {
+function recreateChord(viz, matrix, isocodes) {
+  const selectedLanguageIndex = isocodes.length - 1;
   const width = $(`.right-panel .language-panel`).width() * 0.8;
   const height = width * 1.2;
 
