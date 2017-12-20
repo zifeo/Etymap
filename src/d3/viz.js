@@ -92,15 +92,45 @@ class Viz {
   }
 
   addLine(isocodes, strokeWidth, color, opacity, clickFct) {
+    if (isocodes.length > 2) {
+      const first = isocodes.slice();
+      first.shift();
+      const second = isocodes.slice();
+      second.pop();
+      const zipped = _.zip(first, second);
+      zipped.forEach(pair => this.addLine(pair, strokeWidth, color, opacity, clickFct));
+      return;
+    }
+
     const positionsGeo = isocodes.map(isocode => [languagesCoo[isocode].longitude, languagesCoo[isocode].latitude]);
 
     const positionsGeoMiddle = [];
     for (let i = 0; i < positionsGeo.length - 1; i += 1) {
       positionsGeoMiddle.push(positionsGeo[i]);
-      positionsGeoMiddle.push([
-        (positionsGeo[i][0] + positionsGeo[i + 1][0]) / 2,
-        (positionsGeo[i][1] + positionsGeo[i + 1][1]) / 2,
-      ]);
+
+      if (positionsGeo[i][0] === positionsGeo[i + 1][0] && positionsGeo[i][1] === positionsGeo[i + 1][1]) { //self loop
+        const hash = isocodes[0].split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+
+        const angle = (hash % 20) / 20 * (2 * Math.PI);
+        const first = angle - Math.PI / 16;
+        const second = angle + Math.PI / 16;
+
+        positionsGeoMiddle.push([
+          positionsGeo[i][0] + 2 * Math.cos(first),
+          positionsGeo[i][1] + 2 * Math.sin(first)
+        ]);
+
+        positionsGeoMiddle.push([
+          positionsGeo[i][0] + 2 * Math.cos(second),
+          positionsGeo[i][1] + 2 * Math.sin(second)
+        ]);
+      }
+      else {
+        positionsGeoMiddle.push([
+          (positionsGeo[i][0] + positionsGeo[i + 1][0]) / 2,
+          (positionsGeo[i][1] + positionsGeo[i + 1][1]) / 2
+        ]);
+      }
     }
     positionsGeoMiddle.push(positionsGeo[positionsGeo.length - 1]);
 
@@ -203,9 +233,9 @@ class Viz {
     this.setCountryColors(langInfo.lang, '#ffa293');
 
     const allIso = Object.keys(langNetwork.relation[langInfo.lang]);
-    allIso.push(lang);
+    allIso.push(langInfo.lang);
     this.highlightLanguages(allIso);
-    
+
     this.setRightPanelInfoLanguage(langInfo);
   }
 
@@ -302,7 +332,7 @@ class Viz {
 
     if (parents.length === 0) {
       // no more ancestors
-      this.addLine(previousLangsCopy, 1, 'white', 1);
+      this.addLine(previousLangsCopy, 0.4, 'white', 1);
     }
     for (const i in parents) {
       this.recursiveAddWordLines(allIso, previousLangsCopy, parents[i]);
@@ -361,7 +391,7 @@ class Viz {
 
     const isocodesNotFiltered = Object.keys(langNetwork.relation[isocode]);
     const tempArray = isocodesNotFiltered.map(iso => [iso, langNetwork.relation[isocode][iso]]);
-    const isocodes = _.take(_.sortBy(tempArray, pair => -pair[1]), 6).map(pair => pair[0]);
+    const isocodes = _.take(_.sortBy(tempArray, pair => -pair[1]), 4).map(pair => pair[0]);
     isocodes.push(isocode);
 
     const matrixRelations = [];
@@ -495,7 +525,7 @@ class Viz {
 
     $(`.right-panel .word-panel .svg-container .panel-title`).html(`Etymology of ${wordInfo.word}`); // Title of the graph
 
-    recreateEtymology(this, wordInfo);
+    recreateEtymology(this, wordInfo, false);
   }
 }
 

@@ -2,26 +2,43 @@
 
 import $ from 'jquery';
 import * as d3 from 'd3';
+import _ from 'lodash';
 import { langNetwork } from '../json/data';
 
 const languagesCoo = langNetwork.locations;
 
-function recreateEtymology(viz, wordInfo) {
-  const width = $(`.right-panel .word-panel`).width() * 0.8;
-  const height = width;
+function recreateEtymology(viz, wordInfo, displayParents) {
+  const width = $(`.right-panel .word-panel`).width() * 0.95;
 
-  d3.select(`.right-panel .word-panel .svg-container .svg-tree`).remove();
+  let maxDepth = {
+    parents: 0,
+    children: 0
+  };
 
-  let maxDepth = 0;
+  function computeMaxDepth(obj, newDepth, key) {
+    const parents = obj[1];
+    if (maxDepth[key] < newDepth) {
+      maxDepth[key] = newDepth;
+    }
 
-  function recursiveCreateData(obj, newDepth) {
+    if (parents.length > 0) {
+      // more ancestors
+      parents.forEach(p => computeMaxDepth(p, newDepth + 1, key))
+    }
+  }
+
+  wordInfo['children'].forEach(p => computeMaxDepth(p, 1, 'children'));
+  wordInfo['parents'].forEach(p => computeMaxDepth(p, 1, 'parents'));
+
+  const totalDepth = maxDepth['children'] + maxDepth['parents'];
+  const height = totalDepth * 110;
+
+  d3.select(`.right-panel .word-panel .svg-container .svg-tree`).remove();  
+
+  function recursiveCreateData(obj, key) {
     const lang = obj[0][0];
     const word = obj[0][1];
     const parents = obj[1];
-
-    if (maxDepth < newDepth) {
-      maxDepth = newDepth;
-    }
 
     const recursiveData = {
       name: word,
@@ -30,27 +47,10 @@ function recreateEtymology(viz, wordInfo) {
 
     if (parents.length > 0) {
       // more ancestors
-      const dataParents = [];
-      for (const i in parents) {
-        dataParents.push(recursiveCreateData(parents[i], newDepth + 1));
-      }
-      recursiveData.parents = dataParents;
+      recursiveData.parents = parents.map(p => recursiveCreateData(p, key));
     }
 
     return recursiveData;
-  }
-
-  const data = {
-    name: wordInfo.word,
-    lang: wordInfo.lang,
-  };
-
-  if (wordInfo.parents.length > 0) {
-    const parents = [];
-    for (const i in wordInfo.parents) {
-      parents.push(recursiveCreateData(wordInfo.parents[i], 1));
-    }
-    data.parents = parents;
   }
 
   const svgTree = d3
@@ -60,87 +60,111 @@ function recreateEtymology(viz, wordInfo) {
     .attr('height', height)
     .attr('class', 'svg-tree');
 
-  const gPaths = svgTree.append('g').attr('transform', 'translate(0,0)');
+  createHalfTree('parents');
+  createHalfTree('children');
 
-  const gNodes = svgTree.append('g').attr('transform', 'translate(0,0)');
+  d3.select('#gEty-parents-0').remove(); //Remove duplicate node
 
-  const tree = d3.tree().size([height, width]);
+  function createHalfTree(key) {
+    const data = {
+      name: wordInfo.word,
+      lang: wordInfo.lang,
+    };
 
-  const root = d3.hierarchy(data, d => d.parents);
+    data.parents = wordInfo[key].map(d => recursiveCreateData(d, key));
 
-  const descendants = tree(root).descendants();
+    const gPaths = svgTree.append('g');
+    const gNodes = svgTree.append('g');
 
-  const dataNodes = descendants;
-  const dataLinks = descendants.slice(1);
+    const tree = d3.tree().size([width, maxDepth[key] / totalDepth]);
 
-  dataNodes.forEach(d => {
-    d.y = (1 + d.depth) * width / (maxDepth + 2);
-  });
+    const root = d3.hierarchy(data, d => d.parents);
 
-  let i = 0;
-  const nodes = gNodes
-    .selectAll('none')
-    .data(dataNodes, d => (d.id = ++i))
-    .enter()
-    .append('g')
-    .attr('transform', d => `translate(${d.y},${d.x})`);
+    const descendants = tree(root).descendants();
 
-  nodes
-    .append('circle')
-    .attr('r', 10)
-    .attr('fill', '#76B5DE')
-    .attr('stroke', '#075486')
-    .attr('stroke-width', 2)
-    .attr('class', (d, i) => `circle${i}`)
-    .on('mouseover', (d, i) => {
-      d3
-        .select(`.right-panel .word-panel .svg-container .circle${i}`)
-        .transition()
-        .duration(300)
-        .attr('fill', '#F66')
-        .attr('stroke', '#F00');
-    })
-    .on('mouseout', (d, i) => {
-      d3
-        .select(`.right-panel .word-panel .svg-container .circle${i}`)
-        .transition()
-        .duration(300)
-        .attr('fill', '#76B5DE')
-        .attr('stroke', '#075486');
-    })
-    .on('click', d => viz.asyncSelectWord(d.data.name, d.data.lang));
+    const dataNodes = descendants;
+    const dataLinks = descendants.slice(1);
 
-  nodes
-    .append('text')
-    .attr('dy', '-15px')
-    .attr('text-anchor', 'middle')
-    .text(d => d.data.name);
+    dataNodes.forEach(d => {
+      if (key === 'parents') {
+        d.y = height * (maxDepth['children'] + d.depth + 1) / (totalDepth + 2);
+      }
+      else {
+        d.y = height * (maxDepth['children'] - d.depth + 1) / (totalDepth + 2);
+      }
 
-  nodes
-    .append('text')
-    .attr('dy', '23px')
-    .attr('text-anchor', 'middle')
-    .attr('style', 'cursor:pointer;')
-    .text(d => languagesCoo[d.data.lang].name)
-    .on('click', d => viz.asyncSelectLanguage(d.data.lang));
+      if (d.depth === 0) {
+        d.x = width / 2;
+      }
+      
+    });
 
-  const links = gPaths
-    .selectAll('none')
-    .data(dataLinks, d => d.id)
-    .enter()
-    .append('path')
-    .attr('fill', 'none')
-    .attr('stroke', '#AAA')
-    .attr('stroke-width', 3)
-    .attr(
-      'd',
-      d3
-        .linkHorizontal()
-        .source(d => d)
-        .target(d => d.parent)
-        .x(d => d.y) // reversed as the tree is horizontal
-        .y(d => d.x)
-    );
+    let i = 0;
+    const nodes = gNodes
+      .selectAll('none')
+      .data(dataNodes, d => (d.id = ++i))
+      .enter()
+      .append('g')
+      .attr('transform', d => `translate(${d.x},${d.y})`)
+      .attr('id', (d, i) => `gEty-${key}-${i}`);
+
+    nodes
+      .append('circle')
+      .attr('r', d => d.depth === 0 ? 20 : 10)
+      .attr('fill', '#76B5DE')
+      .attr('stroke', '#075486')
+      .attr('stroke-width', 2)
+      .attr('class', (d, i) => `circleEty-${key}-${i}`)
+      .on('mouseover', (d, i) => {
+        d3
+          .select(`.right-panel .word-panel .svg-container .circleEty-${key}-${i}`)
+          .transition()
+          .duration(300)
+          .attr('fill', '#F66')
+          .attr('stroke', '#F00');
+      })
+      .on('mouseout', (d, i) => {
+        d3
+          .select(`.right-panel .word-panel .svg-container .circleEty-${key}-${i}`)
+          .transition()
+          .duration(300)
+          .attr('fill', '#76B5DE')
+          .attr('stroke', '#075486');
+      })
+      .on('click', d => viz.asyncSelectWord(d.data.name, d.data.lang));
+
+    nodes
+      .append('text')
+      .attr('dy', d => d.depth === 0 ? '-25px' : '-15px')
+      .attr('text-anchor', 'middle')
+      .text(d => d.data.name);
+
+    nodes
+      .append('text')
+      .attr('dy', d => d.depth === 0 ? '33px' : '23px')
+      .attr('text-anchor', 'middle')
+      .attr('style', 'cursor:pointer;')
+      .text(d => languagesCoo[d.data.lang] ? languagesCoo[d.data.lang].name : "fra") //temporary fix for long idioms, ex : "quand le chat n'est pas là, les souris dansent"
+      .on('click', d => viz.asyncSelectLanguage(d.data.lang));
+
+    const links = gPaths
+      .selectAll('none')
+      .data(dataLinks, d => d.id)
+      .enter()
+      .append('path')
+      .attr('fill', 'none')
+      .attr('stroke', '#AAA')
+      .attr('stroke-width', 3)
+      .attr(
+        'd',
+        d3
+          .linkVertical()
+          .source(d => d)
+          .target(d => d.parent)
+          .x(d => d.x) // reversed as the tree is horizontal
+          .y(d => d.y)
+      );
+  }
 }
 
 export { recreateEtymology };
