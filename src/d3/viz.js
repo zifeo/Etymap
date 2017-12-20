@@ -38,7 +38,17 @@ class Viz {
       .zoom()
       .translateExtent([[0, 0],[2000, 1000]]) 
       .scaleExtent([1, 30])
-      .on('zoom', () => this.g.attr('transform', d3.event.transform));
+      .on('zoom', () => {
+        this.g.attr('transform', d3.event.transform)
+
+        const scale = Math.pow(d3.event.transform.k, 0.75);
+        d3.selectAll(`${this.parentSelector} .gLanguage`)
+          .attr('transform', `scale(${1/scale})`)
+
+        const opacityFactor = Math.pow(d3.event.transform.k, 2);
+        d3.selectAll(`${this.parentSelector} .languageText`)
+          .attr('opacity', iso => opacityFactor * langNetwork.stats[iso].count / 1000000)
+      });
 
 
     this.svg.call(this.zoom)
@@ -75,19 +85,30 @@ class Viz {
   }
 
   addAllLanguagesPoints() {
-    this.g
+    const g = this.g
       .selectAll('none')
       .data(allLanguages)
       .enter()
-      .append('circle')
-      .attr('cx', iso => this.projection([languagesCoo[iso].longitude, languagesCoo[iso].latitude])[0])
-      .attr('cy', iso => this.projection([languagesCoo[iso].longitude, languagesCoo[iso].latitude])[1])
-      .attr('r', 1)
-      .attr('stroke-width', 0.2)
+        .append('g')
+        .attr('transform', iso => `translate(${this.projection([languagesCoo[iso].longitude, languagesCoo[iso].latitude])})`)
+        .append('g')
+        .attr('class', 'gLanguage');
+
+    g.append('circle')
+      .attr('r', 3)
+      .attr('stroke-width', 0.7)
       .attr('fill', 'white')
       .attr('stroke', 'blue')
       .attr('class', 'languageCircle')
       .attr('id', iso => `circle-${iso}`)
+      .on('click', iso => this.asyncSelectLanguage(iso));
+
+    g.append('text')
+      .attr('class', 'languageText')
+      .attr('id', iso => `languageText-${iso}`)
+      .text(iso => languagesCoo[iso].name)
+      .attr('text-anchor', 'middle')
+      .attr('dy', '-3px')
       .on('click', iso => this.asyncSelectLanguage(iso));
   }
 

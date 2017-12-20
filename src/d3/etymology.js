@@ -86,12 +86,15 @@ function recreateEtymology(viz, wordInfo, displayParents) {
     const dataLinks = descendants.slice(1);
 
     dataNodes.forEach(d => {
+      let depth = 0;
       if (key === 'parents') {
-        d.y = height * (maxDepth['children'] + d.depth + 1) / (totalDepth + 2);
+        depth = d.depth;
       }
       else {
-        d.y = height * (maxDepth['children'] - d.depth + 1) / (totalDepth + 2);
+        depth = -d.depth;
       }
+
+      d.y = height * (maxDepth['children'] + depth + 1) / (totalDepth + 2);
 
       if (d.depth === 0) {
         d.x = width / 2;
