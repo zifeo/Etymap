@@ -55,7 +55,7 @@
         </p>
         <figure>
             <label for="mn-exports-imports" class="margin-toggle">⊕</label><input type="checkbox" id="mn-exports-imports" class="margin-toggle"><span class="marginnote">Wireframe for language level.</span>
-            <img src="img/languageLevel.png" alt="Wireframe of language level">
+            <img src="img/initial_wireframe/languageLevel.png" alt="Wireframe of language level">
         </figure>
         <p>
             For the language level, there will be bundled edges between languages which are assigned to areas on the map. The edges will represent the relations between words of the linked languages. Above each language area there will be the name of the language assigned to it, it will also highlight the area when hovering on it. These names will be clickable and allow the user to select a language. By selecting a language, a pannel to the left of the map will appear which holds a Sankey diagram of the incoming and outgoing relations (per language) to the selected language. Hovering on this diagram will give additional numerical information to the user. Of course, the underlying map will have all the usual interactions one can expect from a map, namely dragging and zooming.
@@ -67,7 +67,7 @@
         </p>
         <figure>
             <label for="mn-exports-imports" class="margin-toggle">⊕</label><input type="checkbox" id="mn-exports-imports" class="margin-toggle"><span class="marginnote">Wireframe for word level.</span>
-            <img src="img/wordLevel.png" alt="Wireframe diagram of word level.">
+            <img src="img/initial_wireframe/wordLevel.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
             Once the user entered the word level, he will have the exact same interactions with the map as previously. The languages will still have the same interactions too (highlighting areas, etc.). Upon first entering the word level, a random word will be selected. There will now be edges on the map which represent the etymological tree of this word. On the right side, there will be a panel allowing the user to search for a specific word, or pick among suggested words to examin. Whereas on the left there will be some statistics about the etymological trees of the current language: max depth of trees, mean depth, histogram of related languages.
@@ -96,22 +96,22 @@
             The dataset has eight different relations possible between two words. We are only interested in certain of them, as other might be ambiguous or not add any information to the etymological origins of words (i.e knowing that "nicely" is a derived form of "nice"). By performing this initial filter, we practically cut the dataset into half, having 2.7m relations remaining.
         </p>
         <figure>
-            <img src="img/figure1.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure1.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
             The first insight is about the number of words per language. The dataset only holds words which have an etymological relationship, hence all other words are discarded. On Figure 1, we can see that due to this there are languages that have very few words. This could also be the result of a poorly documented language on wikitionary. Either way, we will have to deal with the tail of the distribution in the visualization.
         </p>
         <figure>
-            <img src="img/figure2.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure2.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
             The depth of the etymological tree for a given word is a very important aspect in our visualization. Depending on this depth the tree might be very large and hence given a sense of clutter which we will have to deal with. Figure 2 illustrates the depth of the tree for 250 words sampled uniformly from the whole dataset. The main insight we gain from this is that these trees are relatively shallow, and will therefore not be computationally difficult to draw. This could potentially allow us to draw trees of multiple words at the same time to gain other insights about the data.
         </p>
         <figure>
-            <img src="img/figure3_1.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure3_1.png" alt="Wireframe diagram of word level.">
         </figure>
         <figure>
-            <img src="img/figure3_2.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure3_2.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
             Finally, we explored the relationships for two languages in particular : German and French. Figure 3 illustrates the languages to which these are related (directly or indirectly) by sampling 250 words from the language and constructing their etymological tree. As described in our wireframe, we would have only wanted to plot this feature for directly related languages and not using the full tree as it is currently done in this figure. Given that there are not that many languages related even indirectly to a given language, we could adapt our visualization to show this feature instead or add it in.
