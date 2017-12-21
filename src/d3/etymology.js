@@ -36,15 +36,11 @@ function recreateEtymology(viz, wordInfo, displayParents) {
 
     if (parents.length > 0) {
       // more ancestors
-      if (key === 'children') {
-        _.take(parents, 3).forEach(p => computeMaxDepth(p, newDepth + 1, key));
-      } else {
-        parents.forEach(p => computeMaxDepth(p, newDepth + 1, key));
-      }
+      parents.forEach(p => computeMaxDepth(p, newDepth + 1, key));
     }
   }
 
-  _.take(wordInfo.children, 3).forEach(p => computeMaxDepth(p, 1, 'children'));
+  wordInfo.children.forEach(p => computeMaxDepth(p, 1, 'children'));
   wordInfo.parents.forEach(p => computeMaxDepth(p, 1, 'parents'));
 
   const maxWidth = Math.max(
@@ -69,11 +65,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
 
     if (parents.length > 0) {
       // more ancestors
-      if (key === 'children') {
-        recursiveData.parents = _.take(parents, 3).map(p => recursiveCreateData(p, key));
-      } else {
-        recursiveData.parents = parents.map(p => recursiveCreateData(p, key));
-      }
+      recursiveData.parents = parents.map(p => recursiveCreateData(p, key));
     }
 
     return recursiveData;
@@ -110,11 +102,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       lang: wordInfo.lang,
     };
 
-    if (key === 'parents') {
-      data.parents = wordInfo[key].map(d => recursiveCreateData(d, key));
-    } else {
-      data.parents = _.take(wordInfo[key], 3).map(d => recursiveCreateData(d, key));
-    }
+    data.parents = wordInfo[key].map(d => recursiveCreateData(d, key));
 
     const gPaths = g.append('g');
     const gNodes = g.append('g');

@@ -21,6 +21,8 @@ const vizMode = {
   Word: 3,
 };
 
+const countryColors = ['#ffeac4', '#ffc4c4'];
+
 class Viz {
   constructor(parentSelector) {
     this.parentSelector = parentSelector;
@@ -286,7 +288,9 @@ class Viz {
       .on('end', () => this.g.selectAll('.oldLanguagePath').remove());
   }
 
-  setCountryColors(isocode, color) {
+  setCountryColors(isocode, colorIdx) {
+    const color = countryColors[colorIdx];
+
     const countryIDs = langNetwork.spoken[languagesCoo[isocode].name];
     if (!countryIDs)
       // this language in no longer spoken
@@ -382,8 +386,26 @@ class Viz {
       .attr('opacity', 1);
   }
 
+  updateLegend(iso1, iso2) {
+    $('#legend').show();
+
+    $('#legend .first .label').attr('style', `background-color:${countryColors[0]};`);
+
+    $('#legend .first .text').html(`${languagesCoo[iso1].name}-speaking countries`);
+
+    if (this.mode === vizMode.Language) {
+      $('#legend .second').hide();
+    }
+    else {
+      $('#legend .second').show();
+      $('#legend .second .label').attr('style', `background-color:${countryColors[1]};`);
+      $('#legend .first .text').html(`${languagesCoo[iso2].name}-speaking countries`);
+    }
+  }
+
   /* No selection */
   deselect() {
+    $('#legend').hide();
     closePanel();
 
     this.mode = vizMode.None;
@@ -407,13 +429,14 @@ class Viz {
     openPanel();
     this.resetHighlights();
     this.addLanguageLines(langInfo);
-    this.setCountryColors(langInfo.lang, '#ffeac4');
+    this.setCountryColors(langInfo.lang, 0);
 
     const allIso = Object.keys(langNetwork.relation[langInfo.lang]);
     allIso.push(langInfo.lang);
     this.focusOn(allIso, langInfo.lang);
 
     this.setRightPanelInfoLanguage(langInfo);
+    this.updateLegend(langInfo.lang);
   }
 
   addLanguageLines(langInfo) {
@@ -444,9 +467,10 @@ class Viz {
     this.resetHighlights();
     this.addLanguagePairLines(info1To2, info2To1);
     this.focusOn([info1To2.lang_src, info1To2.lang_to], info1To2.lang_src);
-    this.setCountryColors(info1To2.lang_src, '#ffeac4');
-    this.setCountryColors(info2To1.lang_src, '#ffc4c4');
+    this.setCountryColors(info1To2.lang_src, 0);
+    this.setCountryColors(info2To1.lang_src, 1);
     this.setRightPanelInfoLanguagePair(info1To2, info2To1);
+    this.updateLegend(info1To2.lang_src, info1To2.lang_to);
   }
 
   addLanguagePairLines(info1To2, info2To1) {
@@ -476,6 +500,8 @@ class Viz {
     this.resetHighlights();
     this.addWordLines(wordInfo);
     this.setRightPanelInfoWord(wordInfo);
+
+    $('#legend').hide();
   }
 
   addWordLines(wordInfo) {
@@ -584,6 +610,9 @@ class Viz {
 
       matrixRelations.push(arr);
     }); */
+
+    if (isocodesFrom.length === 0)
+      return;
 
     function getMatrixAndIsocodes(key) {
       const isocodes = _.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]);

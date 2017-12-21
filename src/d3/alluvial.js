@@ -32,6 +32,10 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
 
   const maxSum = Math.max(fromCumSum, toCumSum);
 
+  const offsetFrom = (height - fromCumSum * height / maxSum) / 2;
+  const offsetMiddle = (height - height / maxSum) / 2;
+  const offsetTo = (height - toCumSum * height / maxSum) / 2;
+
   const color = d3
     .scaleLinear()
     .domain([0, 1])
@@ -51,6 +55,10 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
 
   const gTo = gNodes.append('g').attr('transform', `translate(${width - nodeWidth})`);
 
+  function getOffset(isFrom) {
+    return isFrom ? offsetFrom : offsetTo;
+  }
+
   // Nodes & text
   function addNodes(data, dataCum, isocodes, group, isFrom) {
     const baseID = isFrom ? 0 : 1;
@@ -62,7 +70,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .attr('fill', '#37485E')
       .attr('width', nodeWidth)
       .attr('height', (d, i) => data[i] * height / maxSum)
-      .attr('y', (d, i) => (d + i * margin) * height / maxSum)
+      .attr('y', (d, i) => getOffset(isFrom) + (d + i * margin) * height / maxSum)
       .attr('class', (d, i) => `node-${baseID}-${i} clickable`)
       .on('mouseover', (d, i) => {
         d3
@@ -91,7 +99,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .append('text')
       .attr('fill', 'black')
       .attr('x', isFrom ? nodeWidth + 5 : -5)
-      .attr('y', (d, i) => (dataCum[i] + data[i] / 2 + i * margin) * height / maxSum + 5)
+      .attr('y', (d, i) => getOffset(isFrom) + (dataCum[i] + data[i] / 2 + i * margin) * height / maxSum + 5)
       .attr('text-anchor', isFrom ? 'start' : 'end')
       .text(d => languagesCoo[d].name);
   }
@@ -105,26 +113,26 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
     .attr('width', nodeWidth)
     .attr('height', height / maxSum)
     .attr('x', width / 2 - nodeWidth / 2)
-    .attr('y', 0);
+    .attr('y', offsetMiddle);
 
   // Links
   const fromPaths = [];
   for (const i in dataFrom) {
     const newPath = [];
-    newPath.push([0, (dataFromCum[i] + i * margin + dataFrom[i] / 2) * height / maxSum]);
-    newPath.push([nodeWidth, (dataFromCum[i] + i * margin + dataFrom[i] / 2) * height / maxSum]);
-    newPath.push([width / 2 - nodeWidth / 2, (dataFromCum[i] + dataFrom[i] / 2) * height / maxSum]);
-    newPath.push([width / 2 + nodeWidth / 2, (dataFromCum[i] + dataFrom[i] / 2) * height / maxSum]);
+    newPath.push([0, offsetFrom + (dataFromCum[i] + i * margin + dataFrom[i] / 2) * height / maxSum]);
+    newPath.push([nodeWidth, offsetFrom + (dataFromCum[i] + i * margin + dataFrom[i] / 2) * height / maxSum]);
+    newPath.push([width / 2 - nodeWidth / 2, offsetMiddle + (dataFromCum[i] + dataFrom[i] / 2) * height / maxSum]);
+    newPath.push([width / 2 + nodeWidth / 2, offsetMiddle + (dataFromCum[i] + dataFrom[i] / 2) * height / maxSum]);
     fromPaths.push(newPath);
   }
 
   const toPaths = [];
   for (const i in dataTo) {
     const newPath = [];
-    newPath.push([width / 2 - nodeWidth / 2, (dataToCum[i] + dataTo[i] / 2) * height / maxSum]);
-    newPath.push([width / 2 + nodeWidth / 2, (dataToCum[i] + dataTo[i] / 2) * height / maxSum]);
-    newPath.push([width - nodeWidth, (dataToCum[i] + i * margin + dataTo[i] / 2) * height / maxSum]);
-    newPath.push([width, (dataToCum[i] + i * margin + dataTo[i] / 2) * height / maxSum]);
+    newPath.push([width / 2 - nodeWidth / 2, offsetMiddle + (dataToCum[i] + dataTo[i] / 2) * height / maxSum]);
+    newPath.push([width / 2 + nodeWidth / 2, offsetMiddle + (dataToCum[i] + dataTo[i] / 2) * height / maxSum]);
+    newPath.push([width - nodeWidth, offsetTo + (dataToCum[i] + i * margin + dataTo[i] / 2) * height / maxSum]);
+    newPath.push([width, offsetTo + (dataToCum[i] + i * margin + dataTo[i] / 2) * height / maxSum]);
     toPaths.push(newPath);
   }
 
