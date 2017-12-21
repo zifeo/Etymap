@@ -88,7 +88,7 @@ class Viz {
   }
 
   updateScaleAndOpacity() {
-    const scale = Math.pow(this.scale, 0.75);
+    const scale = Math.pow(this.scale, 0.9);
     d3.selectAll(`${this.parentSelector} .gLanguage`)
       .attr('transform', `scale(${1/scale})`);
 
@@ -280,6 +280,8 @@ class Viz {
   }
 
   checkCollisions() {
+    if (this.mode === vizMode.None) return;
+
     const bboxArray = [];
     let mainObj = null;
     this.selectedIsocodes.forEach(iso => {
