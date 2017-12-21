@@ -34,6 +34,10 @@ $('.ui.accordion').accordion({
   exclusive: false,
 });
 
+$('.menu .item')
+  .tab()
+;
+
 $('.search').search({
   apiSettings: {
     url: '/search/{query}',
