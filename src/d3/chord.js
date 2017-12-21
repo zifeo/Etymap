@@ -39,7 +39,7 @@ function recreateChord(viz, params, selector) {
   const color = d3
     .scaleLinear()
     .domain([0, 1, 2, 3, 4])
-    .range(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']);
+    .range(['#BA252A', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']);
 
   function getColor(index) {
     return d3.rgb(color(index));

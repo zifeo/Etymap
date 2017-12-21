@@ -77,7 +77,7 @@ class Viz {
       .enter()
       .append('path')
       .attr('fill', '#DDD')
-      .attr('stroke', 'dimgrey')
+      .attr('stroke', '#AAA')
       .attr('stroke-width', '0.2')
       .attr('d', this.geoPath)
       .attr('class', 'mapPath')
@@ -88,6 +88,9 @@ class Viz {
   updateScaleAndOpacity() {
     const scale = Math.pow(this.scale, 0.9);
     d3.selectAll(`${this.parentSelector} .gLanguage`).attr('transform', `scale(${1 / scale})`);
+
+    const countryStrokeScale = Math.sqrt(scale);
+    d3.selectAll(`${this.parentSelector} .mapPath`).attr('stroke-width', 0.3 / countryStrokeScale);
 
     if (this.mode !== vizMode.None) return;
 
@@ -136,11 +139,11 @@ class Viz {
       .append('circle')
       .attr('r', 3)
       .attr('stroke-width', 0.7)
-      .attr('fill', 'white')
-      .attr('stroke', 'blue')
+      .attr('fill', '#8084AA')
+      .attr('stroke', 'none')
       .attr('class', 'languageCircle')
       .attr('style', 'cursor:pointer;')
-      .attr('id', iso => `circle-${iso}`)
+      .attr('id', iso => `languageCircle-${iso}`)
       .on('click', iso => this.asyncSelectLanguage(iso));
 
     gText
@@ -309,6 +312,11 @@ class Viz {
         .attr('pointer-events', 'auto')
         .attr('opacity', 1);
 
+      this.g
+        .select(`#languageCircle-${iso}`)
+        .attr('pointer-events', 'auto')
+        .attr('opacity', 1);
+
       const bbox = this.g
         .select(`#languageText-${iso}`)
         .node()
@@ -341,6 +349,11 @@ class Viz {
       } else {
         this.g
           .select(`#languageText-${obj.iso}`)
+          .attr('pointer-events', 'none')
+          .attr('opacity', 0);
+
+        this.g
+          .select(`#languageCircle-${obj.iso}`)
           .attr('pointer-events', 'none')
           .attr('opacity', 0);
       }
@@ -394,7 +407,7 @@ class Viz {
     openPanel();
     this.resetHighlights();
     this.addLanguageLines(langInfo);
-    this.setCountryColors(langInfo.lang, '#ffa293');
+    this.setCountryColors(langInfo.lang, '#ffeac4');
 
     const allIso = Object.keys(langNetwork.relation[langInfo.lang]);
     allIso.push(langInfo.lang);
@@ -431,8 +444,8 @@ class Viz {
     this.resetHighlights();
     this.addLanguagePairLines(info1To2, info2To1);
     this.focusOn([info1To2.lang_src, info1To2.lang_to], info1To2.lang_src);
-    this.setCountryColors(info1To2.lang_src, '#ffa293');
-    this.setCountryColors(info2To1.lang_src, '#89ffbe');
+    this.setCountryColors(info1To2.lang_src, '#ffeac4');
+    this.setCountryColors(info2To1.lang_src, '#ffc4c4');
     this.setRightPanelInfoLanguagePair(info1To2, info2To1);
   }
 

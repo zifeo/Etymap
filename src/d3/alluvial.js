@@ -59,7 +59,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .data(dataCum)
       .enter()
       .append('rect')
-      .attr('fill', 'black')
+      .attr('fill', '#37485E')
       .attr('width', nodeWidth)
       .attr('height', (d, i) => data[i] * height / maxSum)
       .attr('y', (d, i) => (d + i * margin) * height / maxSum)
@@ -76,7 +76,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
           .select(`${selector} .node-${baseID}-${i}`)
           .transition()
           .duration(300)
-          .attr('fill', 'black');
+          .attr('fill', '#37485E');
       })
       .on('click', (d, i) => {
         viz.asyncSelectLanguage(isocodes[i]);
@@ -101,6 +101,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
 
   gNodes
     .append('rect') // Central node
+    .attr('fill', '#BA5357')
     .attr('width', nodeWidth)
     .attr('height', height / maxSum)
     .attr('x', width / 2 - nodeWidth / 2)
@@ -135,6 +136,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .enter()
       .append('path')
       .attr('class', (d, i) => `path-${baseID}-${i} clickable`)
+      .attr('id', (d, i) => `path-${baseID}-${i}-${selector}`)
       .attr('fill', 'none')
       .attr('initial-stroke', (d, i) => d3.rgb(color(i / data.length)))
       .attr('stroke', (d, i) => d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'))
@@ -169,6 +171,20 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
         }
         return `${languagesCoo[from].name} ↔ ${languagesCoo[isocodes[i]].name}`;
       });
+
+    gPaths
+      .selectAll('none')
+      .data(paths)
+      .enter()
+      .append('text')
+       .attr('font-size', '40px')
+       .attr('dy', '14px')
+       .attr('opacity', 0.2)
+       .attr('text-anchor', 'middle')
+       .append('textPath')
+        .attr('startOffset', isFrom ? '75%' : '25%')
+        .attr('xlink:href', (d, i) => `#path-${baseID}-${i}-${selector}`)
+        .text('>');
   }
 
   addPaths(fromPaths, dataFrom, isocodesFrom, true);

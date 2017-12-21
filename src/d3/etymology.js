@@ -152,13 +152,17 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       .attr('transform', d => `translate(${d.x},${d.y})`)
       .attr('id', (d, i) => `gEty-${key}-${i}`);
 
+    function getColor(depth) {
+      return depth === 0 ? '#F66' : (key === 'children' ? '#ff7f00' : '#76B5DE');
+    }
+
     nodes
       .append('circle')
       .attr('r', d => (d.depth === 0 ? 20 : 10))
-      .attr('fill', '#76B5DE')
+      .attr('fill', d => getColor(d.depth))
       .attr('stroke', '#075486')
       .attr('stroke-width', 2)
-      .attr('class', (d, i) => `circleEty-${key}-${i}`)
+      .attr('class', (d, i) => `circleEty-${key}-${i} clickable`)
       .on('mouseover', (d, i) => {
         d3
           .select(`.right-panel .word-panel .svg-container .circleEty-${key}-${i}`)
@@ -172,7 +176,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
           .select(`.right-panel .word-panel .svg-container .circleEty-${key}-${i}`)
           .transition()
           .duration(300)
-          .attr('fill', '#76B5DE')
+          .attr('fill', getColor(d.depth))
           .attr('stroke', '#075486');
       })
       .on('click', d => viz.asyncSelectWord(d.data.name, d.data.lang));
