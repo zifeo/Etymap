@@ -3477,6 +3477,10 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
 
+navigo@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/navigo/-/navigo-6.0.1.tgz#9725b1fa93da9dcd5ab5b5691ac48a6b20c10b8c"
+
 ncname@1.0.x:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/ncname/-/ncname-1.0.0.tgz#5b57ad18b1ca092864ef62b0b1ed8194f383b71c"

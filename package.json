@@ -48,6 +48,7 @@
     "datamaps": "^0.5.8",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
+    "navigo": "^6.0.1",
     "semantic-ui-dist": "^2.2.10",
     "whatwg-fetch": "^2.0.3"
   }

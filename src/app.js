@@ -4,6 +4,7 @@ import 'whatwg-fetch';
 import 'babel-polyfill';
 
 import $ from 'jquery';
+import Navigo from 'Navigo';
 import Viz from './d3/viz';
 
 (() => {
@@ -16,6 +17,18 @@ import Viz from './d3/viz';
 
 const viz = new Viz('#viz');
 viz.show();
+
+const router = new Navigo(null, true);
+
+router
+  .on('w/:word/:lang', ({word, lang}) => viz.asyncSelectWord(word, lang))
+  .on('l/:lang', ({lang}) => {
+    console.log('->', lang)
+    viz.asyncSelectLanguage(lang).then(() => console.log('achanged'));
+  })
+  .on('r/:lang1/:lang2', ({lang1, lang2}) => viz.asyncSelectLanguagePair(lang1, lang2))
+    .resolve();
+
 
 $('.ui.accordion').accordion({
   exclusive: false,
