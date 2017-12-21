@@ -2,3 +2,4 @@
 !build
 !server
 !data
+!uwsgi.ini

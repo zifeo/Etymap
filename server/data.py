@@ -28,3 +28,7 @@ with open_data('relation_samples.json') as f:
 
 with open_data('lang_network.json') as f:
     langs_idx = json.load(f)['locations']
+
+
+def assume_loading():
+    print('loaded', flush=True)

@@ -1,10 +1,12 @@
 from flask import Flask, send_from_directory, jsonify
 
 from .idx import *
+from .data import assume_loading
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
+assume_loading()
 
 # Static pages
 
