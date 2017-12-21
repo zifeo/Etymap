@@ -185,16 +185,25 @@ class Viz {
         const second = angle + Math.PI / 8;
 
         positionsGeoMiddle.push([
-          positionsGeo[i][0] + 0.75 * Math.cos(first),
-          positionsGeo[i][1] + 0.75 * Math.sin(first),
+          positionsGeo[i][0] + 0.5 * Math.cos(first),
+          positionsGeo[i][1] + 0.5 * Math.sin(first),
         ]);
-
-        positionsGeoMiddle.push([positionsGeo[i][0] + Math.cos(angle), positionsGeo[i][1] + Math.sin(angle)]);
 
         positionsGeoMiddle.push([
-          positionsGeo[i][0] + 0.75 * Math.cos(second),
-          positionsGeo[i][1] + 0.75 * Math.sin(second),
+          positionsGeo[i][0] + 0.7 * Math.cos(first + Math.PI / 12),
+          positionsGeo[i][1] + 0.7 * Math.sin(first + Math.PI / 12)
         ]);
+
+        positionsGeoMiddle.push([
+          positionsGeo[i][0] + 0.7 * Math.cos(second - Math.PI / 12),
+          positionsGeo[i][1] + 0.7 * Math.sin(second - Math.PI / 12)
+        ]);
+
+        positionsGeoMiddle.push([
+          positionsGeo[i][0] + 0.5 * Math.cos(second),
+          positionsGeo[i][1] + 0.5 * Math.sin(second),
+        ]);
+
       } else {
         positionsGeoMiddle.push([
           (positionsGeo[i][0] + positionsGeo[i + 1][0]) / 2,
@@ -484,7 +493,7 @@ class Viz {
 
     if (parents.length === 0) {
       // no more ancestors
-      this.addLine(previousLangsCopy, 0.4, 'white', 1);
+      this.addLine(previousLangsCopy, 0.25, 'white', 1);
     }
     for (const i in parents) {
       this.recursiveAddWordLines(allIso, previousLangsCopy, parents[i]);
