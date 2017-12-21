@@ -185,14 +185,14 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .data(paths)
       .enter()
       .append('text')
-       .attr('font-size', '40px')
-       .attr('dy', '14px')
-       .attr('opacity', 0.2)
-       .attr('text-anchor', 'middle')
-       .append('textPath')
-        .attr('startOffset', isFrom ? '75%' : '25%')
-        .attr('xlink:href', (d, i) => `#path-${baseID}-${i}-${selector}`)
-        .text('>');
+      .attr('font-size', '40px')
+      .attr('dy', '14px')
+      .attr('opacity', 0.2)
+      .attr('text-anchor', 'middle')
+      .append('textPath')
+      .attr('startOffset', isFrom ? '75%' : '25%')
+      .attr('xlink:href', (d, i) => `#path-${baseID}-${i}-${selector}`)
+      .text('>');
   }
 
   addPaths(fromPaths, dataFrom, isocodesFrom, true);

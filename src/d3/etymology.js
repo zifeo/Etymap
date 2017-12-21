@@ -99,7 +99,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
   function smartTrim(relatives, lang) {
     const differentLangs = relatives.filter(o => o[0][0] !== lang);
     const sameLang = _.take(relatives.filter(o => o[0][0] === lang), 3);
-    return sameLang.concat(differentLangs);;
+    return sameLang.concat(differentLangs);
   }
 
   function createHalfTree(key) {
@@ -147,7 +147,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       .attr('id', (d, i) => `gEty-${key}-${i}`);
 
     function getColor(depth) {
-      return depth === 0 ? '#F66' : (key === 'children' ? '#ff7f00' : '#76B5DE');
+      return depth === 0 ? '#F66' : key === 'children' ? '#ff7f00' : '#76B5DE';
     }
 
     nodes

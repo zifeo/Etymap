@@ -228,9 +228,7 @@ class Viz {
       .attr('class', 'languagePath');
 
     if (clickFct) {
-      path
-        .attr('class', 'languagePath clickable')
-        .on('click', clickFct);
+      path.attr('class', 'languagePath clickable').on('click', clickFct);
     }
 
     const length = Math.ceil(path.node().getTotalLength());
@@ -397,8 +395,7 @@ class Viz {
 
     if (this.mode === vizMode.Language) {
       $('#legend .second').hide();
-    }
-    else {
+    } else {
       $('#legend .second').show();
       $('#legend .second .label').attr('style', `background-color:${countryColors[1]};`);
       $('#legend .second .text').html(`${languagesCoo[iso2].name}-speaking countries`);
@@ -613,8 +610,7 @@ class Viz {
       matrixRelations.push(arr);
     }); */
 
-    if (isocodesFrom.length === 0)
-      return;
+    if (isocodesFrom.length === 0) return;
 
     function getMatrixAndIsocodes(key) {
       const isocodes = _.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]);

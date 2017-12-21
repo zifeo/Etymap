@@ -21,22 +21,19 @@ viz.show();
 const router = new Navigo(null, true);
 
 router
-  .on('w/:word/:lang', ({word, lang}) => viz.asyncSelectWord(word, lang))
-  .on('l/:lang', ({lang}) => {
-    console.log('->', lang)
+  .on('w/:word/:lang', ({ word, lang }) => viz.asyncSelectWord(word, lang))
+  .on('l/:lang', ({ lang }) => {
+    console.log('->', lang);
     viz.asyncSelectLanguage(lang).then(() => console.log('achanged'));
   })
-  .on('r/:lang1/:lang2', ({lang1, lang2}) => viz.asyncSelectLanguagePair(lang1, lang2))
-    .resolve();
-
+  .on('r/:lang1/:lang2', ({ lang1, lang2 }) => viz.asyncSelectLanguagePair(lang1, lang2))
+  .resolve();
 
 $('.ui.accordion').accordion({
   exclusive: false,
 });
 
-$('.menu .item')
-  .tab()
-;
+$('.menu .item').tab();
 
 $('.search').search({
   apiSettings: {
