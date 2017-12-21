@@ -191,19 +191,18 @@ class Viz {
 
         positionsGeoMiddle.push([
           positionsGeo[i][0] + 0.7 * Math.cos(first + Math.PI / 12),
-          positionsGeo[i][1] + 0.7 * Math.sin(first + Math.PI / 12)
+          positionsGeo[i][1] + 0.7 * Math.sin(first + Math.PI / 12),
         ]);
 
         positionsGeoMiddle.push([
           positionsGeo[i][0] + 0.7 * Math.cos(second - Math.PI / 12),
-          positionsGeo[i][1] + 0.7 * Math.sin(second - Math.PI / 12)
+          positionsGeo[i][1] + 0.7 * Math.sin(second - Math.PI / 12),
         ]);
 
         positionsGeoMiddle.push([
           positionsGeo[i][0] + 0.5 * Math.cos(second),
           positionsGeo[i][1] + 0.5 * Math.sin(second),
         ]);
-
       } else {
         positionsGeoMiddle.push([
           (positionsGeo[i][0] + positionsGeo[i + 1][0]) / 2,
@@ -591,8 +590,16 @@ class Viz {
     $('.right-panel .language-pair-panel .median-first').html(langNetwork.stats[iso1].percentile50.toFixed(2));
     $('.right-panel .language-pair-panel .median-second').html(langNetwork.stats[iso2].percentile50.toFixed(2));
 
-    $('.right-panel .language-pair-panel .letters-first').html(_.take(_.sortBy(langNetwork.stats[iso1].histogram, pair => -pair[1]), 3).map(pair => pair[0].toUpperCase()).toString());
-    $('.right-panel .language-pair-panel .letters-second').html(_.take(_.sortBy(langNetwork.stats[iso2].histogram, pair => -pair[1]), 3).map(pair => pair[0].toUpperCase()).toString());
+    $('.right-panel .language-pair-panel .letters-first').html(
+      _.take(_.sortBy(langNetwork.stats[iso1].histogram, pair => -pair[1]), 3)
+        .map(pair => pair[0].toUpperCase())
+        .toString()
+    );
+    $('.right-panel .language-pair-panel .letters-second').html(
+      _.take(_.sortBy(langNetwork.stats[iso2].histogram, pair => -pair[1]), 3)
+        .map(pair => pair[0].toUpperCase())
+        .toString()
+    );
 
     const wordTemplate = $(`.right-panel .first-samples-list .template`);
     wordTemplate.hide();
@@ -660,8 +667,7 @@ class Viz {
 
       if (lang === wordInfo.lang) {
         clone.html(`<strong>${languagesCoo[lang].name}</strong>`);
-      }
-      else {
+      } else {
         clone.html(languagesCoo[lang].name);
       }
 
