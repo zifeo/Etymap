@@ -172,17 +172,22 @@ class Viz {
         const hash = isocodes[0].split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
 
         const angle = (hash % 20) / 20 * (2 * Math.PI);
-        const first = angle - Math.PI / 16;
-        const second = angle + Math.PI / 16;
+        const first = angle - Math.PI / 8;
+        const second = angle + Math.PI / 8;
 
         positionsGeoMiddle.push([
-          positionsGeo[i][0] + 2 * Math.cos(first),
-          positionsGeo[i][1] + 2 * Math.sin(first)
+          positionsGeo[i][0] + 0.75 * Math.cos(first),
+          positionsGeo[i][1] + 0.75 * Math.sin(first)
         ]);
 
         positionsGeoMiddle.push([
-          positionsGeo[i][0] + 2 * Math.cos(second),
-          positionsGeo[i][1] + 2 * Math.sin(second)
+          positionsGeo[i][0] + Math.cos(angle),
+          positionsGeo[i][1] + Math.sin(angle)
+        ]);
+
+        positionsGeoMiddle.push([
+          positionsGeo[i][0] + 0.75 * Math.cos(second),
+          positionsGeo[i][1] + 0.75 * Math.sin(second)
         ]);
       }
       else {
