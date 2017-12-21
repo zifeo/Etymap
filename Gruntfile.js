@@ -80,6 +80,18 @@ module.exports = function(grunt) {
         },
       },
     },
+    uglify: {
+      dist: {
+        options: {
+          sourceMap: false,
+          mangle: true,
+          compress: true,
+        },
+        files: {
+          'build/app.js': 'build/app.js',
+        },
+      },
+    },
     shell: {
       flask: {
         command: 'export FLASK_APP=server/main.py && export FLASK_DEBUG=1 && (flask run || python3 -m flask run)',
@@ -95,6 +107,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['clean', 'less', 'htmlmin', 'copy']);
   grunt.registerTask('dev', ['default', 'browserify', 'shell', 'watch']);
+  grunt.registerTask('prod', ['default', 'browserify', 'uglify']);
 
 };
 
