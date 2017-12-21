@@ -349,7 +349,7 @@ class Viz {
     const visibleBBox = [];
 
     sorted.forEach(obj => {
-      if (visibleBBox.filter(bbox => !this.bboxCollision(bbox, obj.bbox)).length === visibleBBox.length) {
+      if (visibleBBox.filter(bbox => !Viz.bboxCollision(bbox, obj.bbox)).length === visibleBBox.length) {
         visibleBBox.push(obj.bbox);
       } else {
         this.g
@@ -365,7 +365,7 @@ class Viz {
     });
   }
 
-  bboxCollision(bbox1, bbox2) {
+  static bboxCollision(bbox1, bbox2) {
     return !(
       bbox1.left > bbox2.right ||
       bbox2.left > bbox1.right ||
@@ -536,7 +536,7 @@ class Viz {
 
   /* Right Panel */
 
-  hideAllRightSubpanels() {
+  static hideAllRightSubpanels() {
     $(`.right-panel .language-panel`).hide();
     $(`.right-panel .language-pair-panel`).hide();
     $(`.right-panel .word-panel`).hide();
@@ -545,7 +545,7 @@ class Viz {
   setRightPanelInfoLanguage(langInfo) {
     const isocode = langInfo.lang;
 
-    this.hideAllRightSubpanels();
+    Viz.hideAllRightSubpanels();
     $(`.right-panel .language-panel`).show();
 
     $(`.right-panel .notTemplate`).remove();
@@ -642,7 +642,7 @@ class Viz {
     const iso1 = info1To2.lang_src;
     const iso2 = info1To2.lang_to;
 
-    this.hideAllRightSubpanels();
+    Viz.hideAllRightSubpanels();
     $(`.right-panel .language-pair-panel`).show();
 
     $(`.right-panel .notTemplate`).remove();
@@ -718,7 +718,7 @@ class Viz {
   }
 
   setRightPanelInfoWord(wordInfo) {
-    this.hideAllRightSubpanels();
+    Viz.hideAllRightSubpanels();
     $(`.right-panel .word-panel`).show();
 
     $(`.right-panel .notTemplate`).remove();
