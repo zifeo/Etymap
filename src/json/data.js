@@ -32,41 +32,37 @@ langNetwork.relationProportion = {};
 
 const allLanguages = Array.from(new Set([...Object.keys(langNetwork.from), ...Object.keys(langNetwork.to)]));
 allLanguages.forEach(iso => {
-	const allRelatedIsocodes = new Set();
-	if (!langNetwork.from[iso])
-		langNetwork.from[iso] = [];
+  const allRelatedIsocodes = new Set();
+  if (!langNetwork.from[iso]) langNetwork.from[iso] = [];
 
-	langNetwork.from[iso].forEach(pair => allRelatedIsocodes.add(pair[0]));
+  langNetwork.from[iso].forEach(pair => allRelatedIsocodes.add(pair[0]));
 
-	if (!langNetwork.to[iso])
-		langNetwork.to[iso] = [];
+  if (!langNetwork.to[iso]) langNetwork.to[iso] = [];
 
-	langNetwork.to[iso].forEach(pair => allRelatedIsocodes.add(pair[0]));
+  langNetwork.to[iso].forEach(pair => allRelatedIsocodes.add(pair[0]));
 
-	langNetwork.relation[iso] = {};
-	let sum = 0;
-	allRelatedIsocodes.forEach(otherIso => {
-		langNetwork.relation[iso][otherIso] = 0;
+  langNetwork.relation[iso] = {};
+  let sum = 0;
+  allRelatedIsocodes.forEach(otherIso => {
+    langNetwork.relation[iso][otherIso] = 0;
 
-		const valuesFrom = langNetwork.from[iso].filter(pair => pair[0] === otherIso);
-		if (valuesFrom.length > 0) {
-			langNetwork.relation[iso][otherIso] += valuesFrom[0][1];
-			sum  += valuesFrom[0][1];
-		}
-			
+    const valuesFrom = langNetwork.from[iso].filter(pair => pair[0] === otherIso);
+    if (valuesFrom.length > 0) {
+      langNetwork.relation[iso][otherIso] += valuesFrom[0][1];
+      sum += valuesFrom[0][1];
+    }
 
+    const valuesTo = langNetwork.to[iso].filter(pair => pair[0] === otherIso);
+    if (valuesTo.length > 0) {
+      langNetwork.relation[iso][otherIso] += valuesTo[0][1];
+      sum += valuesTo[0][1];
+    }
+  });
 
-		const valuesTo = langNetwork.to[iso].filter(pair => pair[0] === otherIso);
-		if (valuesTo.length > 0) {
-			langNetwork.relation[iso][otherIso] += valuesTo[0][1];
-			sum  += valuesTo[0][1];
-		}
-	});
-
-	langNetwork.relationProportion[iso] = { ...langNetwork.relation[iso] };
-	allRelatedIsocodes.forEach(otherIso => {
-		langNetwork.relationProportion[iso][otherIso] /= sum;
-	});
+  langNetwork.relationProportion[iso] = { ...langNetwork.relation[iso] };
+  allRelatedIsocodes.forEach(otherIso => {
+    langNetwork.relationProportion[iso][otherIso] /= sum;
+  });
 });
 
-export { geojson, langNetwork, allLanguages};
+export { geojson, langNetwork, allLanguages };
