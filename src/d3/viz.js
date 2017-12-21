@@ -738,7 +738,7 @@ class Viz {
         clone.html(languagesCoo[lang].name);
       }
 
-      clone.click(() => this.asyncSelectLanguage(lang));
+      clone.click(() => this.asyncSelectWord(wordInfo.word, lang));
 
       $(`.right-panel .homographs-list`).append(clone);
     });
