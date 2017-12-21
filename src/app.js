@@ -4,7 +4,7 @@ import 'whatwg-fetch';
 import 'babel-polyfill';
 
 import $ from 'jquery';
-import Navigo from 'Navigo';
+import Navigo from 'navigo';
 import Viz from './d3/viz';
 
 (() => {
