@@ -228,7 +228,9 @@ class Viz {
       .attr('class', 'languagePath');
 
     if (clickFct) {
-      path.on('click', clickFct);
+      path
+        .attr('class', 'languagePath clickable')
+        .on('click', clickFct);
     }
 
     const length = Math.ceil(path.node().getTotalLength());
@@ -399,7 +401,7 @@ class Viz {
     else {
       $('#legend .second').show();
       $('#legend .second .label').attr('style', `background-color:${countryColors[1]};`);
-      $('#legend .first .text').html(`${languagesCoo[iso2].name}-speaking countries`);
+      $('#legend .second .text').html(`${languagesCoo[iso2].name}-speaking countries`);
     }
   }
 
@@ -696,7 +698,7 @@ class Viz {
   }
 
   setRightPanelInfoLanguagePairDiagram(from, selector) {
-    $(`.right-panel ${selector} h5`).html(`Other relations for ${languagesCoo[from].name}`); // Title
+    $(`.right-panel ${selector} h5`).html(`Other relations for ${languagesCoo[from].name} (min. 5%)`); // Title
 
     // Alluvial Diagram
 
@@ -724,7 +726,7 @@ class Viz {
 
     $(`.right-panel .notTemplate`).remove();
 
-    $(`.right-panel h2`).html(wordInfo.word); // Title
+    $(`.right-panel .word-panel h2`).html(wordInfo.word); // Title
 
     const homographTemplate = $(`.right-panel .homographs-list .template`);
     homographTemplate.hide();
