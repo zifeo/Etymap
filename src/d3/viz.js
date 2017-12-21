@@ -357,9 +357,7 @@ class Viz {
   }
 
   resetHighlights() {
-    this.g
-      .selectAll(`${this.parentSelector} .mapPath`)
-      .attr('fill', '#DDD');
+    this.g.selectAll(`${this.parentSelector} .mapPath`).attr('fill', '#DDD');
 
     this.g.selectAll(`${this.parentSelector} .gLanguage`).attr('opacity', 1);
 
@@ -518,10 +516,8 @@ class Viz {
     $(`.right-panel .mean`).html(langNetwork.stats[isocode].mean.toFixed(2));
     $(`.right-panel .median`).html(langNetwork.stats[isocode].percentile50.toFixed(2));
     $(`.right-panel .most-used-letter`).html(
-      _.take(_.sortBy(langNetwork.stats[isocode].histogram, pair => -pair[1]), 1)
-        .map(pair => pair[0].toUpperCase())[0]
+      _.take(_.sortBy(langNetwork.stats[isocode].histogram, pair => -pair[1]), 1).map(pair => pair[0].toUpperCase())[0]
     );
-
 
     const sampleTemplate = $(`.right-panel .sample-panel .template`);
     sampleTemplate.hide();
@@ -574,9 +570,7 @@ class Viz {
       });
 
       matrixRelations.push(arr);
-    });*/
-
-    
+    }); */
 
     function getMatrixAndIsocodes(key) {
       const isocodes = _.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]);

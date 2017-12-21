@@ -166,9 +166,8 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .text((d, i) => {
         if (isFrom) {
           return `${languagesCoo[isocodes[i]].name} ↔ ${languagesCoo[from].name}`;
-        } else {
-          return `${languagesCoo[from].name} ↔ ${languagesCoo[isocodes[i]].name}`;
         }
+        return `${languagesCoo[from].name} ↔ ${languagesCoo[isocodes[i]].name}`;
       });
   }
 
