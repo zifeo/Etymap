@@ -50,4 +50,4 @@ def lang_name(lang: str) -> Optional[str]:
 
 
 def lang_name_fuzzy(lang: str) -> List[Tuple[str, str]]:
-    return [iso for iso, l in langs_idx.items() if l['name'].startswith(lang)]
+    return [iso for iso, l in langs_idx.items() if l['name'].lower().startswith(lang)]
