@@ -13,6 +13,10 @@ function cloneTemplate(element) {
 
 function openPanel() {
   $('.ui.sidebar')
+  	.sidebar({
+      dimPage: false,
+      closable: false
+    })
     .sidebar('setting', 'transition', 'overlay')
     .sidebar('show');
 }

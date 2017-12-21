@@ -28,6 +28,7 @@ class Viz {
 
   show() {
     this.mode = vizMode.None;
+    this.selectedIsocodes = [];
 
     this.setUpSVG();
     this.addGeoJson();
@@ -56,6 +57,7 @@ class Viz {
         this.scale = d3.event.transform.k;
 
         this.updateScaleAndOpacity();
+        this.checkCollisions();
       });
 
 
@@ -216,7 +218,19 @@ class Viz {
       .attr('stroke-dashoffset', 0);
   }
 
-  focusOn(isocodes) {
+  focusOn(isocodes, mainIsocode) {
+    this.selectedIsocodes = isocodes;
+    this.mainIsocode = mainIsocode;
+
+    //Low opacity for every language, the correct ones will be set during the zoom
+    this.g.selectAll(`${this.parentSelector} .languageCircle`)
+     .attr('opacity', 0.2);
+
+    this.g.selectAll(`${this.parentSelector} .languageText`)
+     .attr('opacity', 0);
+
+    this.checkCollisions();
+
     if (isocodes.length < 2) return;
 
     const positions = isocodes.map(isocode =>
@@ -231,19 +245,25 @@ class Viz {
     const boundingWidth = maxX - minX;
     const boundingHeight = maxY - minY;
 
-    const scale = 1 / Math.max(boundingWidth / (0.95 * this.width), boundingHeight / (0.95 * this.height));
-    const translateX = this.width / 2 - scale * (maxX + minX) / 2;
+    const realWidth = this.width - 600;
+
+    const scale = Math.min(1 / Math.max(boundingWidth / (0.95 * realWidth), boundingHeight / (0.95 * this.height)), 30);
+    const translateX = this.width / 2 - scale * (maxX + minX) / 2 - 300;
     const translateY = this.height / 2 - scale * (maxY + minY) / 2;
 
     this.svg
       .transition()
       .duration(1000)
-      .call(this.zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale))
-      .on('end', () => this.highlightLanguages(isocodes, true));
+      .call(this.zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale));
   }
 
   removeAllLines() {
-    this.g.selectAll('.languagePath').remove();
+    this.g.selectAll('.languagePath')
+     .attr('class', 'oldLanguagePath')
+     .transition()
+     .duration(500)
+     .attr('stroke-width', 0)
+     .on('end', () => this.g.selectAll('.oldLanguagePath').remove())
   }
 
   setCountryColors(isocode, color) {
@@ -259,36 +279,37 @@ class Viz {
     });
   }
 
-  highlightLanguages(isocodes, isEndTransition) {
-    this.g.selectAll(`${this.parentSelector} .gLanguage`)
-     .attr('opacity', 1);
-
-    this.g.selectAll(`${this.parentSelector} .languageCircle`)
-     .attr('opacity', 0.2);
-
-    this.g.selectAll(`${this.parentSelector} .languageText`)
-     .attr('opacity', 0);
-
+  checkCollisions() {
     const bboxArray = [];
-    isocodes.forEach(iso => {
-      this.g.select(`#circle-${iso}`)
-       .attr('opacity', 1);
-
+    let mainObj = null;
+    this.selectedIsocodes.forEach(iso => {
       this.g.select(`#languageText-${iso}`)
+       .attr('pointer-events', 'auto')
        .attr('opacity', 1);
 
       const bbox = this.g.select(`#languageText-${iso}`).node().getBoundingClientRect();
 
-      bboxArray.push({
-        bbox: bbox,
-        iso: iso
-      });
+      if (iso === this.mainIsocode) {
+        mainObj = {
+          bbox: bbox,
+          iso: iso
+        }
+      }
+      else {
+        bboxArray.push({
+          bbox: bbox,
+          iso: iso
+        });
+      }
     });
 
-    if (!isEndTransition)
-      return;
-
     const sorted = _.sortBy(bboxArray, obj => -langNetwork.stats[obj.iso].count);
+    if (mainObj) {
+      sorted.unshift(mainObj);
+    }
+    else {
+      console.error(`${this.mainIsocode} not in selectedIsocodes`);
+    }
     const visibleBBox = [];
 
     sorted.forEach(obj => {
@@ -297,9 +318,8 @@ class Viz {
       }
       else {
         this.g.select(`#languageText-${obj.iso}`)
-         .transition()
-         .duration(1000)
-         .attr('opacity', 0);
+          .attr('pointer-events', 'none')
+          .attr('opacity', 0);
       }
     });
   }
@@ -324,12 +344,15 @@ class Viz {
      .attr('opacity', 1);
 
     this.g.selectAll(`${this.parentSelector} .languageText`)
+     .attr('pointer-events', 'auto')
      .attr('opacity', 1);
   }
 
   /* No selection */
   deselect() {
     this.mode = vizMode.None;
+    this.selectedIsocodes = [];
+
     this.removeAllLines();
     this.resetHighlights();
     this.updateScaleAndOpacity();
@@ -352,7 +375,7 @@ class Viz {
 
     const allIso = Object.keys(langNetwork.relation[langInfo.lang]);
     allIso.push(langInfo.lang);
-    this.highlightLanguages(allIso);
+    this.focusOn(allIso, langInfo.lang);
 
     this.setRightPanelInfoLanguage(langInfo);
   }
@@ -361,19 +384,13 @@ class Viz {
     const isocode = langInfo.lang;
     this.removeAllLines();
 
-    const allIsocodesRelated = [isocode];
     Object.keys(langNetwork.relationProportion[isocode]).forEach(otherLang => {
       const value = langNetwork.relationProportion[isocode][otherLang];
 
-      allIsocodesRelated.push(otherLang);
       this.addLine([isocode, otherLang], 0.5 + value, 'white', 0.5, () =>
         this.asyncSelectLanguagePair(isocode, otherLang)
       );
     });
-
-    if (allIsocodesRelated.length > 1) {
-      this.focusOn(allIsocodesRelated);
-    }
   }
 
   /* Language pair */
@@ -390,8 +407,7 @@ class Viz {
     openPanel();
     this.resetHighlights();
     this.addLanguagePairLines(info1To2, info2To1);
-    this.focusOn([info1To2.lang_src, info1To2.lang_to]);
-    this.highlightLanguages([info1To2.lang_src, info2To1.lang_src]);
+    this.focusOn([info1To2.lang_src, info1To2.lang_to], info1To2.lang_src);
     this.setCountryColors(info1To2.lang_src, '#ffa293');
     this.setCountryColors(info2To1.lang_src, '#89ffbe');
     this.setRightPanelInfoLanguagePair(info1To2, info2To1);
@@ -434,18 +450,13 @@ class Viz {
       this.recursiveAddWordLines(allIso, [wordInfo.lang], wordInfo.parents[i]);
     }
 
-    this.focusOn(Array.from(allIso));
-    this.highlightLanguages(allIso);
+    this.focusOn(Array.from(allIso), wordInfo.lang);
   }
 
   recursiveAddWordLines(allIso, previousLangs, obj) {
     let lang = obj[0][0];
     const word = obj[0][1];
     const parents = obj[1];
-
-    if (!(lang in languagesCoo)) {
-      lang = 'por'; // temporary, only for testing
-    }
 
     const previousLangsCopy = previousLangs.slice(0);
     previousLangsCopy.push(lang);

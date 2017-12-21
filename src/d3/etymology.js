@@ -15,20 +15,40 @@ function recreateEtymology(viz, wordInfo, displayParents) {
     children: 0
   };
 
+  const treeWidth = {
+    parents: {},
+    children: {}
+  };
+
+  treeWidth.parents[0] = 0;
+  treeWidth.children[0] = 0;
+
   function computeMaxDepth(obj, newDepth, key) {
     const parents = obj[1];
     if (maxDepth[key] < newDepth) {
       maxDepth[key] = newDepth;
     }
 
+    if (!treeWidth[key][newDepth]) {
+      treeWidth[key][newDepth] = 0;
+    }
+    treeWidth[key][newDepth] ++;
+
     if (parents.length > 0) {
       // more ancestors
-      parents.forEach(p => computeMaxDepth(p, newDepth + 1, key))
+      if (key === 'children') {
+        _.take(parents, 3).forEach(p => computeMaxDepth(p, newDepth + 1, key))
+      }
+      else {
+        parents.forEach(p => computeMaxDepth(p, newDepth + 1, key))
+      }
     }
   }
 
-  wordInfo['children'].forEach(p => computeMaxDepth(p, 1, 'children'));
+  _.take(wordInfo['children'], 3).forEach(p => computeMaxDepth(p, 1, 'children'));
   wordInfo['parents'].forEach(p => computeMaxDepth(p, 1, 'parents'));
+
+  const maxWidth = Math.max(_.max(Object.keys(treeWidth.children).map(i => treeWidth.children[i])), _.max(Object.keys(treeWidth.parents).map(i => treeWidth.parents[i])));
 
   const totalDepth = maxDepth['children'] + maxDepth['parents'];
   const height = (totalDepth + 2) * 110;
@@ -47,7 +67,12 @@ function recreateEtymology(viz, wordInfo, displayParents) {
 
     if (parents.length > 0) {
       // more ancestors
-      recursiveData.parents = parents.map(p => recursiveCreateData(p, key));
+      if (key === 'children') {
+        recursiveData.parents = _.take(parents, 3).map(p => recursiveCreateData(p, key));
+      }
+      else {
+        recursiveData.parents = parents.map(p => recursiveCreateData(p, key));
+      }
     }
 
     return recursiveData;
@@ -60,6 +85,20 @@ function recreateEtymology(viz, wordInfo, displayParents) {
     .attr('height', height)
     .attr('class', 'svg-tree');
 
+  const g = svgTree.append('g');
+
+  const zoom = d3
+      .zoom()
+      .scaleExtent([1, 1])
+      .on('zoom', () => {
+        const transform = d3.event.transform;
+        transform.y = 0;
+        g.attr('transform', transform);
+      });
+
+
+    svgTree.call(zoom)
+
   createHalfTree('parents');
   createHalfTree('children');
 
@@ -71,12 +110,17 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       lang: wordInfo.lang,
     };
 
-    data.parents = wordInfo[key].map(d => recursiveCreateData(d, key));
+    if (key === 'parents') {
+      data.parents = wordInfo[key].map(d => recursiveCreateData(d, key));
+    }
+    else {
+      data.parents = _.take(wordInfo[key], 3).map(d => recursiveCreateData(d, key));
+    }
 
-    const gPaths = svgTree.append('g');
-    const gNodes = svgTree.append('g');
+    const gPaths = g.append('g');
+    const gNodes = g.append('g');
 
-    const tree = d3.tree().size([width, maxDepth[key] / totalDepth]);
+    const tree = d3.tree().size([Math.max(maxWidth * width / 5, width), maxDepth[key] / totalDepth]);
 
     const root = d3.hierarchy(data, d => d.parents);
 
