@@ -8,7 +8,7 @@ import Viz from './d3/viz';
 
 (() => {
   // dirty hack avoiding babel to reorganise imports
-  // semantic require window.jQuery to set
+  // semantic require window.jQuery to be set
   window.jQuery = $;
   global.jQuery = $;
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
