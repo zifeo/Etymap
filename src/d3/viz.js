@@ -24,8 +24,9 @@ const vizMode = {
 const countryColors = ['#ffeac4', '#ffc4c4'];
 
 class Viz {
-  constructor(parentSelector) {
+  constructor(parentSelector, router) {
     this.parentSelector = parentSelector;
+    this.router = router;
   }
 
   show() {
@@ -146,7 +147,7 @@ class Viz {
       .attr('class', 'languageCircle')
       .attr('style', 'cursor:pointer;')
       .attr('id', iso => `languageCircle-${iso}`)
-      .on('click', iso => this.asyncSelectLanguage(iso));
+      .on('click', iso => this.navigateToLanguage(iso));
 
     gText
       .append('text')
@@ -156,7 +157,7 @@ class Viz {
       .attr('dy', '-5px')
       .attr('style', 'cursor:pointer;')
       .attr('id', iso => `languageText-${iso}`)
-      .on('click', iso => this.asyncSelectLanguage(iso));
+      .on('click', iso => this.navigateToLanguage(iso));
 
     this.updateScaleAndOpacity();
   }
@@ -228,7 +229,7 @@ class Viz {
       .attr('class', 'languagePath');
 
     if (clickFct) {
-      path.on('click', clickFct);
+      path.attr('class', 'languagePath clickable').on('click', clickFct);
     }
 
     const length = Math.ceil(path.node().getTotalLength());
@@ -395,11 +396,10 @@ class Viz {
 
     if (this.mode === vizMode.Language) {
       $('#legend .second').hide();
-    }
-    else {
+    } else {
       $('#legend .second').show();
       $('#legend .second .label').attr('style', `background-color:${countryColors[1]};`);
-      $('#legend .first .text').html(`${languagesCoo[iso2].name}-speaking countries`);
+      $('#legend .second .text').html(`${languagesCoo[iso2].name}-speaking countries`);
     }
   }
 
@@ -418,12 +418,12 @@ class Viz {
 
   /* Single Language */
 
-  async asyncSelectLanguage(isocode) {
-    const info = await Api.getLangData(isocode);
-    this.selectLanguage(info);
+  navigateToLanguage(isocode) {
+    this.router.navigate(`l/${isocode}`);
   }
 
-  selectLanguage(langInfo) {
+  async selectLanguage(isocode) {
+    const langInfo = await Api.getLangData(isocode);
     this.mode = vizMode.Language;
 
     openPanel();
@@ -447,20 +447,20 @@ class Viz {
       const value = langNetwork.relationProportion[isocode][otherLang];
 
       this.addLine([isocode, otherLang], 0.5 + value, 'white', 0.5, () =>
-        this.asyncSelectLanguagePair(isocode, otherLang)
+        this.navigateToLanguagePair(isocode, otherLang)
       );
     });
   }
 
   /* Language pair */
 
-  async asyncSelectLanguagePair(iso1, iso2) {
-    const info1To2 = await Api.getLangPairData(iso1, iso2);
-    const info2To1 = await Api.getLangPairData(iso2, iso1);
-    this.selectLanguagePair(info1To2, info2To1);
+  navigateToLanguagePair(iso1, iso2) {
+    this.router.navigate(`r/${iso1}/${iso2}`);
   }
 
-  selectLanguagePair(info1To2, info2To1) {
+  async selectLanguagePair(iso1, iso2) {
+    const info1To2 = await Api.getLangPairData(iso1, iso2);
+    const info2To1 = await Api.getLangPairData(iso2, iso1);
     this.mode = vizMode.Pair;
 
     openPanel();
@@ -488,12 +488,12 @@ class Viz {
 
   /* Single word */
 
-  async asyncSelectWord(word, lang) {
-    const info = await Api.getWordData(word, lang);
-    this.selectWord(info);
+  navigateToWord(word, lang) {
+    this.router.navigate(`w/${word}/${lang}`);
   }
 
-  selectWord(wordInfo) {
+  async selectWord(word, lang) {
+    const wordInfo = await Api.getWordData(word, lang);
     this.mode = vizMode.Word;
 
     openPanel();
@@ -565,7 +565,7 @@ class Viz {
       const clone = cloneTemplate(sampleTemplate);
 
       clone.html(word);
-      clone.click(() => this.asyncSelectWord(word, isocode));
+      clone.click(() => this.navigateToWord(word, isocode));
 
       $(`.right-panel .sample-panel`).append(clone);
     });
@@ -611,8 +611,7 @@ class Viz {
       matrixRelations.push(arr);
     }); */
 
-    if (isocodesFrom.length === 0)
-      return;
+    if (isocodesFrom.length === 0) return;
 
     function getMatrixAndIsocodes(key) {
       const isocodes = _.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]);
@@ -675,7 +674,7 @@ class Viz {
       const clone = cloneTemplate(wordTemplate);
 
       clone.html(word);
-      clone.click(() => this.asyncSelectWord(word, iso1));
+      clone.click(() => this.navigateToWord(word, iso1));
 
       $(`.right-panel .first-samples-list`).append(clone);
     });
@@ -684,7 +683,7 @@ class Viz {
       const clone = cloneTemplate(wordTemplate);
 
       clone.html(word);
-      clone.click(() => this.asyncSelectWord(word, iso2));
+      clone.click(() => this.navigateToWord(word, iso2));
 
       $(`.right-panel .second-samples-list`).append(clone);
     });
@@ -696,7 +695,7 @@ class Viz {
   }
 
   setRightPanelInfoLanguagePairDiagram(from, selector) {
-    $(`.right-panel ${selector} h5`).html(`Other relations for ${languagesCoo[from].name}`); // Title
+    $(`.right-panel ${selector} h5`).html(`Other relations for ${languagesCoo[from].name} (min. 5%)`); // Title
 
     // Alluvial Diagram
 
@@ -724,7 +723,7 @@ class Viz {
 
     $(`.right-panel .notTemplate`).remove();
 
-    $(`.right-panel h2`).html(wordInfo.word); // Title
+    $(`.right-panel .word-panel h2`).html(wordInfo.word); // Title
 
     const homographTemplate = $(`.right-panel .homographs-list .template`);
     homographTemplate.hide();
@@ -738,7 +737,7 @@ class Viz {
         clone.html(languagesCoo[lang].name);
       }
 
-      clone.click(() => this.asyncSelectLanguage(lang));
+      clone.click(() => this.navigateToWord(wordInfo.word, lang));
 
       $(`.right-panel .homographs-list`).append(clone);
     });
@@ -750,7 +749,7 @@ class Viz {
       const clone = cloneTemplate(synonymTemplate);
 
       clone.html(pair[1]);
-      clone.click(() => this.asyncSelectWord(pair[0], pair[1]));
+      clone.click(() => this.navigateToWord(pair[0], pair[1]));
 
       $(`.right-panel .synonyms-list`).append(clone);
     });
@@ -759,7 +758,7 @@ class Viz {
       const clone = cloneTemplate(synonymTemplate);
 
       clone.html(`${pair[1]} (${languagesCoo[pair[0]].name})`);
-      clone.click(() => this.asyncSelectWord(pair[1], pair[0]));
+      clone.click(() => this.navigateToWord(pair[1], pair[0]));
 
       $(`.right-panel .translations-list`).append(clone);
     });

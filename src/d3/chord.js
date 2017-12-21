@@ -79,7 +79,7 @@ function recreateChord(viz, params, selector) {
         .duration(300)
         .style('fill-opacity', '0.7');
     })
-    .on('click', d => viz.asyncSelectLanguage(isocodes[d.index]))
+    .on('click', d => viz.navigateToLanguage(isocodes[d.index]))
     .append('title')
     .text(d => `${languagesCoo[isocodes[d.index]].name}`);
 
@@ -113,7 +113,7 @@ function recreateChord(viz, params, selector) {
         .duration(300)
         .style('fill-opacity', '0.7');
     })
-    .on('click', d => viz.asyncSelectLanguagePair(isocodes[d.source.index], isocodes[d.target.index]))
+    .on('click', d => viz.navigateToLanguagePair(isocodes[d.source.index], isocodes[d.target.index]))
     .append('title')
     .text(d => `${languagesCoo[isocodes[d.target.index]].name} ↔ ${languagesCoo[isocodes[d.source.index]].name}`);
 

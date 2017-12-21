@@ -87,7 +87,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
           .attr('fill', '#37485E');
       })
       .on('click', (d, i) => {
-        viz.asyncSelectLanguage(isocodes[i]);
+        viz.navigateToLanguage(isocodes[i]);
       })
       .append('title')
       .text((d, i) => languagesCoo[isocodes[i]].name);
@@ -167,9 +167,9 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       })
       .on('click', (d, i) => {
         if (isFrom) {
-          viz.asyncSelectLanguagePair(from, isocodes[i]);
+          viz.navigateToLanguagePair(from, isocodes[i]);
         } else {
-          viz.asyncSelectLanguagePair(isocodes[i], from);
+          viz.navigateToLanguagePair(isocodes[i], from);
         }
       })
       .append('title')
@@ -185,14 +185,14 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .data(paths)
       .enter()
       .append('text')
-       .attr('font-size', '40px')
-       .attr('dy', '14px')
-       .attr('opacity', 0.2)
-       .attr('text-anchor', 'middle')
-       .append('textPath')
-        .attr('startOffset', isFrom ? '75%' : '25%')
-        .attr('xlink:href', (d, i) => `#path-${baseID}-${i}-${selector}`)
-        .text('>');
+      .attr('font-size', '40px')
+      .attr('dy', '14px')
+      .attr('opacity', 0.2)
+      .attr('text-anchor', 'middle')
+      .append('textPath')
+      .attr('startOffset', isFrom ? '75%' : '25%')
+      .attr('xlink:href', (d, i) => `#path-${baseID}-${i}-${selector}`)
+      .text('>');
   }
 
   addPaths(fromPaths, dataFrom, isocodesFrom, true);

@@ -36,12 +36,12 @@ function recreateEtymology(viz, wordInfo, displayParents) {
 
     if (parents.length > 0) {
       // more ancestors
-      parents.forEach(p => computeMaxDepth(p, newDepth + 1, key));
+      smartTrim(parents, obj[0][0]).forEach(p => computeMaxDepth(p, newDepth + 1, key));
     }
   }
 
-  wordInfo.children.forEach(p => computeMaxDepth(p, 1, 'children'));
-  wordInfo.parents.forEach(p => computeMaxDepth(p, 1, 'parents'));
+  smartTrim(wordInfo.children, wordInfo.lang).forEach(p => computeMaxDepth(p, 1, 'children'));
+  smartTrim(wordInfo.parents, wordInfo.lang).forEach(p => computeMaxDepth(p, 1, 'parents'));
 
   const maxWidth = Math.max(
     _.max(Object.keys(treeWidth.children).map(i => treeWidth.children[i])),
@@ -49,7 +49,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
   );
 
   const totalDepth = maxDepth.children + maxDepth.parents;
-  const height = (totalDepth + 2) * 110;
+  const height = (totalDepth + 2) * 130;
 
   d3.select(`.right-panel .word-panel .svg-container .svg-tree`).remove();
 
@@ -65,7 +65,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
 
     if (parents.length > 0) {
       // more ancestors
-      recursiveData.parents = parents.map(p => recursiveCreateData(p, key));
+      recursiveData.parents = smartTrim(parents, lang).map(p => recursiveCreateData(p, key));
     }
 
     return recursiveData;
@@ -96,13 +96,19 @@ function recreateEtymology(viz, wordInfo, displayParents) {
 
   d3.select('#gEty-parents-0').remove(); // Remove duplicate node
 
+  function smartTrim(relatives, lang) {
+    const differentLangs = relatives.filter(o => o[0][0] !== lang);
+    const sameLang = _.take(relatives.filter(o => o[0][0] === lang), 3);
+    return sameLang.concat(differentLangs);
+  }
+
   function createHalfTree(key) {
     const data = {
       name: wordInfo.word,
       lang: wordInfo.lang,
     };
 
-    data.parents = wordInfo[key].map(d => recursiveCreateData(d, key));
+    data.parents = smartTrim(wordInfo[key], wordInfo.lang).map(d => recursiveCreateData(d, key));
 
     const gPaths = g.append('g');
     const gNodes = g.append('g');
@@ -141,7 +147,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       .attr('id', (d, i) => `gEty-${key}-${i}`);
 
     function getColor(depth) {
-      return depth === 0 ? '#F66' : (key === 'children' ? '#ff7f00' : '#76B5DE');
+      return depth === 0 ? '#F66' : key === 'children' ? '#ff7f00' : '#76B5DE';
     }
 
     nodes
@@ -167,7 +173,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
           .attr('fill', getColor(d.depth))
           .attr('stroke', '#075486');
       })
-      .on('click', d => viz.asyncSelectWord(d.data.name, d.data.lang));
+      .on('click', d => viz.navigateToWord(d.data.name, d.data.lang));
 
     nodes
       .append('text')
@@ -181,7 +187,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       .attr('text-anchor', 'middle')
       .attr('style', 'cursor:pointer;')
       .text(d => (languagesCoo[d.data.lang] ? languagesCoo[d.data.lang].name : 'fra')) // temporary fix for long idioms, ex : "quand le chat n'est pas là, les souris dansent"
-      .on('click', d => viz.asyncSelectLanguage(d.data.lang));
+      .on('click', d => viz.navigateToLanguage(d.data.lang));
 
     const links = gPaths
       .selectAll('none')
