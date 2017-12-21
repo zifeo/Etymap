@@ -63,7 +63,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .attr('width', nodeWidth)
       .attr('height', (d, i) => data[i] * height / maxSum)
       .attr('y', (d, i) => (d + i * margin) * height / maxSum)
-      .attr('class', (d, i) => `node-${baseID}-${i}`)
+      .attr('class', (d, i) => `node-${baseID}-${i} clickable`)
       .on('mouseover', (d, i) => {
         d3
           .select(`${selector} .node-${baseID}-${i}`)
@@ -80,7 +80,9 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       })
       .on('click', (d, i) => {
         viz.asyncSelectLanguage(isocodes[i]);
-      });
+      })
+      .append('title')
+      .text((d, i) => languagesCoo[isocodes[i]].name);
 
     group
       .selectAll('none')
@@ -132,7 +134,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       .data(paths)
       .enter()
       .append('path')
-      .attr('class', (d, i) => `path-${baseID}-${i}`)
+      .attr('class', (d, i) => `path-${baseID}-${i} clickable`)
       .attr('fill', 'none')
       .attr('initial-stroke', (d, i) => d3.rgb(color(i / data.length)))
       .attr('stroke', (d, i) => d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'))
@@ -158,6 +160,14 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
           viz.asyncSelectLanguagePair(from, isocodes[i]);
         } else {
           viz.asyncSelectLanguagePair(isocodes[i], from);
+        }
+      })
+      .append('title')
+      .text((d, i) => {
+        if (isFrom) {
+          return `${languagesCoo[isocodes[i]].name} ↔ ${languagesCoo[from].name}`;
+        } else {
+          return `${languagesCoo[from].name} ↔ ${languagesCoo[isocodes[i]].name}`;
         }
       });
   }

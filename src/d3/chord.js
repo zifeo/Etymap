@@ -6,7 +6,10 @@ import { langNetwork } from '../json/data';
 
 const languagesCoo = langNetwork.locations;
 
-function recreateChord(viz, matrix, isocodes) {
+function recreateChord(viz, params, selector) {
+  const matrix = params[0];
+  const isocodes = params[1];
+
   const selectedLanguageIndex = isocodes.length - 1;
   const width = $(`.right-panel .language-panel`).width() * 0.8;
   const height = width * 1.2;
@@ -14,10 +17,8 @@ function recreateChord(viz, matrix, isocodes) {
   const outerRadius = width / 2.5;
   const innerRadius = width / 3;
 
-  d3.selectAll('.svg-chord').remove();
-
   const svgChord = d3
-    .select(`.right-panel .svg-chord-container`)
+    .select(`.right-panel ${selector}`)
     .append('svg')
     .attr('width', width)
     .attr('height', height)
@@ -37,11 +38,11 @@ function recreateChord(viz, matrix, isocodes) {
 
   const color = d3
     .scaleLinear()
-    .domain([0, isocodes.length - 1])
-    .range(['#76B5DE', '#075486']);
+    .domain([0, 1, 2, 3, 4])
+    .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00']);
 
   function getColor(index) {
-    return index === selectedLanguageIndex ? 'red' : d3.rgb(color(index));
+    return d3.rgb(color(index));
   }
 
   const g = svgChord
@@ -51,7 +52,7 @@ function recreateChord(viz, matrix, isocodes) {
 
   const groups = g
     .append('g')
-    .attr('class', 'groups')
+    .attr('class', 'groups clickable')
     .selectAll('g')
     .data(chords => chords.groups)
     .enter()
@@ -61,7 +62,7 @@ function recreateChord(viz, matrix, isocodes) {
     .append('path')
     .style('fill-opacity', '0.7')
     .style('fill', d => getColor(d.index))
-    .style('stroke', 'black')
+    .style('stroke', 'none')
     .attr('id', d => `arc${d.index}`)
     .attr('d', arc)
     .on('mouseover', (d, i) => {
@@ -78,46 +79,25 @@ function recreateChord(viz, matrix, isocodes) {
         .duration(300)
         .style('fill-opacity', '0.7');
     })
-    .on('click', d => viz.asyncSelectLanguage(isocodes[d.index]));
+    .on('click', d => viz.asyncSelectLanguage(isocodes[d.index]))
+    .append('title')
+    .text(d => `${languagesCoo[isocodes[d.index]].name}`);
 
   function getXY(d, cosOrSin) {
     return innerRadius * cosOrSin((d.startAngle + d.endAngle) / 2 - Math.PI / 2);
   }
 
-  const gradients = svgChord
-    .append('defs')
-    .selectAll('linearGradient')
-    .data(chord(matrix))
-    .enter()
-    .append('linearGradient')
-    .attr('id', d => `gradient${d.source.index}-${d.target.index}`)
-    .attr('gradientUnits', 'userSpaceOnUse')
-    .attr('x1', d => getXY(d.source, Math.cos))
-    .attr('y1', d => getXY(d.source, Math.sin))
-    .attr('x2', d => getXY(d.target, Math.cos))
-    .attr('y2', d => getXY(d.target, Math.sin));
-
-  gradients
-    .append('stop')
-    .attr('offset', '0%')
-    .attr('stop-color', d => getColor(d.source.index));
-
-  gradients
-    .append('stop')
-    .attr('offset', '100%')
-    .attr('stop-color', d => getColor(d.target.index));
-
   g
     .append('g')
-    .attr('class', 'ribbons')
+    .attr('class', 'ribbons clickable')
     .selectAll('path')
     .data(chords => chords)
     .enter()
     .append('path')
     .attr('d', ribbon)
     .style('fill-opacity', '0.7')
-    .style('fill', d => `url(#gradient${d.source.index}-${d.target.index})`)
-    .style('stroke', 'black')
+    .style('fill', d => getColor(d.target.index))
+    .style('stroke', 'none')
     .attr('id', d => `ribbon${d.source.index}-${d.target.index}`)
     .on('mouseover', (d, i) => {
       d3
@@ -133,7 +113,9 @@ function recreateChord(viz, matrix, isocodes) {
         .duration(300)
         .style('fill-opacity', '0.7');
     })
-    .on('click', d => viz.asyncSelectLanguagePair(isocodes[d.source.index], isocodes[d.target.index]));
+    .on('click', d => viz.asyncSelectLanguagePair(isocodes[d.source.index], isocodes[d.target.index]))
+    .append('title')
+    .text(d => `${languagesCoo[isocodes[d.target.index]].name} ↔ ${languagesCoo[isocodes[d.source.index]].name}`);
 
   groups
     .append('text')

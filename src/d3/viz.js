@@ -77,8 +77,8 @@ class Viz {
       .enter()
       .append('path')
       .attr('fill', '#DDD')
-      .attr('stroke', '#DDD')
-      .attr('stroke-width', '0')
+      .attr('stroke', 'dimgrey')
+      .attr('stroke-width', '0.2')
       .attr('d', this.geoPath)
       .attr('class', 'mapPath')
       .attr('id', d => `country-${d.properties.iso_a3}`)
@@ -148,7 +148,7 @@ class Viz {
       .attr('class', 'languageText')
       .text(iso => languagesCoo[iso].name)
       .attr('text-anchor', 'middle')
-      .attr('dy', '-3px')
+      .attr('dy', '-5px')
       .attr('style', 'cursor:pointer;')
       .attr('id', iso => `languageText-${iso}`)
       .on('click', iso => this.asyncSelectLanguage(iso));
@@ -294,8 +294,7 @@ class Viz {
         .select(`#country-${countryID}`)
         .transition()
         .duration(400)
-        .attr('fill', color)
-        .attr('stroke', color);
+        .attr('fill', color);
     });
   }
 
@@ -360,8 +359,7 @@ class Viz {
   resetHighlights() {
     this.g
       .selectAll(`${this.parentSelector} .mapPath`)
-      .attr('fill', '#DDD')
-      .attr('stroke', '#DDD');
+      .attr('fill', '#DDD');
 
     this.g.selectAll(`${this.parentSelector} .gLanguage`).attr('opacity', 1);
 
@@ -517,6 +515,14 @@ class Viz {
 
     $(`.right-panel .panel-title`).html(languagesCoo[isocode].name); // Title
 
+    $(`.right-panel .mean`).html(langNetwork.stats[isocode].mean.toFixed(2));
+    $(`.right-panel .median`).html(langNetwork.stats[isocode].percentile50.toFixed(2));
+    $(`.right-panel .most-used-letter`).html(
+      _.take(_.sortBy(langNetwork.stats[isocode].histogram, pair => -pair[1]), 1)
+        .map(pair => pair[0].toUpperCase())[0]
+    );
+
+
     const sampleTemplate = $(`.right-panel .sample-panel .template`);
     sampleTemplate.hide();
 
@@ -552,6 +558,7 @@ class Viz {
 
     // Template for chord Diagram
 
+    /*
     const isocodesNotFiltered = Object.keys(langNetwork.relation[isocode]);
     const tempArray = isocodesNotFiltered.map(iso => [iso, langNetwork.relation[isocode][iso]]);
     const isocodes = _.take(_.sortBy(tempArray, pair => -pair[1]), 4).map(pair => pair[0]);
@@ -567,9 +574,33 @@ class Viz {
       });
 
       matrixRelations.push(arr);
-    });
+    });*/
 
-    recreateChord(this, matrixRelations, isocodes);
+    
+
+    function getMatrixAndIsocodes(key) {
+      const isocodes = _.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]);
+      isocodes.push(isocode);
+
+      const matrixRelations = [];
+      isocodes.forEach(first => {
+        const arr = [];
+
+        isocodes.forEach(second => {
+          const values = langNetwork[key][first].filter(pair => pair[0] === second);
+          const value = values.length > 0 ? Math.log1p(values[0][1]) : 0;
+          arr.push(value);
+        });
+
+        matrixRelations.push(arr);
+      });
+
+      return [matrixRelations, isocodes];
+    }
+
+    d3.selectAll('.svg-chord').remove();
+
+    recreateChord(this, getMatrixAndIsocodes('from'), '.svg-chord-from-container');
   }
 
   setRightPanelInfoLanguagePair(info1To2, info2To1) {
@@ -671,7 +702,7 @@ class Viz {
         clone.html(languagesCoo[lang].name);
       }
 
-      clone.click(() => visu.asyncSelectLanguage(lang));
+      clone.click(() => this.asyncSelectLanguage(lang));
 
       $(`.right-panel .homographs-list`).append(clone);
     });
@@ -683,7 +714,7 @@ class Viz {
       const clone = cloneTemplate(synonymTemplate);
 
       clone.html(pair[1]);
-      clone.click(() => visu.asyncSelectWord(pair[0], pair[1]));
+      clone.click(() => this.asyncSelectWord(pair[0], pair[1]));
 
       $(`.right-panel .synonyms-list`).append(clone);
     });
