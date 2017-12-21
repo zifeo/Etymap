@@ -15,18 +15,15 @@ import Viz from './d3/viz';
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
 })();
 
-const viz = new Viz('#viz');
-viz.show();
-
 const router = new Navigo(null, true);
 
+const viz = new Viz('#viz', router);
+viz.show();
+
 router
-  .on('w/:word/:lang', ({ word, lang }) => viz.asyncSelectWord(word, lang))
-  .on('l/:lang', ({ lang }) => {
-    console.log('->', lang);
-    viz.asyncSelectLanguage(lang).then(() => console.log('achanged'));
-  })
-  .on('r/:lang1/:lang2', ({ lang1, lang2 }) => viz.asyncSelectLanguagePair(lang1, lang2))
+  .on('w/:word/:lang', ({ word, lang }) => viz.selectWord(word, lang))
+  .on('l/:lang', ({ lang }) => viz.selectLanguage(lang))
+  .on('r/:lang1/:lang2', ({ lang1, lang2 }) => viz.selectLanguagePair(lang1, lang2))
   .resolve();
 
 $('.ui.accordion').accordion({
@@ -45,9 +42,9 @@ $('.search').search({
   onSelect: result => {
     const { word, lang } = result;
     if (word) {
-      viz.asyncSelectWord(word, lang);
+      viz.navigateToWord(word, lang);
     } else {
-      viz.asyncSelectLanguage(lang);
+      viz.navigateToLanguage(lang);
     }
   },
 });

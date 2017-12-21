@@ -173,7 +173,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
           .attr('fill', getColor(d.depth))
           .attr('stroke', '#075486');
       })
-      .on('click', d => viz.asyncSelectWord(d.data.name, d.data.lang));
+      .on('click', d => viz.navigateToWord(d.data.name, d.data.lang));
 
     nodes
       .append('text')
@@ -187,7 +187,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       .attr('text-anchor', 'middle')
       .attr('style', 'cursor:pointer;')
       .text(d => (languagesCoo[d.data.lang] ? languagesCoo[d.data.lang].name : 'fra')) // temporary fix for long idioms, ex : "quand le chat n'est pas là, les souris dansent"
-      .on('click', d => viz.asyncSelectLanguage(d.data.lang));
+      .on('click', d => viz.navigateToLanguage(d.data.lang));
 
     const links = gPaths
       .selectAll('none')

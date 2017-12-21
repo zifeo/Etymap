@@ -87,7 +87,7 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
           .attr('fill', '#37485E');
       })
       .on('click', (d, i) => {
-        viz.asyncSelectLanguage(isocodes[i]);
+        viz.navigateToLanguage(isocodes[i]);
       })
       .append('title')
       .text((d, i) => languagesCoo[isocodes[i]].name);
@@ -167,9 +167,9 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
       })
       .on('click', (d, i) => {
         if (isFrom) {
-          viz.asyncSelectLanguagePair(from, isocodes[i]);
+          viz.navigateToLanguagePair(from, isocodes[i]);
         } else {
-          viz.asyncSelectLanguagePair(isocodes[i], from);
+          viz.navigateToLanguagePair(isocodes[i], from);
         }
       })
       .append('title')
