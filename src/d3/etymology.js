@@ -31,7 +31,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
   wordInfo['parents'].forEach(p => computeMaxDepth(p, 1, 'parents'));
 
   const totalDepth = maxDepth['children'] + maxDepth['parents'];
-  const height = totalDepth * 110;
+  const height = (totalDepth + 2) * 110;
 
   d3.select(`.right-panel .word-panel .svg-container .svg-tree`).remove();  
 

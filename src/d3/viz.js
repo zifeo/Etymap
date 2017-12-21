@@ -14,12 +14,21 @@ const languagesCoo = langNetwork.locations;
 
 const lineGenerator = d3.line().curve(d3.curveCardinal);
 
+const vizMode = {
+  None: 0,
+  Language: 1,
+  Pair: 2,
+  Word: 3
+}
+
 class Viz {
   constructor(parentSelector) {
     this.parentSelector = parentSelector;
   }
 
   show() {
+    this.mode = vizMode.None;
+
     this.setUpSVG();
     this.addGeoJson();
     this.addAllLanguagesPoints();
@@ -33,6 +42,10 @@ class Viz {
       .attr('class', 'main-map');
 
     this.g = this.svg.append('g').attr('id', 'g');
+    this.gMap = this.g.append('g');
+    this.gPath = this.g.append('g');
+
+    this.scale = 1;
 
     this.zoom = d3
       .zoom()
@@ -40,14 +53,9 @@ class Viz {
       .scaleExtent([1, 30])
       .on('zoom', () => {
         this.g.attr('transform', d3.event.transform)
+        this.scale = d3.event.transform.k;
 
-        const scale = Math.pow(d3.event.transform.k, 0.75);
-        d3.selectAll(`${this.parentSelector} .gLanguage`)
-          .attr('transform', `scale(${1/scale})`)
-
-        const opacityFactor = Math.pow(d3.event.transform.k, 2);
-        d3.selectAll(`${this.parentSelector} .languageText`)
-          .attr('opacity', iso => opacityFactor * langNetwork.stats[iso].count / 1000000)
+        this.updateScaleAndOpacity();
       });
 
 
@@ -63,7 +71,7 @@ class Viz {
 
     this.geoPath = d3.geoPath().projection(this.projection);
 
-    this.g
+    this.gMap
       .selectAll('path')
       .data(geojson.features)
       .enter()
@@ -73,7 +81,21 @@ class Viz {
       .attr('stroke-width', '0')
       .attr('d', this.geoPath)
       .attr('class', 'mapPath')
-      .attr('id', d => `country-${d.properties.iso_a3}`);
+      .attr('id', d => `country-${d.properties.iso_a3}`)
+      .on('click', () => this.deselect());
+  }
+
+  updateScaleAndOpacity() {
+    const scale = Math.pow(this.scale, 0.75);
+    d3.selectAll(`${this.parentSelector} .gLanguage`)
+      .attr('transform', `scale(${1/scale})`);
+
+    if (this.mode !== vizMode.None)
+      return;
+
+    const opacityFactor = Math.pow(this.scale, 2);
+    d3.selectAll(`${this.parentSelector} .gLanguage`)
+      .attr('opacity', iso => opacityFactor * langNetwork.stats[iso].count / 1000000);
   }
 
   get width() {
@@ -85,31 +107,46 @@ class Viz {
   }
 
   addAllLanguagesPoints() {
-    const g = this.g
+    const gCircle = this.g
       .selectAll('none')
       .data(allLanguages)
       .enter()
         .append('g')
         .attr('transform', iso => `translate(${this.projection([languagesCoo[iso].longitude, languagesCoo[iso].latitude])})`)
         .append('g')
-        .attr('class', 'gLanguage');
+        .attr('class', 'gLanguage')
+        .attr('id', iso => `gLanguageCircle-${iso}`);
 
-    g.append('circle')
+    const gText = this.g
+      .selectAll('none')
+      .data(allLanguages)
+      .enter()
+        .append('g')
+        .attr('transform', iso => `translate(${this.projection([languagesCoo[iso].longitude, languagesCoo[iso].latitude])})`)
+        .append('g')
+        .attr('class', 'gLanguage')
+        .attr('id', iso => `gLanguageText-${iso}`);
+
+    gCircle.append('circle')
       .attr('r', 3)
       .attr('stroke-width', 0.7)
       .attr('fill', 'white')
       .attr('stroke', 'blue')
       .attr('class', 'languageCircle')
+      .attr('style', 'cursor:pointer;')
       .attr('id', iso => `circle-${iso}`)
       .on('click', iso => this.asyncSelectLanguage(iso));
 
-    g.append('text')
+    gText.append('text')
       .attr('class', 'languageText')
-      .attr('id', iso => `languageText-${iso}`)
       .text(iso => languagesCoo[iso].name)
       .attr('text-anchor', 'middle')
       .attr('dy', '-3px')
+      .attr('style', 'cursor:pointer;')
+      .attr('id', iso => `languageText-${iso}`)
       .on('click', iso => this.asyncSelectLanguage(iso));
+
+    this.updateScaleAndOpacity();
   }
 
   addLine(isocodes, strokeWidth, color, opacity, clickFct) {
@@ -155,7 +192,7 @@ class Viz {
     }
     positionsGeoMiddle.push(positionsGeo[positionsGeo.length - 1]);
 
-    const path = this.g
+    const path = this.gPath
       .append('path') // Path that goes through each language
       .datum(positionsGeoMiddle)
       .attr('d', lineGenerator(positionsGeoMiddle.map(posGeo => this.projection(posGeo))))
@@ -201,7 +238,8 @@ class Viz {
     this.svg
       .transition()
       .duration(1000)
-      .call(this.zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale));
+      .call(this.zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale))
+      .on('end', () => this.highlightLanguages(isocodes, true));
   }
 
   removeAllLines() {
@@ -221,23 +259,80 @@ class Viz {
     });
   }
 
-  highlightLanguages(isocodes) {
-    this.g.selectAll('.languageCircle')
+  highlightLanguages(isocodes, isEndTransition) {
+    this.g.selectAll(`${this.parentSelector} .gLanguage`)
+     .attr('opacity', 1);
+
+    this.g.selectAll(`${this.parentSelector} .languageCircle`)
      .attr('opacity', 0.2);
 
+    this.g.selectAll(`${this.parentSelector} .languageText`)
+     .attr('opacity', 0);
+
+    const bboxArray = [];
     isocodes.forEach(iso => {
       this.g.select(`#circle-${iso}`)
        .attr('opacity', 1);
+
+      this.g.select(`#languageText-${iso}`)
+       .attr('opacity', 1);
+
+      const bbox = this.g.select(`#languageText-${iso}`).node().getBoundingClientRect();
+
+      bboxArray.push({
+        bbox: bbox,
+        iso: iso
+      });
+    });
+
+    if (!isEndTransition)
+      return;
+
+    const sorted = _.sortBy(bboxArray, obj => -langNetwork.stats[obj.iso].count);
+    const visibleBBox = [];
+
+    sorted.forEach(obj => {
+      if (visibleBBox.filter(bbox => !this.bboxCollision(bbox, obj.bbox)).length === visibleBBox.length) {
+        visibleBBox.push(obj.bbox);
+      }
+      else {
+        this.g.select(`#languageText-${obj.iso}`)
+         .transition()
+         .duration(1000)
+         .attr('opacity', 0);
+      }
     });
   }
 
+  bboxCollision(bbox1, bbox2) {
+    return !(bbox1.left > bbox2.right ||
+             bbox2.left > bbox1.right ||
+             bbox1.top > bbox2.bottom ||
+             bbox2.top > bbox1.bottom);
+    
+  }
+
   resetHighlights() {
-    this.g.selectAll('.mapPath')
+    this.g.selectAll(`${this.parentSelector} .mapPath`)
      .attr('fill', '#DDD')
      .attr('stroke', '#DDD');
 
-    this.g.selectAll('.languageCircle')
+    this.g.selectAll(`${this.parentSelector} .gLanguage`)
      .attr('opacity', 1);
+
+    this.g.selectAll(`${this.parentSelector} .languageCircle`)
+     .attr('opacity', 1);
+
+    this.g.selectAll(`${this.parentSelector} .languageText`)
+     .attr('opacity', 1);
+  }
+
+  /* No selection */
+  deselect() {
+    this.mode = vizMode.None;
+    this.removeAllLines();
+    this.resetHighlights();
+    this.updateScaleAndOpacity();
   }
 
   /* Single Language */
@@ -248,6 +343,8 @@ class Viz {
   }
 
   selectLanguage(langInfo) {
+    this.mode = vizMode.Language;
+
     openPanel();
     this.resetHighlights();
     this.addLanguageLines(langInfo);
@@ -288,6 +385,8 @@ class Viz {
   }
 
   selectLanguagePair(info1To2, info2To1) {
+    this.mode = vizMode.Pair;
+
     openPanel();
     this.resetHighlights();
     this.addLanguagePairLines(info1To2, info2To1);
@@ -319,6 +418,8 @@ class Viz {
   }
 
   selectWord(wordInfo) {
+    this.mode = vizMode.Word;
+
     openPanel();
     this.resetHighlights();
     this.addWordLines(wordInfo);
