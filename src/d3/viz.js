@@ -5,7 +5,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 import Api from '../api';
 import { geojson, langNetwork, allLanguages } from '../json/data';
-import { cloneTemplate, openPanel } from '../utils';
+import { cloneTemplate, openPanel, closePanel } from '../utils';
 import { recreateChord } from './chord';
 import { recreateAlluvial } from './alluvial';
 import { recreateEtymology } from './etymology';
@@ -367,6 +367,8 @@ class Viz {
 
   /* No selection */
   deselect() {
+    closePanel();
+
     this.mode = vizMode.None;
     this.selectedIsocodes = [];
 
@@ -508,20 +510,21 @@ class Viz {
     $(`.right-panel .panel-title`).html(languagesCoo[isocode].name); // Title
 
     const sampleTemplate = $(`.right-panel .sample-panel .template`);
+    sampleTemplate.hide();
 
     _.take(langInfo.samples, 6).forEach(word => {
       const clone = cloneTemplate(sampleTemplate);
 
-      clone.find('.word-button').html(word);
-      clone.find('.word-button').click(() => this.asyncSelectWord(word, isocode));
+      clone.html(word);
+      clone.click(() => this.asyncSelectWord(word, isocode));
 
       $(`.right-panel .sample-panel`).append(clone);
     });
 
-    // only takes the influencing languages, which account for at least 10% of the words
-    const influencing = _.takeWhile(langNetwork.fromProportion[isocode], pair => pair[1] > 0.1);
-    // only takes the influenced languages, which account for at least 10% of the words
-    const influenced = _.takeWhile(langNetwork.toProportion[isocode], pair => pair[1] > 0.1);
+    // only takes the influencing languages, which account for at least 5% of the words
+    const influencing = _.takeWhile(langNetwork.fromProportion[isocode], pair => pair[1] > 0.05);
+    // only takes the influenced languages, which account for at least 5% of the words
+    const influenced = _.takeWhile(langNetwork.toProportion[isocode], pair => pair[1] > 0.05);
 
     const dataFromNotNormalized = influencing.map(pair => pair[1]);
     const dataToNotNormalized = influenced.map(pair => pair[1]);
@@ -534,6 +537,8 @@ class Viz {
     const isocodesFrom = influencing.map(pair => pair[0]);
     const dataTo = dataToNotNormalized.map(value => value / toSum);
     const isocodesTo = influenced.map(pair => pair[0]);
+
+    d3.selectAll('.svg-alluvial').remove();
 
     recreateAlluvial(this, isocode, `.language-panel .svg-container`, dataFrom, isocodesFrom, dataTo, isocodesTo);
 
@@ -568,63 +573,52 @@ class Viz {
 
     $(`.right-panel .notTemplate`).remove();
 
-    this.setRightPanelInfoLanguagePairTitle(iso1, iso2, '.first-direction .title');
-    this.setRightPanelInfoLanguagePairTitle(iso2, iso1, '.second-direction .title');
+    $('.right-panel .language-pair-panel .first').html(languagesCoo[iso1].name);
+    $('.right-panel .language-pair-panel .second').html(languagesCoo[iso2].name);
 
-    this.setRightPanelInfoLanguagePairStats(iso1, iso2, '.first-direction .stats');
-    this.setRightPanelInfoLanguagePairStats(iso2, iso1, '.second-direction .stats');
+    $('.right-panel .language-pair-panel .mean-first').html(langNetwork.stats[iso1].mean.toFixed(2));
+    $('.right-panel .language-pair-panel .mean-second').html(langNetwork.stats[iso2].mean.toFixed(2));
 
-    this.setRightPanelInfoLanguagePairSample(iso1, iso2, info1To2, '.first-direction .samples');
-    this.setRightPanelInfoLanguagePairSample(iso2, iso1, info2To1, '.second-direction .samples');
+    $('.right-panel .language-pair-panel .median-first').html(langNetwork.stats[iso1].percentile50.toFixed(2));
+    $('.right-panel .language-pair-panel .median-second').html(langNetwork.stats[iso2].percentile50.toFixed(2));
+
+    $('.right-panel .language-pair-panel .letters-first').html(_.take(_.sortBy(langNetwork.stats[iso1].histogram, pair => -pair[1]), 3).map(pair => pair[0].toUpperCase()).toString());
+    $('.right-panel .language-pair-panel .letters-second').html(_.take(_.sortBy(langNetwork.stats[iso2].histogram, pair => -pair[1]), 3).map(pair => pair[0].toUpperCase()).toString());
+
+    const wordTemplate = $(`.right-panel .first-samples-list .template`);
+    wordTemplate.hide();
+
+    _.take(info1To2.samples, 6).forEach(word => {
+      const clone = cloneTemplate(wordTemplate);
+
+      clone.html(word);
+      clone.click(() => this.asyncSelectWord(word, iso1));
+
+      $(`.right-panel .first-samples-list`).append(clone);
+    });
+
+    _.take(info2To1.samples, 6).forEach(word => {
+      const clone = cloneTemplate(wordTemplate);
+
+      clone.html(word);
+      clone.click(() => this.asyncSelectWord(word, iso2));
+
+      $(`.right-panel .second-samples-list`).append(clone);
+    });
 
     d3.selectAll('.svg-alluvial').remove();
 
-    this.setRightPanelInfoLanguagePairDiagram(iso1, '.first-direction .svg-container');
-    this.setRightPanelInfoLanguagePairDiagram(iso2, '.second-direction .svg-container');
-  }
-
-  setRightPanelInfoLanguagePairTitle(from, to, selector) {
-    $(`.right-panel ${selector} .panel-title`).html(`From ${languagesCoo[from].name} to ${languagesCoo[to].name}`); // Title
-
-    $(`.right-panel ${selector} .language-button`)
-      .html(languagesCoo[from].name)
-      .click(() => this.asyncSelectLanguage(from));
-  }
-
-  setRightPanelInfoLanguagePairStats(from, to, selector) {
-    $(`.right-panel ${selector} .panel-title`).html('Stats'); // Title
-
-    const values = langNetwork.from[from] ? langNetwork.from[from].filter(pair => pair[0] === to) : [];
-    const numWords = values.length > 0 ? values[0][1] : 0;
-
-    $(`.right-panel ${selector} .absolute`).html(
-      `${numWords} words come from ${languagesCoo[from].name} to ${languagesCoo[to].name}.`
-    );
-    $(`.right-panel ${selector} .proportion`).html(`That is ${53.2} % of ${languagesCoo[to].name}'s words.`);
-  }
-
-  setRightPanelInfoLanguagePairSample(from, to, info, selector) {
-    $(`.right-panel ${selector} .panel-title`).html('Sample words'); // Title
-
-    const template = $(`.right-panel ${selector} .template`); // Word button
-
-    _.take(info.samples, 6).forEach(word => {
-      const clone = cloneTemplate(template);
-
-      clone.find('.word-button').html(word);
-      clone.find('.word-button').click(() => this.asyncSelectWord(word, from));
-
-      $(`.right-panel ${selector} .segments`).append(clone);
-    });
+    this.setRightPanelInfoLanguagePairDiagram(iso1, '.first-svg-container');
+    this.setRightPanelInfoLanguagePairDiagram(iso2, '.second-svg-container');
   }
 
   setRightPanelInfoLanguagePairDiagram(from, selector) {
-    $(`.right-panel ${selector} .panel-title`).html(`Other relations for ${languagesCoo[from].name}`); // Title
+    $(`.right-panel ${selector} h5`).html(`Other relations for ${languagesCoo[from].name}`); // Title
 
-    // Template for alluvial Diagram
+    // Alluvial Diagram
 
-    const influencing = _.takeWhile(langNetwork.fromProportion[from], pair => pair[1] > 0.1); // only takes the influencing languages, which account for at least 10% of the words
-    const influenced = _.takeWhile(langNetwork.toProportion[from], pair => pair[1] > 0.1); // only takes the influenced languages, which account for at least 10% of the words
+    const influencing = _.takeWhile(langNetwork.fromProportion[from], pair => pair[1] > 0.05); // only takes the influencing languages, which account for at least 5% of the words
+    const influenced = _.takeWhile(langNetwork.toProportion[from], pair => pair[1] > 0.05); // only takes the influenced languages, which account for at least 5% of the words
 
     const dataFromNotNormalized = influencing.map(pair => pair[1]);
     const dataToNotNormalized = influenced.map(pair => pair[1]);
@@ -647,33 +641,50 @@ class Viz {
 
     $(`.right-panel .notTemplate`).remove();
 
-    $(`.right-panel .panel-title`).html(wordInfo.word); // Title
+    $(`.right-panel h2`).html(wordInfo.word); // Title
 
-    const wordTemplate = $(`.right-panel .synonyms-panel .template`);
+    const homographTemplate = $(`.right-panel .homographs-list .template`);
+    homographTemplate.hide();
 
-    function addToWordsPanel(list, panelClass, visu) {
-      list.forEach(pair => {
-        const lang = pair[0];
-        const word = pair[1];
+    wordInfo.langs.forEach(lang => {
+      const clone = cloneTemplate(homographTemplate);
 
-        const clone = cloneTemplate(wordTemplate);
+      if (lang === wordInfo.lang) {
+        clone.html(`<strong>${languagesCoo[lang].name}</strong>`);
+      }
+      else {
+        clone.html(languagesCoo[lang].name);
+      }
 
-        clone.find('.word-button').html(word);
-        clone.find('.word-button').click(() => visu.asyncSelectWord(word, lang));
+      clone.click(() => visu.asyncSelectLanguage(lang));
 
-        clone.find('.lang-button').html(languagesCoo[lang] ? languagesCoo[lang].name : lang);
-        clone.find('.lang-button').click(() => visu.asyncSelectLanguage(lang));
+      $(`.right-panel .homographs-list`).append(clone);
+    });
 
-        $(`.right-panel .${panelClass}`).append(clone);
-      });
-    }
+    const synonymTemplate = $(`.right-panel .synonyms-list .template`);
+    synonymTemplate.hide();
 
-    addToWordsPanel(wordInfo.synonyms.filter(pair => pair[0] === wordInfo.lang), 'synonyms-panel', this);
-    addToWordsPanel(wordInfo.synonyms.filter(pair => pair[0] !== wordInfo.lang), 'translations-panel', this);
+    _.take(wordInfo.synonyms, 5).forEach(pair => {
+      const clone = cloneTemplate(synonymTemplate);
+
+      clone.html(pair[1]);
+      clone.click(() => visu.asyncSelectWord(pair[0], pair[1]));
+
+      $(`.right-panel .synonyms-list`).append(clone);
+    });
+
+    _.take(wordInfo.translations, 5).forEach(pair => {
+      const clone = cloneTemplate(synonymTemplate);
+
+      clone.html(`${pair[1]} (${languagesCoo[pair[0]].name})`);
+      clone.click(() => this.asyncSelectWord(pair[1], pair[0]));
+
+      $(`.right-panel .translations-list`).append(clone);
+    });
 
     // Graph
 
-    $(`.right-panel .word-panel .svg-container .panel-title`).html(`Etymology of ${wordInfo.word}`); // Title of the graph
+    $(`.right-panel .word-panel .svg-container .h5`).html(`Parents & Children of ${wordInfo.word}`); // Title of the graph
 
     recreateEtymology(this, wordInfo, false);
   }

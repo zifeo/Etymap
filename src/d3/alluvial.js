@@ -14,8 +14,6 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
   const nodeWidth = width / 20;
   const margin = 0.05;
 
-  d3.selectAll('.svg-alluvial').remove();
-
   const dataFromCum = [];
   let curr = 0;
   for (const i in dataFrom) {
