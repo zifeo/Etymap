@@ -6,6 +6,7 @@ import 'babel-polyfill';
 import $ from 'jquery';
 import Navigo from 'navigo';
 import Viz from './d3/viz';
+import { inFrame } from "./utils";
 
 (() => {
   // dirty hack avoiding babel to reorganise imports
@@ -15,9 +16,11 @@ import Viz from './d3/viz';
   require('semantic-ui-dist/dist/semantic.min'); // eslint-disable-line
 })();
 
+const isInFrame = inFrame();
 const router = new Navigo(null, true);
 
-const viz = new Viz('#viz', router);
+const viz = new Viz('#viz', router, isInFrame);
+window.viz = viz;
 viz.show();
 
 router
@@ -25,6 +28,10 @@ router
   .on('l/:lang', ({ lang }) => viz.selectLanguage(lang))
   .on('r/:lang1/:lang2', ({ lang1, lang2 }) => viz.selectLanguagePair(lang1, lang2))
   .resolve();
+
+if (isInFrame) {
+  $('.top-bar').hide();
+}
 
 $('.ui.accordion').accordion({
   exclusive: false,

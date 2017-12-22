@@ -25,4 +25,12 @@ function closePanel() {
   $('.ui.sidebar').sidebar('hide');
 }
 
-export { cloneTemplate, openPanel, closePanel };
+function inFrame() {
+  try {
+    return window.self !== window.top;
+  } catch (ex) {
+    return true;
+  }
+}
+
+export { cloneTemplate, openPanel, closePanel, inFrame };
