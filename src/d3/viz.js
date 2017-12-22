@@ -611,29 +611,12 @@ class Viz {
       $(`.right-panel .sample-panel`).append(clone);
     }
 
-    // only takes the influencing languages, which account for at least 5% of the words
-    const influencing = _.takeWhile(langNetwork.fromProportion[isocode], pair => pair[1] > 0.05);
-    // only takes the influenced languages, which account for at least 5% of the words
-    const influenced = _.takeWhile(langNetwork.toProportion[isocode], pair => pair[1] > 0.05);
-
-    const dataFromNotNormalized = influencing.map(pair => pair[1]);
-    const dataToNotNormalized = influenced.map(pair => pair[1]);
-
-    const fromSum =
-      dataFromNotNormalized.length > 0 ? dataFromNotNormalized.reduce((total, value) => total + value) : 1;
-    const toSum = dataToNotNormalized.length > 0 ? dataToNotNormalized.reduce((total, value) => total + value) : 1;
-
-    const dataFrom = dataFromNotNormalized.map(value => value / fromSum);
-    const isocodesFrom = influencing.map(pair => pair[0]);
-    const dataTo = dataToNotNormalized.map(value => value / toSum);
-    const isocodesTo = influenced.map(pair => pair[0]);
-
     d3.selectAll('.svg-alluvial').remove();
 
-    recreateAlluvial(this, isocode, `.language-panel .svg-container`, dataFrom, isocodesFrom, dataTo, isocodesTo);
+    recreateAlluvial(this, isocode, `.language-panel .svg-container`);
 
     // Chord Diagram
-    if (isocodesFrom.length === 0) {
+    if (langNetwork.from[isocode].length === 0) {
       $(`.language-panel .svg-chord-from-container`).hide();
       return;
     }
@@ -743,25 +726,7 @@ class Viz {
     $(`.right-panel ${selector} h4`).html(`Other relations for ${languagesCoo[from].name} (min. 5%)`); // Title
 
     // Alluvial Diagram
-
-    // only takes the influencing languages, which account for at least 5% of the words
-    const influencing = _.takeWhile(langNetwork.fromProportion[from], pair => pair[1] > 0.05);
-    // only takes the influenced languages, which account for at least 5% of the words
-    const influenced = _.takeWhile(langNetwork.toProportion[from], pair => pair[1] > 0.05);
-
-    const dataFromNotNormalized = influencing.map(pair => pair[1]);
-    const dataToNotNormalized = influenced.map(pair => pair[1]);
-
-    const fromSum =
-      dataFromNotNormalized.length > 0 ? dataFromNotNormalized.reduce((total, value) => total + value) : 1;
-    const toSum = dataToNotNormalized.length > 0 ? dataToNotNormalized.reduce((total, value) => total + value) : 1;
-
-    const dataFrom = dataFromNotNormalized.map(value => value / fromSum);
-    const isocodesFrom = influencing.map(pair => pair[0]);
-    const dataTo = dataToNotNormalized.map(value => value / toSum);
-    const isocodesTo = influenced.map(pair => pair[0]);
-
-    recreateAlluvial(this, from, selector, dataFrom, isocodesFrom, dataTo, isocodesTo);
+    recreateAlluvial(this, from, selector);
   }
 
   setRightPanelInfoWord(wordInfo) {
@@ -811,6 +776,8 @@ class Viz {
 
     _.take(wordInfo.translations, 5).forEach(pair => {
       const clone = cloneTemplate(synonymTemplate);
+
+      console.log(pair)
 
       clone.html(`${pair[1]} (${languagesCoo[pair[0]].name})`);
       clone.click(() => this.navigateToWord(pair[1], pair[0]));
