@@ -39,6 +39,7 @@ The development flavour is available on [localhost:5000](http://localhost:5000).
 - Glottolog, Languages coordinates, http://glottolog.org
 - SIL ISO 639-3, Macrolanguage mappings, www.sil.org/iso639-3
 - Yago-Naga, UWN / MENTA: Towards a Universal Multilingual Wordnet, https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/uwn/
+- Dave Liepmann, Tufte CSS, https://edwardtufte.github.io/tufte-css/
 
 ## License
 
