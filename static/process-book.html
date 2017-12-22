@@ -191,6 +191,43 @@
         </p>
     </section>
     <section>
+        <h2 id="language_names">Improving how to display language names</h2>
+        <p>
+            We have already discussed how to display language names on the map quite a bit. We finally found a decent solution to this issue.
+        </p>
+        <figure>
+            <img src="img/language_names/all_showing.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <p>
+            The first approach was to show them all, but the overlapping was absolutely unreadable as you can see on the screenshot above. There are workarounds, we could have spaced some of the language points better and fixed the minimum zoom level such that we ensure that there is enough space between the points. But the drawbacks of these modifications are huge. The user would need to drag the map around more to get from a point A to a point B (because he can't zoom out anymore). He would also spend more time searching for a language point if we move it away from where it is traditionnaly known to be. These are particuarly bad downsides sice, as we established in the "Refining our visualization's direction" article, the map is usefull for quick switching and searching of languages. It would therefore be going directly against our goal.
+        </p>
+        <figure>
+            <img src="img/language_names/none.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <p>
+            The second approach is the exact opposite, hide everyhing until it is selected or hovered. Obviously, the problem here is that it becomes a guessing and memory game. As a user, you will have to imagine what language is assigned to a point, and if you check it by hovering, you will have to remember until you do not need it anymore. Again, it goes without saying that this is completely defeating the purpose of our map.
+        </p>
+        <p>
+            As most things, the solution is neither black or white.
+            We have already established that the map should help the user quickly search for information he knows. What this means in practice is that commonly-known languages should always be shown. Now, for more "obscure" languages, the goal would be to only show them if we know that the user is looking for their name. The way we could detect this, is if the user is centered and/or zoomed on it. We kind of get the best of both worlds by doing this. Finally, we would also want to put the spotlight on the "larger" (from an etymological relations point of view) languages.
+        </p>
+        <p>
+            Of course, there is no ideal solution, the previous paragraph simply establishes what we want/need. Now it's all about compromising.
+        </p>
+        <p>
+            The more we thought about it the more this problem looks like how Google Maps deals with location names. They also have to deal with well-known searched locations, aswell as more obscure places, and their solution is similar to what we describe above.
+        </p>
+        <figure>
+            <img src="img/language_names/gradient.png" alt="Wireframe diagram of word level.">
+        </figure>
+        <p>
+            Unfortunately, we don't have a clear established hierarchy of well-known languages. However, we do have an established order of languages from their number of etymological relations. Our datasdet is also quite biased towards well-known languages - this is simple the nautre of Wikitionnary contributions. We can therefore use this as our metric to show language names. We have decided to use an opacity gradient instead of discrete steps to show the language names. This creates a nice smooth transition, and already gives the user the information if he's looking for it or doesn't stand out too much if he isn't looking for them.
+        </p>
+        <p>
+            As part of a feedback loop, we asked the initial users what they thought of this new version we propose. All agreed that it was much better than the two extreme solutions and only argued about how certain languages should be more/less prominent.
+        </p>
+    </section>
+    <section>
         <h2 id="epilogue">Inspiration & references</h2>
         <ol>
             <li><a href="https://edwardtufte.github.io/tufte-css/">Tufte CSS</a>, Dave Liepmann.</li>
