@@ -38,7 +38,7 @@
         <h2 id="initial_wireframe">Initial wireframe</h2>
 
         <p>
-            As part of the process book, we will now describe and discuss our initial wireframe and the motivations behind each decision that went into making it. Of course, this only serves as a starting point. The closer we will get to a functional prototype, the more we will learn and understand about our dataset and how our visualization shows its features. The future insights we will gain, will therefore most likely change the visualization from the wireframe we describe here.
+            We will now describe and discuss our initial wireframe and the motivations behind each decision that went into making it. Of course, this only serves as a starting point. The closer we will get to a functional prototype, the more we will learn and understand about our dataset and how our visualization shows its features. The future insights we will gain, will therefore most likely change the visualization from the wireframe we describe here.
         </p>
         <p>
             There are two main aspects of the data that we want to show. The first one being how languages relate to each other etymologically, and the second one is at a finer grain, namely the etymological tree of specific words. This already plays nicely into the "context and detail" principle, since it allows the user to see these two different levels of the data.
@@ -70,7 +70,7 @@
             <img src="img/initial_wireframe/wordLevel.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
-            Once the user entered the word level, he will have the exact same interactions with the map as previously. The languages will still have the same interactions too (highlighting areas, etc.). Upon first entering the word level, a random word will be selected. There will now be edges on the map which represent the etymological tree of this word. On the right side, there will be a panel allowing the user to search for a specific word, or pick among suggested words to examin. Whereas on the left there will be some statistics about the etymological trees of the current language: max depth of trees, mean depth, histogram of related languages.
+            Once the user entered the word level, he will have the exact same interactions with the map as previously. The languages will still have the same interactions too (highlighting areas, etc.). Upon first entering the word level, a random word will be selected. There will now be edges on the map which represent the etymological tree of this word. On the right side, there will be a panel allowing the user to search for a specific word, or pick among suggested words to examine. Whereas on the left there will be some statistics about the etymological trees of the current language: max depth of trees, mean depth, histogram of related languages.
         </p>
     </section>
     <section>
@@ -123,12 +123,9 @@
         </p>
     </section>
     <section>
-        <h2 id="towards_synonyms">Towards synonyms</h2>
+        <h2 id="synonyms">Giving more thought to synonyms</h2>
         <p>
-            After some feedback...
-        </p>
-        <p>
-            The goal is to now incorporate "synonyms" into our visualization. The quotes are used here to actually describe all words share a same meaning, they can therefore span across different languages. You could consider them as traditional synonyms and translations.
+            We think that our visualization could greatly benefit from the added insights "synonyms" bring. The quotes are used here to actually describe all words share a same meaning, they can therefore span across different languages. You could consider them as traditional synonyms and translations.
             <br>
             These would particularly be interesting to visualize since it could show if there are languages which do not have a specific word for something. They could also be used to see if all the synonyms and translations of a word share parts of their respective etymological tree. For example we could see if all the "synonyms" of "flat" have "πλατύς" in Ancient Greek as their etymological origin.
         </p>
@@ -140,6 +137,24 @@
         </p>
         <p>
             We have not yet done a in-depth data exploration of this dataset. However, we have checked that the languages documented in the Etymwn overlap with this set. It is indeed the case. We do still want to check if they both suffer from the same skew - if some languages have significantly more data than others.
+        </p>
+    </section>
+    <section>
+        <h2 id="first_proto">Partial first prototype</h2>
+        <p>
+        In the initial wireframe we had also discussed some interactions when hovering on language names on the map. In most cases, the amount of language points or edges depdending on the user input is again too high to make this interaction appropriate. In short, it is practically impossible or even simply annoying to move the mouse away from any data on the map - the user would therefore always be highlighting data from something he did not actually select. This was by no means something important to the visualization, but rather a quick and easy way to get more information about languages without selecting them. We removed this entirely, and do not intend to add it again. However, by adding a router to the visualization, the user will be able to quickly push and pop his history and can therefore still rapidly get quick information about a language and still go back to his original selection.
+        </p>
+
+        <p>
+        The bundled edges for each relationship between two languages was not a bad idea. However, given that we have these two clear levels of data, there is no actual point in having individual edges per relationship. In fact, it is more consistent to just have a single link between the two languages. This level of the visualization is not intended for detail at all. Of course, we need a way to get down to the detail, but this is definitely not the best approach. Clicking on a single edge is difficult, and doesn't really allow to explore the interesting words. Given the minimal benefit of this, we will continuing with single edges between languages instead of a bundle of edges. We still need to find an accurate way of representing the weights of these edges, it could be done by color or width for example. This is a particulary hard problem given the logarithmic number of words per language there is (as we saw in the data exploration).
+        </p>
+
+        <p>
+        Now we can move on to the world level.
+        </p>
+
+        <p>
+        We are currently able to build and draw both the tree of all derived words for a given word and the tree of all words which constitue it's etymoligcal origin. There are some obvious challenges which we had not thought about in the initial wireframe. In our data exploration we had only evaluated the depth of these trees, but not at all their number of words. This can lead to the problem where Latin words for example are not particularly deep, but are the origin of practically all European languages making the tree very wide. This is a problem we will have to spend additional time on and for which we do not have an immedaite solution.
         </p>
     </section>
     <section>

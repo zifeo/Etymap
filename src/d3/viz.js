@@ -24,9 +24,10 @@ const vizMode = {
 const countryColors = ['#ffeac4', '#ffc4c4'];
 
 class Viz {
-  constructor(parentSelector, router) {
+  constructor(parentSelector, router, disablePanel) {
     this.parentSelector = parentSelector;
     this.router = router;
+    this.disablePanel = disablePanel;
   }
 
   show() {
@@ -419,6 +420,7 @@ class Viz {
   /* Single Language */
 
   navigateToLanguage(isocode) {
+    if (this.disablePanel) return;
     this.router.navigate(`l/${isocode}`);
   }
 
@@ -455,6 +457,7 @@ class Viz {
   /* Language pair */
 
   navigateToLanguagePair(iso1, iso2) {
+    if (this.disablePanel) return;
     this.router.navigate(`r/${iso1}/${iso2}`);
   }
 
@@ -489,6 +492,7 @@ class Viz {
   /* Single word */
 
   navigateToWord(word, lang) {
+    if (this.disablePanel) return;
     this.router.navigate(`w/${word}/${lang}`);
   }
 
