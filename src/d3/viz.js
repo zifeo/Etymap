@@ -28,6 +28,10 @@ class Viz {
     this.parentSelector = parentSelector;
     this.router = router;
     this.disablePanel = disablePanel;
+
+    if(this.disablePanel) {
+      $(parentSelector).find('*').removeClass('clickable').css('cursor', 'auto');
+    }
   }
 
   show() {
@@ -414,6 +418,7 @@ class Viz {
 
   /* No selection */
   deselect() {
+    if (this.disablePanel) return;
     this.router.navigate('');
     $('#legend').hide();
     closePanel();
