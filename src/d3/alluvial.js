@@ -17,25 +17,20 @@ function recreateAlluvial(viz, from, selector) {
   const dataFromNotNormalized = influencing.map(pair => pair[1]);
   const dataToNotNormalized = influenced.map(pair => pair[1]);
 
-  const fromSum =
-    dataFromNotNormalized.length > 0 ? dataFromNotNormalized.reduce((total, value) => total + value) : 0;
+  const fromSum = dataFromNotNormalized.length > 0 ? dataFromNotNormalized.reduce((total, value) => total + value) : 0;
   const toSum = dataToNotNormalized.length > 0 ? dataToNotNormalized.reduce((total, value) => total + value) : 0;
 
-  const fromOtherPresent = (fromSum < 1);
+  const fromOtherPresent = fromSum < 1;
   const dataFrom = dataFromNotNormalized;
-  if (fromOtherPresent)
-    dataFrom.push(1 - fromSum);
+  if (fromOtherPresent) dataFrom.push(1 - fromSum);
   const isocodesFrom = influencing.map(pair => pair[0]);
-  if (fromOtherPresent)
-    isocodesFrom.push(null);
+  if (fromOtherPresent) isocodesFrom.push(null);
 
-  const toOtherPresent = (toSum < 1);
+  const toOtherPresent = toSum < 1;
   const dataTo = dataToNotNormalized;
-  if (toOtherPresent)
-    dataTo.push(1 - toSum);
+  if (toOtherPresent) dataTo.push(1 - toSum);
   const isocodesTo = influenced.map(pair => pair[0]);
-  if (toOtherPresent)
-    isocodesTo.push(null);
+  if (toOtherPresent) isocodesTo.push(null);
 
   const width = $(`.right-panel ${selector} `).width() * 0.8;
   const height = width;
@@ -89,17 +84,15 @@ function recreateAlluvial(viz, from, selector) {
   }
 
   function getName(isFrom, i) {
-    if (isFrom)
-      return isocodesFrom[i] ? languagesCoo[isocodesFrom[i]].name : 'Others';
-    else
-      return isocodesTo[i] ? languagesCoo[isocodesTo[i]].name : 'Others';
+    if (isFrom) return isocodesFrom[i] ? languagesCoo[isocodesFrom[i]].name : 'Others';
+    return isocodesTo[i] ? languagesCoo[isocodesTo[i]].name : 'Others';
   }
 
   // Nodes & text
   function addNodes(data, dataCum, isocodes, group, isFrom) {
     const baseID = isFrom ? 0 : 1;
 
-    //Node
+    // Node
     group
       .selectAll('none')
       .data(dataCum)
@@ -109,10 +102,9 @@ function recreateAlluvial(viz, from, selector) {
       .attr('width', nodeWidth)
       .attr('height', (d, i) => data[i] * height / maxSum)
       .attr('y', (d, i) => getOffset(isFrom) + (d + i * margin) * height / maxSum)
-      .attr('class', (d, i) => isocodes[i] ? `node-${baseID}-${i} clickable` : `node-${baseID}-${i}`)
+      .attr('class', (d, i) => (isocodes[i] ? `node-${baseID}-${i} clickable` : `node-${baseID}-${i}`))
       .on('mouseover', (d, i) => {
-        if (!isocodes[i])
-          return;
+        if (!isocodes[i]) return;
 
         d3
           .select(`${selector} .node-${baseID}-${i}`)
@@ -121,8 +113,7 @@ function recreateAlluvial(viz, from, selector) {
           .attr('fill', '#F66');
       })
       .on('mouseout', (d, i) => {
-        if (!isocodes[i])
-          return;
+        if (!isocodes[i]) return;
 
         d3
           .select(`${selector} .node-${baseID}-${i}`)
@@ -131,15 +122,14 @@ function recreateAlluvial(viz, from, selector) {
           .attr('fill', '#37485E');
       })
       .on('click', (d, i) => {
-        if (!isocodes[i])
-          return;
+        if (!isocodes[i]) return;
 
         viz.navigateToLanguage(isocodes[i]);
       })
       .append('title')
       .text((d, i) => getName(isFrom, i));
 
-    //Language name
+    // Language name
     group
       .selectAll('none')
       .data(isocodes)
@@ -155,16 +145,16 @@ function recreateAlluvial(viz, from, selector) {
   addNodes(dataFrom, dataFromCum, isocodesFrom, gFrom, true);
   addNodes(dataTo, dataToCum, isocodesTo, gTo, false);
 
-  //Central node
+  // Central node
   gNodes
-    .append('rect') 
+    .append('rect')
     .attr('fill', '#BA5357')
     .attr('width', nodeWidth)
     .attr('height', height / maxSum)
     .attr('x', width / 2 - nodeWidth / 2)
     .attr('y', offsetMiddle);
 
-  //Central text
+  // Central text
   gNodes
     .append('text')
     .attr('dy', '6px')
@@ -201,7 +191,7 @@ function recreateAlluvial(viz, from, selector) {
       .data(paths)
       .enter()
       .append('path')
-      .attr('class', (d, i) => isocodes[i] ? `path-${baseID}-${i} clickable` : `path-${baseID}-${i}`)
+      .attr('class', (d, i) => (isocodes[i] ? `path-${baseID}-${i} clickable` : `path-${baseID}-${i}`))
       .attr('id', (d, i) => `path-${baseID}-${i}-${selector}`)
       .attr('fill', 'none')
       .attr('initial-stroke', (d, i) => d3.rgb(color(i / data.length)))
@@ -210,8 +200,7 @@ function recreateAlluvial(viz, from, selector) {
       .attr('stroke-width', (d, i) => data[i] * height / maxSum)
       .attr('d', lineGeneratorAlluvial)
       .on('mouseover', (d, i) => {
-        if (!isocodes[i])
-          return;
+        if (!isocodes[i]) return;
 
         d3
           .select(`${selector} .path-${baseID}-${i}`)
@@ -220,8 +209,7 @@ function recreateAlluvial(viz, from, selector) {
           .attr('stroke', '#F66');
       })
       .on('mouseout', (d, i) => {
-        if (!isocodes[i])
-          return;
+        if (!isocodes[i]) return;
 
         d3
           .select(`${selector} .path-${baseID}-${i}`)
@@ -230,8 +218,7 @@ function recreateAlluvial(viz, from, selector) {
           .attr('stroke', d3.select(`${selector} .path-${baseID}-${i}`).attr('initial-stroke'));
       })
       .on('click', (d, i) => {
-        if (!isocodes[i])
-          return;
+        if (!isocodes[i]) return;
 
         if (isFrom) {
           viz.navigateToLanguagePair(from, isocodes[i]);
@@ -241,8 +228,7 @@ function recreateAlluvial(viz, from, selector) {
       })
       .append('title')
       .text((d, i) => {
-        if (!isocodes[i])
-          return;
+        if (!isocodes[i]) return;
 
         if (isFrom) {
           return `${languagesCoo[isocodes[i]].name} ↔ ${languagesCoo[from].name}`;
@@ -250,7 +236,7 @@ function recreateAlluvial(viz, from, selector) {
         return `${languagesCoo[from].name} ↔ ${languagesCoo[isocodes[i]].name}`;
       });
 
-    //Arrow
+    // Arrow
     gPaths
       .selectAll('none')
       .data(paths)
