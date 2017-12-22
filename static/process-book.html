@@ -142,19 +142,19 @@
     <section>
         <h2 id="first_proto">Partial first prototype</h2>
         <p>
-        In the initial wireframe we had also discussed some interactions when hovering on language names on the map. In most cases, the amount of language points or edges depending on the user input is again too high to make this interaction appropriate. In short, it is practically impossible or even simply annoying to move the mouse away from any data on the map - the user would therefore always be highlighting data from something he did not actually select. This was by no means something important to the visualization, but rather a quick and easy way to get more information about languages without selecting them. We removed this entirely, and do not intend to add it again. However, by adding a router to the visualization, the user will be able to quickly push and pop his history and can therefore still rapidly get quick information about a language and still go back to his original selection.
+            In the initial wireframe we had also discussed some interactions when hovering on language names on the map. In most cases, the amount of language points or edges depending on the user input is again too high to make this interaction appropriate. In short, it is practically impossible or even simply annoying to move the mouse away from any data on the map - the user would therefore always be highlighting data from something he did not actually select. This was by no means something important to the visualization, but rather a quick and easy way to get more information about languages without selecting them. We removed this entirely, and do not intend to add it again. However, by adding a router to the visualization, the user will be able to quickly push and pop his history and can therefore still rapidly get quick information about a language and still go back to his original selection.
         </p>
 
         <p>
-        The bundled edges for each relationship between two languages was not a bad idea. However, given that we have these two clear levels of data, there is no actual point in having individual edges per relationship. In fact, it is more consistent to just have a single link between the two languages. This level of the visualization is not intended for detail at all. Of course, we need a way to get down to the detail, but this is definitely not the best approach. Clicking on a single edge is difficult, and doesn't really allow to explore the interesting words. Given the minimal benefit of this, we will continuing with single edges between languages instead of a bundle of edges. We still need to find an accurate way of representing the weights of these edges, it could be done by color or width for example. This is a particularly hard problem given the logarithmic number of words per language there is (as we saw in the data exploration).
+            The bundled edges for each relationship between two languages was not a bad idea. However, given that we have these two clear levels of data, there is no actual point in having individual edges per relationship. In fact, it is more consistent to just have a single link between the two languages. This level of the visualization is not intended for detail at all. Of course, we need a way to get down to the detail, but this is definitely not the best approach. Clicking on a single edge is difficult, and doesn't really allow to explore the interesting words. Given the minimal benefit of this, we will continuing with single edges between languages instead of a bundle of edges. We still need to find an accurate way of representing the weights of these edges, it could be done by color or width for example. This is a particularly hard problem given the logarithmic number of words per language there is (as we saw in the data exploration).
         </p>
 
         <p>
-        Now we can move on to the world level.
+            Now we can move on to the world level.
         </p>
 
         <p>
-        We are currently able to build and draw both the tree of all derived words for a given word and the tree of all words which constitute it's etymological origin. There are some obvious challenges which we had not thought about in the initial wireframe. In our data exploration we had only evaluated the depth of these trees, but not at all their number of words. This can lead to the problem where Latin words for example are not particularly deep, but are the origin of practically all European languages making the tree very wide. This is a problem we will have to spend additional time on and for which we do not have an immediate solution.
+            We are currently able to build and draw both the tree of all derived words for a given word and the tree of all words which constitute it's etymological origin. There are some obvious challenges which we had not thought about in the initial wireframe. In our data exploration we had only evaluated the depth of these trees, but not at all their number of words. This can lead to the problem where Latin words for example are not particularly deep, but are the origin of practically all European languages making the tree very wide. This is a problem we will have to spend additional time on and for which we do not have an immediate solution.
         </p>
     </section>
     <section>
@@ -175,19 +175,19 @@
             The figure above illustrates the core new direction for our visualization.
         </p>
         <p>
-        On the left side of it, we have illustrated our visualization as a simple state machine between the three levels (word, language and relation). The edges between the states are the aspects of the data we can use to switch between them.
+            On the left side of it, we have illustrated our visualization as a simple state machine between the three levels (word, language and relation). The edges between the states are the aspects of the data we can use to switch between them.
         </p>
         <p>
-        On the right side, there are extremely simple wireframes of each level.
+            On the right side, there are extremely simple wireframes of each level.
         </p>
         <p>
-        The language level will have a chord diagram of the largest influences the currently selected language has. Clicking on a specific relation will select it and bring the user to the relation level. The Sankey diagram will still remain here too, and will also have clickable relations. The reasoning behind adding a chord diagram is that it will allow the user to go to relations which do not directly involve the currently selected language. Otherwise he would have to go back to the map and search for the language for which he wants to know a relationship. This is clearly not ideal.
+            The language level will have a chord diagram of the largest influences the currently selected language has. Clicking on a specific relation will select it and bring the user to the relation level. The Sankey diagram will still remain here too, and will also have clickable relations. The reasoning behind adding a chord diagram is that it will allow the user to go to relations which do not directly involve the currently selected language. Otherwise he would have to go back to the map and search for the language for which he wants to know a relationship. This is clearly not ideal.
         </p>
         <p>
-        For the word level, we will simply add clickable edges on the word graph, so that the user can go to the language relation which holds that word relation.
+            For the word level, we will simply add clickable edges on the word graph, so that the user can go to the language relation which holds that word relation.
         </p>
         <p>
-        The relation level will hold a Sankey diagram as did the language level, but for each language in the relation. It will easily allow the user to navigate to other similar relations as well as compare how important a language is to another. More importantly, it will also have sampled words from each language which are part of the relation. This will fulfill the initial motivations behind adding the relation level.
+            The relation level will hold a Sankey diagram as did the language level, but for each language in the relation. It will easily allow the user to navigate to other similar relations as well as compare how important a language is to another. More importantly, it will also have sampled words from each language which are part of the relation. This will fulfill the initial motivations behind adding the relation level.
         </p>
     </section>
     <section>
@@ -226,18 +226,31 @@
         <p>
             As part of a feedback loop, we asked the initial users what they thought of this new version we propose. All agreed that it was much better than the two extreme solutions and only argued about how certain languages should be more/less prominent.
         </p>
+    </section>
+    <h2 id="peer_assessment">Peer assessment</h2>
+    <p>
+        <strong>Peer assessment by Arnaud Delamare:</strong> <br>
 
-        <p>
-            Peer assessment by Arnaud Delamare : <br>
+        <strong>Preparation:</strong> My teammates were prepared at each meeting, with their task of the week done.<br>
 
-            Preparation : My teammates were prepared at each meeting, with their task of the week done.<br>
+        <strong>Contribution:</strong> We each did an equal part of the project, and when a dilemma occured (for instance, a choice of color), we gave each other feedback on what we thought was best.<br>
 
-            Contribution : We each did an equal part of the project, and when a dilemma occured (for instance, a choice of color), we gave each other feedback on what we thought was best.<br>
+        <strong>Respect for others' ideas:</strong>  There was some discussion during the topic selection for this project, both of my teammates offered their own ideas, while giving suggestions on what could be improved.<br>
 
-            Respect for others' ideas : There was some discussion during the topic selection for this project, both of my teammates offered their own ideas, while giving suggestions on what could be improved.<br>
+        <strong>Felxibility:</strong> There was a slight disagreement concerning the selection of the topic, Teo wanted to do a viz about neural nets, but Nicolas and I preferred the current topic. In the end Teo was conviced by our arguments, and generously agreed on our topic.
+    </p>
+    <p>
+        <strong>Peer assessment by Nicolas Roussel:</strong> <br>
 
-            Flexibility : There was a slight disagreement concerning the selection of the topic, Teo wanted to do a viz about neural nets, but Nicolas and I preferred the current topic. In the end Teo was conviced by our arguments, and generously agreed on our topic.
-        </p>
+        <strong>Preparation:</strong> They were always prepared.<br>
+
+        <strong>Contribution:</strong> I do not feel like anyone was being counterproductive during the whole project.<br>
+
+        <strong>Respect for others' ideas:</strong> Yes, every new feature was discussed as a team.<br>
+
+        <strong>Felxibility:</strong> I do not recall any major disagreements which were blocking our progress.
+    </p>
+    <section>
     </section>
     <section>
         <h2 id="epilogue">Inspiration &amp; references</h2>
