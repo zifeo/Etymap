@@ -270,6 +270,7 @@ class Viz {
       this.projection([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude])
     );
 
+
     const minX = Math.min(...positions.map(p => p[0]));
     const maxX = Math.max(...positions.map(p => p[0]));
     const minY = Math.min(...positions.map(p => p[1]));
@@ -278,10 +279,10 @@ class Viz {
     const boundingWidth = maxX - minX;
     const boundingHeight = maxY - minY;
 
-    const realWidth = this.width - 600;
+    const realWidth = this.width - (this.disablePanel ? 0 : 600);
 
     const scale = Math.min(1 / Math.max(boundingWidth / (0.95 * realWidth), boundingHeight / (0.95 * this.height)), 30);
-    const translateX = this.width / 2 - scale * (maxX + minX) / 2 - 300;
+    const translateX = this.width / 2 - scale * (maxX + minX) / 2 - (this.disablePanel ? 0 : 300);
     const translateY = this.height / 2 - scale * (maxY + minY) / 2;
 
     this.svg
@@ -432,6 +433,19 @@ class Viz {
   navigateToLanguage(isocode) {
     if (this.disablePanel) return;
     this.router.navigate(`l/${isocode}`);
+  }
+
+  async latinExample() {
+    const lat = 'lat';
+    const langInfo = await Api.getLangData(lat);
+    this.mode = vizMode.Language;
+
+    this.resetHighlights();
+    this.addLanguageLines(langInfo);
+
+    const allIso = Object.keys(langNetwork.relation[langInfo.lang]);
+    allIso.push(langInfo.lang);
+    this.focusOn(allIso, langInfo.lang);
   }
 
   async selectLanguage(isocode) {

@@ -26,13 +26,9 @@
             Before getting into these secrets, let's remind ourselves of the general setting. Our world has seen many languages come and go, and are widely distributed around our globe. The small visualization below will let you explore the languages we will be discussing here.
         </p>
         <figure>
-            <iframe id="frame1" src="/" width="600" height="400" frameborder="0"></iframe>
-            <script type="application/javascript">
-                setTimeout(function() {
-                    //document.getElementById('frame1').contentWindow.viz.taFoncDeViz()
-                }, 1000)
-            </script>
-            <img src="img/story/languages_and_regions.png" alt="Wireframe of language level">
+            <iframe id="frame-all" src="/" width="750" height="400" frameborder="0">
+                <img src="img/story/languages_and_regions.png" alt="Languages and regions">
+            </iframe>
         </figure>
 
         <p>
@@ -41,11 +37,28 @@
             Actually, the links on this map show both kinds of relationships - the languages which were influenced by Latin and those which influenced Latin. Don't hesitate to click around and see this information for other languages than Latin.
         </p>
         <figure>
-            <img src="img/story/latin_everywhere.png" alt="Wireframe of language level">
+            <iframe id="frame-lat" src="/" width="750" height="400" frameborder="0">
+                <img src="img/story/latin_everywhere.png" alt="Latin everywhere">
+            </iframe>
+            <script type="application/javascript">
+              {
+                function load() {
+                  setTimeout(function() {
+                    var viz = document.getElementById('frame-lat').contentWindow.viz;
+                    if (viz && viz.latinExample) {
+                      viz.latinExample();
+                    } else {
+                      load()
+                    }
+                  }, 50)
+                }
+                load();
+              }
+            </script>
         </figure>
 
         <p>
-        We can now look a bit deeper into the data, namely a specific relationship between two languages....
+            We can now look a bit deeper into the data, namely a specific relationship between two languages....
         </p>
 
         <p>

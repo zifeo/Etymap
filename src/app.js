@@ -29,8 +29,8 @@ router
   .on('r/:lang1/:lang2', ({ lang1, lang2 }) => viz.selectLanguagePair(lang1, lang2))
   .resolve();
 
-if (isInFrame) {
-  $('.top-bar').hide();
+if (!isInFrame) {
+  $('.top-bar').fadeIn();
 }
 
 $('.ui.accordion').accordion({
