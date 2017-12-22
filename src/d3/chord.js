@@ -58,7 +58,7 @@ function recreateChord(viz, params, selector) {
     .append('g')
     .on('click', d => viz.navigateToLanguage(isocodes[d.index]));
 
-  //Outer nodes
+  // Outer nodes
   groups
     .append('path')
     .style('fill-opacity', '0.7')
@@ -83,7 +83,7 @@ function recreateChord(viz, params, selector) {
     .append('title')
     .text(d => languagesCoo[isocodes[d.index]].name);
 
-  //Ribbons
+  // Ribbons
   g
     .append('g')
     .attr('class', 'ribbons clickable')
