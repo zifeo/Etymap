@@ -417,6 +417,7 @@ class Viz {
 
   /* No selection */
   deselect() {
+    this.router.navigate('');
     $('#legend').hide();
     closePanel();
 
