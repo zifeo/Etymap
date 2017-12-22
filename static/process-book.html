@@ -58,7 +58,7 @@
             <img src="img/initial_wireframe/languageLevel.png" alt="Wireframe of language level">
         </figure>
         <p>
-            For the language level, there will be bundled edges between languages which are assigned to areas on the map. The edges will represent the relations between words of the linked languages. Above each language area there will be the name of the language assigned to it, it will also highlight the area when hovering on it. These names will be clickable and allow the user to select a language. By selecting a language, a pannel to the left of the map will appear which holds a Sankey diagram of the incoming and outgoing relations (per language) to the selected language. Hovering on this diagram will give additional numerical information to the user. Of course, the underlying map will have all the usual interactions one can expect from a map, namely dragging and zooming.
+            For the language level, there will be bundled edges between languages which are assigned to areas on the map. The edges will represent the relations between words of the linked languages. Above each language area there will be the name of the language assigned to it, it will also highlight the area when hovering on it. These names will be clickable and allow the user to select a language. By selecting a language, a panel to the left of the map will appear which holds a Sankey diagram of the incoming and outgoing relations (per language) to the selected language. Hovering on this diagram will give additional numerical information to the user. Of course, the underlying map will have all the usual interactions one can expect from a map, namely dragging and zooming.
             <br>
             We have chosen to use bundled edges as we are only interested in the distribution of relations per language at this level. For the same reason, the Sankey diagram is an appropriate visualization to have. The reason we want both to be shown at the same time is because it will allow the user to isolate a language. It also allows for easier comparisons between languages, because two languages might have similar distributions but could be geographically quite different - which will make it hard for the user to compare them. This Sankey diagram proposes a sort of "standard" representation of these relationships.
         </p>
@@ -99,7 +99,7 @@
             <img src="img/etymwn_dataset/figure1.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
-            The first insight is about the number of words per language. The dataset only holds words which have an etymological relationship, hence all other words are discarded. On Figure 1, we can see that due to this there are languages that have very few words. This could also be the result of a poorly documented language on wikitionary. Either way, we will have to deal with the tail of the distribution in the visualization.
+            The first insight is about the number of words per language. The dataset only holds words which have an etymological relationship, hence all other words are discarded. On Figure 1, we can see that due to this there are languages that have very few words. This could also be the result of a poorly documented language on Wikitionary. Either way, we will have to deal with the tail of the distribution in the visualization.
         </p>
         <figure>
             <img src="img/etymwn_dataset/figure2.png" alt="Wireframe diagram of word level.">
@@ -142,11 +142,11 @@
     <section>
         <h2 id="first_proto">Partial first prototype</h2>
         <p>
-        In the initial wireframe we had also discussed some interactions when hovering on language names on the map. In most cases, the amount of language points or edges depdending on the user input is again too high to make this interaction appropriate. In short, it is practically impossible or even simply annoying to move the mouse away from any data on the map - the user would therefore always be highlighting data from something he did not actually select. This was by no means something important to the visualization, but rather a quick and easy way to get more information about languages without selecting them. We removed this entirely, and do not intend to add it again. However, by adding a router to the visualization, the user will be able to quickly push and pop his history and can therefore still rapidly get quick information about a language and still go back to his original selection.
+        In the initial wireframe we had also discussed some interactions when hovering on language names on the map. In most cases, the amount of language points or edges depending on the user input is again too high to make this interaction appropriate. In short, it is practically impossible or even simply annoying to move the mouse away from any data on the map - the user would therefore always be highlighting data from something he did not actually select. This was by no means something important to the visualization, but rather a quick and easy way to get more information about languages without selecting them. We removed this entirely, and do not intend to add it again. However, by adding a router to the visualization, the user will be able to quickly push and pop his history and can therefore still rapidly get quick information about a language and still go back to his original selection.
         </p>
 
         <p>
-        The bundled edges for each relationship between two languages was not a bad idea. However, given that we have these two clear levels of data, there is no actual point in having individual edges per relationship. In fact, it is more consistent to just have a single link between the two languages. This level of the visualization is not intended for detail at all. Of course, we need a way to get down to the detail, but this is definitely not the best approach. Clicking on a single edge is difficult, and doesn't really allow to explore the interesting words. Given the minimal benefit of this, we will continuing with single edges between languages instead of a bundle of edges. We still need to find an accurate way of representing the weights of these edges, it could be done by color or width for example. This is a particulary hard problem given the logarithmic number of words per language there is (as we saw in the data exploration).
+        The bundled edges for each relationship between two languages was not a bad idea. However, given that we have these two clear levels of data, there is no actual point in having individual edges per relationship. In fact, it is more consistent to just have a single link between the two languages. This level of the visualization is not intended for detail at all. Of course, we need a way to get down to the detail, but this is definitely not the best approach. Clicking on a single edge is difficult, and doesn't really allow to explore the interesting words. Given the minimal benefit of this, we will continuing with single edges between languages instead of a bundle of edges. We still need to find an accurate way of representing the weights of these edges, it could be done by color or width for example. This is a particularly hard problem given the logarithmic number of words per language there is (as we saw in the data exploration).
         </p>
 
         <p>
@@ -154,19 +154,19 @@
         </p>
 
         <p>
-        We are currently able to build and draw both the tree of all derived words for a given word and the tree of all words which constitue it's etymoligcal origin. There are some obvious challenges which we had not thought about in the initial wireframe. In our data exploration we had only evaluated the depth of these trees, but not at all their number of words. This can lead to the problem where Latin words for example are not particularly deep, but are the origin of practically all European languages making the tree very wide. This is a problem we will have to spend additional time on and for which we do not have an immedaite solution.
+        We are currently able to build and draw both the tree of all derived words for a given word and the tree of all words which constitute it's etymological origin. There are some obvious challenges which we had not thought about in the initial wireframe. In our data exploration we had only evaluated the depth of these trees, but not at all their number of words. This can lead to the problem where Latin words for example are not particularly deep, but are the origin of practically all European languages making the tree very wide. This is a problem we will have to spend additional time on and for which we do not have an immediate solution.
         </p>
     </section>
     <section>
         <h2 id="refining_direction">Refining our visualization's direction</h2>
         <p>
-            From the previous prototype we already noticed and fixed some of the obvious flaws which are mostly related to usability. We will now take the time to also talk about what our visualizaiton is doing right/wrong more generally. These opinions are based on our own personal views of it aswell as feedback from users which had not heard about this project at all.
+            From the previous prototype we already noticed and fixed some of the obvious flaws which are mostly related to usability. We will now take the time to also talk about what our visualization is doing right/wrong more generally. These opinions are based on our own personal views of it as well as feedback from users which had not heard about this project at all.
         </p>
         <p>
-            The map plays an essential role in locating well-known relations, but it's hard to accurately display data on it without having a bias due to the projection, or other spatial constraints. We initially only wanted the side panels as places to give additional information, but in reality these should be used as the main source for precise measures. They are a core part of the visualizatoin and should therefore be more prominent, or at least more informative.
+            The map plays an essential role in locating well-known relations, but it's hard to accurately display data on it without having a bias due to the projection, or other spatial constraints. We initially only wanted the side panels as places to give additional information, but in reality these should be used as the main source for precise measures. They are a core part of the visualization and should therefore be more prominent, or at least more informative.
         </p>
         <p>
-            A second big change for our visualization, is the transition between words and languages. They initially seem quite closely related, but in reality for our visualization we need another layer in between them. The reason for this is that it's very interesting to inspect all words which are part of relathionship between two given languages. For example, it can be interesting to examine the words which are related to English and Japanese to understand their overall nature. We therefore want to add what we call a "relation level" which allows the user to specifically target an etymological relationship between two languages.
+            A second big change for our visualization, is the transition between words and languages. They initially seem quite closely related, but in reality for our visualization we need another layer in between them. The reason for this is that it's very interesting to inspect all words which are part of relationship between two given languages. For example, it can be interesting to examine the words which are related to English and Japanese to understand their overall nature. We therefore want to add what we call a "relation level" which allows the user to specifically target an etymological relationship between two languages.
         </p>
         <figure>
             <img src="img/refining_direction/state_machine_and_wireframe.jpg" alt="Wireframe diagram of word level.">
@@ -181,13 +181,13 @@
         On the right side, there are extremely simple wireframes of each level.
         </p>
         <p>
-        The language level will have a chord diagram of the largest influences the currently selected lanugage has. Clicking on a specific relation will select it and bring the user to the relation level. The Sankey diagram will still remain here too, and will also have clickable relations. The reasonning behind adding a chord diagram is that it will allow the user to go to relations which do not directly involve the currently selected language. Otherwise he would have to go back to the map and search for the language for which he wants to know a relationship. This is clearly not ideal.
+        The language level will have a chord diagram of the largest influences the currently selected language has. Clicking on a specific relation will select it and bring the user to the relation level. The Sankey diagram will still remain here too, and will also have clickable relations. The reasoning behind adding a chord diagram is that it will allow the user to go to relations which do not directly involve the currently selected language. Otherwise he would have to go back to the map and search for the language for which he wants to know a relationship. This is clearly not ideal.
         </p>
         <p>
         For the word level, we will simply add clickable edges on the word graph, so that the user can go to the language relation which holds that word relation.
         </p>
         <p>
-        The relation level will hold a Sankey diagram as did the language level, but for each language in the relation. It will easily allow the user to navigate to other similar relations aswell as compare how important a language is to another. More importantly, it will also have sampled words from each language which are part of the relation. This will fulfill the initial motivations behind adding the relation level.
+        The relation level will hold a Sankey diagram as did the language level, but for each language in the relation. It will easily allow the user to navigate to other similar relations as well as compare how important a language is to another. More importantly, it will also have sampled words from each language which are part of the relation. This will fulfill the initial motivations behind adding the relation level.
         </p>
     </section>
     <section>
@@ -199,13 +199,13 @@
             <img src="img/language_names/all_showing.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
-            The first approach was to show them all, but the overlapping was absolutely unreadable as you can see on the screenshot above. There are workarounds, we could have spaced some of the language points better and fixed the minimum zoom level such that we ensure that there is enough space between the points. But the drawbacks of these modifications are huge. The user would need to drag the map around more to get from a point A to a point B (because he can't zoom out anymore). He would also spend more time searching for a language point if we move it away from where it is traditionnaly known to be. These are particuarly bad downsides sice, as we established in the "Refining our visualization's direction" article, the map is usefull for quick switching and searching of languages. It would therefore be going directly against our goal.
+            The first approach was to show them all, but the overlapping was absolutely unreadable as you can see on the screenshot above. There are workarounds, we could have spaced some of the language points better and fixed the minimum zoom level such that we ensure that there is enough space between the points. But the drawbacks of these modifications are huge. The user would need to drag the map around more to get from a point A to a point B (because he can't zoom out anymore). He would also spend more time searching for a language point if we move it away from where it is traditionally known to be. These are particularly bad downsides since, as we established in the "Refining our visualization's direction" article, the map is useful for quick switching and searching of languages. It would therefore be going directly against our goal.
         </p>
         <figure>
             <img src="img/language_names/none.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
-            The second approach is the exact opposite, hide everyhing until it is selected or hovered. Obviously, the problem here is that it becomes a guessing and memory game. As a user, you will have to imagine what language is assigned to a point, and if you check it by hovering, you will have to remember until you do not need it anymore. Again, it goes without saying that this is completely defeating the purpose of our map.
+            The second approach is the exact opposite, hide everything until it is selected or hovered. Obviously, the problem here is that it becomes a guessing and memory game. As a user, you will have to imagine what language is assigned to a point, and if you check it by hovering, you will have to remember until you do not need it anymore. Again, it goes without saying that this is completely defeating the purpose of our map.
         </p>
         <p>
             As most things, the solution is neither black or white.
@@ -215,13 +215,13 @@
             Of course, there is no ideal solution, the previous paragraph simply establishes what we want/need. Now it's all about compromising.
         </p>
         <p>
-            The more we thought about it the more this problem looks like how Google Maps deals with location names. They also have to deal with well-known searched locations, aswell as more obscure places, and their solution is similar to what we describe above.
+            The more we thought about it the more this problem looks like how Google Maps deals with location names. They also have to deal with well-known searched locations, as well as more obscure places, and their solution is similar to what we describe above.
         </p>
         <figure>
             <img src="img/language_names/gradient.png" alt="Wireframe diagram of word level.">
         </figure>
         <p>
-            Unfortunately, we don't have a clear established hierarchy of well-known languages. However, we do have an established order of languages from their number of etymological relations. Our datasdet is also quite biased towards well-known languages - this is simple the nautre of Wikitionnary contributions. We can therefore use this as our metric to show language names. We have decided to use an opacity gradient instead of discrete steps to show the language names. This creates a nice smooth transition, and already gives the user the information if he's looking for it or doesn't stand out too much if he isn't looking for them.
+            Unfortunately, we don't have a clear established hierarchy of well-known languages. However, we do have an established order of languages from their number of etymological relations. Our dataset is also quite biased towards well-known languages - this is simple the nature of Wikitionnary contributions. We can therefore use this as our metric to show language names. We have decided to use an opacity gradient instead of discrete steps to show the language names. This creates a nice smooth transition, and already gives the user the information if he's looking for it or doesn't stand out too much if he isn't looking for them.
         </p>
         <p>
             As part of a feedback loop, we asked the initial users what they thought of this new version we propose. All agreed that it was much better than the two extreme solutions and only argued about how certain languages should be more/less prominent.
