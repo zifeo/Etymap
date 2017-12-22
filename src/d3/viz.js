@@ -690,17 +690,22 @@ class Viz {
 
     d3.selectAll('.svg-alluvial').remove();
 
+    // visibility needed to draw svg
+    $('.alluvial-rel .ui.attached.tab').addClass('active');
     this.setRightPanelInfoLanguagePairDiagram(iso1, '.first-svg-container');
     this.setRightPanelInfoLanguagePairDiagram(iso2, '.second-svg-container');
+    $('.alluvial-rel .ui.attached.tab.active:not(:first)').removeClass('active');
   }
 
   setRightPanelInfoLanguagePairDiagram(from, selector) {
-    $(`.right-panel ${selector} h5`).html(`Other relations for ${languagesCoo[from].name} (min. 5%)`); // Title
+    $(`.right-panel ${selector} h4`).html(`Other relations for ${languagesCoo[from].name} (min. 5%)`); // Title
 
     // Alluvial Diagram
 
-    const influencing = _.takeWhile(langNetwork.fromProportion[from], pair => pair[1] > 0.05); // only takes the influencing languages, which account for at least 5% of the words
-    const influenced = _.takeWhile(langNetwork.toProportion[from], pair => pair[1] > 0.05); // only takes the influenced languages, which account for at least 5% of the words
+    // only takes the influencing languages, which account for at least 5% of the words
+    const influencing = _.takeWhile(langNetwork.fromProportion[from], pair => pair[1] > 0.05);
+    // only takes the influenced languages, which account for at least 5% of the words
+    const influenced = _.takeWhile(langNetwork.toProportion[from], pair => pair[1] > 0.05);
 
     const dataFromNotNormalized = influencing.map(pair => pair[1]);
     const dataToNotNormalized = influenced.map(pair => pair[1]);
@@ -765,7 +770,7 @@ class Viz {
 
     // Graph
 
-    $(`.right-panel .word-panel .svg-container .h5`).html(`Parents & Children of ${wordInfo.word}`); // Title of the graph
+    $(`.right-panel .word-panel .svg-container .h4`).html(`Parents & Children of ${wordInfo.word}`); // Title of the graph
 
     recreateEtymology(this, wordInfo, false);
   }
