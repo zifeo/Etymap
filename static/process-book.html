@@ -103,22 +103,22 @@
             The dataset has eight different relations possible between two words. We are only interested in certain of them, as other might be ambiguous or not add any information to the etymological origins of words (i.e knowing that "nicely" is a derived form of "nice"). By performing this initial filter, we practically cut the dataset into half, having 2.7m relations remaining.
         </p>
         <figure>
-            <img src="img/etymwn_dataset/figure1.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure1.png">
         </figure>
         <p>
             The first insight is about the number of words per language. The dataset only holds words which have an etymological relationship, hence all other words are discarded. On Figure 1, we can see that due to this there are languages that have very few words. This could also be the result of a poorly documented language on Wikitionary. Either way, we will have to deal with the tail of the distribution in the visualization.
         </p>
         <figure>
-            <img src="img/etymwn_dataset/figure2.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure2.png">
         </figure>
         <p>
             The depth of the etymological tree for a given word is a very important aspect in our visualization. Depending on this depth the tree might be very large and hence given a sense of clutter which we will have to deal with. Figure 2 illustrates the depth of the tree for 250 words sampled uniformly from the whole dataset. The main insight we gain from this is that these trees are relatively shallow, and will therefore not be computationally difficult to draw. This could potentially allow us to draw trees of multiple words at the same time to gain other insights about the data.
         </p>
         <figure>
-            <img src="img/etymwn_dataset/figure3_1.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure3_1.png">
         </figure>
         <figure>
-            <img src="img/etymwn_dataset/figure3_2.png" alt="Wireframe diagram of word level.">
+            <img src="img/etymwn_dataset/figure3_2.png">
         </figure>
         <p>
             Finally, we explored the relationships for two languages in particular : German and French. Figure 3 illustrates the languages to which these are related (directly or indirectly) by sampling 250 words from the language and constructing their etymological tree. As described in our wireframe, we would have only wanted to plot this feature for directly related languages and not using the full tree as it is currently done in this figure. Given that there are not that many languages related even indirectly to a given language, we could adapt our visualization to show this feature instead or add it in.
@@ -176,7 +176,7 @@
             A second big change for our visualization, is the transition between words and languages. They initially seem quite closely related, but in reality for our visualization we need another layer in between them. The reason for this is that it's very interesting to inspect all words which are part of relationship between two given languages. For example, it can be interesting to examine the words which are related to English and Japanese to understand their overall nature. We therefore want to add what we call a "relation level" which allows the user to specifically target an etymological relationship between two languages.
         </p>
         <figure>
-            <img src="img/refining_direction/state_machine_and_wireframe.jpg" alt="Wireframe diagram of word level.">
+            <img src="img/refining_direction/state_machine_and_wireframe.jpg">
         </figure>
         <p>
             The figure above illustrates the core new direction for our visualization.
@@ -203,13 +203,13 @@
             We have already discussed how to display language names on the map quite a bit. We finally found a decent solution to this issue.
         </p>
         <figure>
-            <img src="img/language_names/all_showing.png" alt="Wireframe diagram of word level.">
+            <img src="img/language_names/all_showing.png">
         </figure>
         <p>
             The first approach was to show them all, but the overlapping was absolutely unreadable as you can see on the screenshot above. There are workarounds, we could have spaced some of the language points better and fixed the minimum zoom level such that we ensure that there is enough space between the points. But the drawbacks of these modifications are huge. The user would need to drag the map around more to get from a point A to a point B (because he can't zoom out anymore). He would also spend more time searching for a language point if we move it away from where it is traditionally known to be. These are particularly bad downsides since, as we established in the "Refining our visualization's direction" article, the map is useful for quick switching and searching of languages. It would therefore be going directly against our goal.
         </p>
         <figure>
-            <img src="img/language_names/none.png" alt="Wireframe diagram of word level.">
+            <img src="img/language_names/none.png">
         </figure>
         <p>
             The second approach is the exact opposite, hide everything until it is selected or hovered. Obviously, the problem here is that it becomes a guessing and memory game. As a user, you will have to imagine what language is assigned to a point, and if you check it by hovering, you will have to remember until you do not need it anymore. Again, it goes without saying that this is completely defeating the purpose of our map.
@@ -225,7 +225,7 @@
             The more we thought about it the more this problem looks like how Google Maps deals with location names. They also have to deal with well-known searched locations, as well as more obscure places, and their solution is similar to what we describe above.
         </p>
         <figure>
-            <img src="img/language_names/gradient.png" alt="Wireframe diagram of word level.">
+            <img src="img/language_names/gradient.png">
         </figure>
         <p>
             Unfortunately, we don't have a clear established hierarchy of well-known languages. However, we do have an established order of languages from their number of etymological relations. Our dataset is also quite biased towards well-known languages - this is simple the nature of Wikitionnary contributions. We can therefore use this as our metric to show language names. We have decided to use an opacity gradient instead of discrete steps to show the language names. This creates a nice smooth transition, and already gives the user the information if he's looking for it or doesn't stand out too much if he isn't looking for them.
@@ -256,7 +256,7 @@
         </p>
     </section>
     <section>
-        <h2 id="peer_assessment">Evaluation</h2>
+        <h2 id="evaluation">Evaluation</h2>
         <p>
             As we unfortunately come to the end of this project, it is time for us to evaluate our work.
         </p>
