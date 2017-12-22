@@ -29,6 +29,7 @@ class Viz {
     this.router = router;
     this.disablePanel = disablePanel;
 
+    this.elemID = 0;
     if(this.disablePanel) {
       $(parentSelector).find('*').removeClass('clickable').css('cursor', 'auto');
     }
@@ -167,14 +168,14 @@ class Viz {
     this.updateScaleAndOpacity();
   }
 
-  addLine(isocodes, strokeWidth, color, opacity, clickFct, title) {
+  addLine(isocodes, strokeWidth, color, opacity, clickFct, title, directed) {
     if (isocodes.length > 2) {
       const first = isocodes.slice();
       first.shift();
       const second = isocodes.slice();
       second.pop();
       const zipped = _.zip(first, second);
-      zipped.forEach(pair => this.addLine(pair, strokeWidth, color, opacity, clickFct));
+      zipped.forEach(pair => this.addLine(pair, strokeWidth, color, opacity, clickFct, title, directed));
       return;
     }
 
@@ -238,7 +239,8 @@ class Viz {
       .attr('stroke', color)
       .attr('stroke-opacity', opacity)
       .attr('stroke-width', strokeWidth)
-      .attr('class', 'languagePath');
+      .attr('class', 'languagePath')
+      .attr('id', `pathLine-${++this.elemID}`);
 
     if (clickFct) {
       path
@@ -246,6 +248,21 @@ class Viz {
         .on('click', clickFct)
         .append('title')
         .text(title);
+    }
+
+    if (directed && positionsGeoMiddle.length === 3) {
+
+      this.gPath
+       .append('text')
+       .attr('font-size', '4px')
+       .attr('fill', 'white')
+       .attr('dy', '1.35px')
+       .attr('opacity', 0.9)
+       .attr('text-anchor', 'middle')
+       .append('textPath')
+       .attr('startOffset', '50%')
+       .attr('xlink:href', (d, i) => `#pathLine-${this.elemID}`)
+       .text('>');
     }
 
     const length = Math.ceil(path.node().getTotalLength());
@@ -490,7 +507,8 @@ class Viz {
         'white',
         0.5,
         () => this.navigateToLanguagePair(isocode, otherLang),
-        `${languagesCoo[isocode].name} ↔ ${languagesCoo[otherLang].name}`
+        `${languagesCoo[isocode].name} ↔ ${languagesCoo[otherLang].name}`,
+        false
       );
     });
   }
@@ -527,7 +545,7 @@ class Viz {
     }
 
     this.removeAllLines();
-    this.addLine([iso1, iso2], 0.5 + value, 'white', 0.7);
+    this.addLine([iso1, iso2], 0.5 + value, 'white', 0.7, null, null, false);
   }
 
   /* Single word */
@@ -572,7 +590,7 @@ class Viz {
 
     if (parents.length === 0) {
       // no more ancestors
-      this.addLine(previousLangsCopy, 0.25, 'white', 1);
+      this.addLine(previousLangsCopy, 0.25, 'white', 1, null, null, true);
     }
     for (const i in parents) {
       this.recursiveAddWordLines(allIso, previousLangsCopy, parents[i]);
