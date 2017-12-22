@@ -12,9 +12,11 @@ Install Livereload [extension](http://livereload.com/extensions/) and extract `d
 pip3 install -r requirements.txt
 yarn
 yarn start dev
+# or
+yarn start prod
 ```
 
-Go to [localhost:5000](http://localhost:5000).
+The dev flavour is available on[localhost:5000](http://localhost:5000).
 
 ## Proposal
 
