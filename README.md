@@ -1,12 +1,16 @@
 # Etymap
 
-## Live prototype
+## Live version
 
-A live prototype is available [here](https://etymap.xyz/).
+A live version is available on [etymap.xyz](https://etymap.xyz).
+
+Watch the [screencast](https://www.youtube.com/watch?v=eECwmJ6InZc), read the [story](https://etymap.xyz/story) or discover the [process book](https://etymap.xyz/process-book).
+
+![Screenshot](./static/img/screen.png)
 
 ## Getting started
 
-Install Livereload [extension](http://livereload.com/extensions/) and extract `data.zip`.
+Install Livereload [extension](http://livereload.com/extensions/) and extract `data.7z`.
 
 ```shell
 pip3 install -r requirements.txt
@@ -16,25 +20,26 @@ yarn start dev
 yarn start prod
 ```
 
-The dev flavour is available on[localhost:5000](http://localhost:5000).
+The development flavour is available on [localhost:5000](http://localhost:5000).
 
-## Proposal
+## Build with
 
-We are planning to build an interactive map which illustrates the etymology of words. Etymology is a subject which spans across time and space, and therefore creates a challenging and interesting problem to visualize.
-
-In short, the main feature will allow the user to pick a word (or a group of words) and see its etymology as an insight (paths, directions, ancestors, periods, etc.) on the map. There are other interesting opportunities, for example, we could show words with different meanings which share a part of their etymology or other relations with them (synonyms, antonyms, homonyms).
-
-The target audience would be linguists, historians and more generally anyone curious about the words we use everyday. 
-
-Some similar work can be found on the "etymology maps" subreddit (https://www.reddit.com/r/etymologymaps/). However most the vizualisation are not interactive and only project one aspect of the data.
-
-## Main dataset
-
-http://www1.icsi.berkeley.edu/~demelo/etymwn
-
-This dataset describes the relations between words: derivations (from or to), etymological relations and variations. We will also use other ISO datasets to get the mappings between language codes to their actual name.
+- Jupyter, http://jupyter.org/
+- Flask, http://flask.pocoo.org/
+- D3 Data-Driven Documents, https://d3js.org/
+- Semantic UI, https://semantic-ui.com/
+- Lodash, https://lodash.com/
+- Jquery, https://jquery.org/
+- Navigo, https://github.com/krasimir/navigo
 
 ## References
 
-- http://www1.icsi.berkeley.edu/~demelo/etymwn
-- https://www.wiktionary.org
+- Mledoze, Countries, https://github.com/mledoze/countries
+- Gerard de Melo, Etymological Wordnet: Tracing the History of Words, 2014, http://www1.icsi.berkeley.edu/~demelo/etymwn
+- Glottolog, Languages coordinates, http://glottolog.org
+- SIL ISO 639-3, Macrolanguage mappings, www.sil.org/iso639-3
+- Yago-Naga, UWN / MENTA: Towards a Universal Multilingual Wordnet, https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/uwn/
+
+## License
+
+The project is licensed under MIT. Datasets follow their respective licensing schemes and are not be assimilated to the processing.
