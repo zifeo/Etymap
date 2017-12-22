@@ -269,25 +269,34 @@ class Viz {
 
     this.checkCollisions();
 
-    if (isocodes.length < 2) return;
-
     const positions = isocodes.map(isocode =>
       this.projection([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude])
     );
 
-    const minX = Math.min(...positions.map(p => p[0]));
-    const maxX = Math.max(...positions.map(p => p[0]));
-    const minY = Math.min(...positions.map(p => p[1]));
-    const maxY = Math.max(...positions.map(p => p[1]));
-
-    const boundingWidth = maxX - minX;
-    const boundingHeight = maxY - minY;
-
     const realWidth = this.width - (this.disablePanel ? 0 : 600);
 
-    const scale = Math.min(1 / Math.max(boundingWidth / (0.95 * realWidth), boundingHeight / (0.95 * this.height)), 30);
-    const translateX = this.width / 2 - scale * (maxX + minX) / 2 - (this.disablePanel ? 0 : 300);
-    const translateY = this.height / 2 - scale * (maxY + minY) / 2;
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+
+    if (isocodes.length === 1) {
+      scale = 30;
+      translateX = this.width / 2 - scale * positions[0][0] - (this.disablePanel ? 0 : 300);
+      translateY = this.height / 2 - scale * positions[0][1];
+    }
+    else {
+      const minX = Math.min(...positions.map(p => p[0]));
+      const maxX = Math.max(...positions.map(p => p[0]));
+      const minY = Math.min(...positions.map(p => p[1]));
+      const maxY = Math.max(...positions.map(p => p[1]));
+
+      const boundingWidth = maxX - minX;
+      const boundingHeight = maxY - minY;
+
+      scale = Math.min(1 / Math.max(boundingWidth / (0.85 * realWidth), boundingHeight / (0.95 * this.height)), 30);
+      translateX = this.width / 2 - scale * (maxX + minX) / 2 - (this.disablePanel ? 0 : 300);
+      translateY = this.height / 2 - scale * (maxY + minY) / 2;
+    }
 
     this.svg
       .transition()
@@ -626,8 +635,7 @@ class Viz {
     $(`.language-panel .svg-chord-from-container`).show();
 
     function getMatrixAndIsocodes(key) {
-      const isocodes = _.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]);
-      isocodes.push(isocode);
+      const isocodes = [isocode].concat(_.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]));
 
       const matrixRelations = [];
       isocodes.forEach(first => {
@@ -788,7 +796,7 @@ class Viz {
     if (wordInfo.translations.length === 0) {
       const clone = cloneTemplate(synonymTemplate);
 
-      clone.html(`<strong>No translations for ${wordInfo.word}</strong>`);
+      clone.html(`No translations for ${wordInfo.word}`);
       clone.removeClass('clickable');
 
       $(`.right-panel .translations-list`).append(clone);

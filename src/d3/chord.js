@@ -38,7 +38,7 @@ function recreateChord(viz, params, selector) {
   const color = d3
     .scaleLinear()
     .domain([0, 1, 2, 3, 4])
-    .range(['#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#BA252A']);
+    .range(['#BA252A', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']);
 
   function getColor(index) {
     return d3.rgb(color(index));
@@ -126,7 +126,7 @@ function recreateChord(viz, params, selector) {
       }`;
     })
     .style('text-anchor', 'middle')
-    .style('font-weight', d => (d.index !== 4 ? 'normal' : 'bolder'))
+    .style('font-weight', d => (d.index !== 0 ? 'normal' : 'bolder'))
     .text(d => languagesCoo[isocodes[d.index]].name);
 }
 
