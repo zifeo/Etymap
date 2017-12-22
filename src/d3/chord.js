@@ -56,7 +56,7 @@ function recreateChord(viz, params, selector) {
     .data(chords => chords.groups)
     .enter()
     .append('g')
-     .on('click', d => viz.navigateToLanguage(isocodes[d.index]));
+    .on('click', d => viz.navigateToLanguage(isocodes[d.index]));
 
   groups
     .append('path')
@@ -115,16 +115,18 @@ function recreateChord(viz, params, selector) {
   groups
     .append('text')
     .attr('dy', '.35em')
-    .attr(
-      'transform',
-      d => {
-        const mean = (d.startAngle + d.endAngle) / 2;
-        return `translate(${outerRadius * 1.05 * Math.cos(-Math.PI / 2 + mean)}, ${outerRadius * 1.05 * Math.sin(-Math.PI / 2 + mean)})` +
-                (mean > Math.PI / 2 && mean < 3 * Math.PI / 2 ? `rotate(${mean * 180 / Math.PI + 180})`  : `rotate(${mean * 180 / Math.PI})`)
-      }
-    )
+    .attr('transform', d => {
+      const mean = (d.startAngle + d.endAngle) / 2;
+      return `translate(${outerRadius * 1.05 * Math.cos(-Math.PI / 2 + mean)}, ${outerRadius *
+        1.05 *
+        Math.sin(-Math.PI / 2 + mean)})${
+        mean > Math.PI / 2 && mean < 3 * Math.PI / 2
+          ? `rotate(${mean * 180 / Math.PI + 180})`
+          : `rotate(${mean * 180 / Math.PI})`
+      }`;
+    })
     .style('text-anchor', 'middle')
-    .style('font-weight', d => d.index !== 4 ? 'normal' : 'bolder')
+    .style('font-weight', d => (d.index !== 4 ? 'normal' : 'bolder'))
     .text(d => languagesCoo[isocodes[d.index]].name);
 }
 

@@ -120,8 +120,8 @@ function recreateAlluvial(viz, from, selector, dataFrom, isocodesFrom, dataTo, i
     .attr('dy', '6px')
     .attr('font-size', '20px')
     .attr('text-anchor', 'middle')
-    .attr('transform', `translate(${width/2}, ${height/2})rotate(-90)`)
-    .text(languagesCoo[from].name)
+    .attr('transform', `translate(${width / 2}, ${height / 2})rotate(-90)`)
+    .text(languagesCoo[from].name);
 
   // Links
   const fromPaths = [];

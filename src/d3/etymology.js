@@ -196,7 +196,7 @@ function recreateEtymology(viz, wordInfo) {
       .append('path')
       .attr('fill', 'none')
       .attr('stroke', '#AAA')
-      .attr('stroke-width', d => diffLang(d) ? 7 : 3)
+      .attr('stroke-width', d => (diffLang(d) ? 7 : 3))
       .attr('id', d => `pathLink-${d.id}`)
       .attr(
         'd',
@@ -207,14 +207,14 @@ function recreateEtymology(viz, wordInfo) {
           .x(d => d.x) // reversed as the tree is horizontal
           .y(d => d.y)
       )
-      .attr('class', d => diffLang(d) ? 'clickable' : '')
+      .attr('class', d => (diffLang(d) ? 'clickable' : ''))
       .on('click', d => {
         if (diffLang(d)) {
           viz.navigateToLanguagePair(d.data.lang, d.parent.data.lang);
         }
       })
       .append('title')
-      .text(d => diffLang(d) ? `${languagesCoo[d.data.lang].name} ↔ ${languagesCoo[d.parent.data.lang].name}` : '');
+      .text(d => (diffLang(d) ? `${languagesCoo[d.data.lang].name} ↔ ${languagesCoo[d.parent.data.lang].name}` : ''));
 
     function diffLang(d) {
       return d.data.lang !== d.parent.data.lang;

@@ -212,7 +212,7 @@ class Viz {
         ]);
       } else {
         const vec = [positionsGeo[i][0] - positionsGeo[i + 1][0], positionsGeo[i][1] - positionsGeo[i + 1][1]];
-        const length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1])
+        const length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
         const normal = [-vec[0], vec[1]];
         if (normal[1] < 0) {
           normal[0] = -normal[0];
@@ -237,9 +237,10 @@ class Viz {
       .attr('class', 'languagePath');
 
     if (clickFct) {
-      path.attr('class', 'languagePath clickable')
-       .on('click', clickFct)
-       .append('title')
+      path
+        .attr('class', 'languagePath clickable')
+        .on('click', clickFct)
+        .append('title')
         .text(title);
     }
 
@@ -269,7 +270,6 @@ class Viz {
     const positions = isocodes.map(isocode =>
       this.projection([languagesCoo[isocode].longitude, languagesCoo[isocode].latitude])
     );
-
 
     const minX = Math.min(...positions.map(p => p[0]));
     const maxX = Math.max(...positions.map(p => p[0]));
@@ -472,8 +472,13 @@ class Viz {
     Object.keys(langNetwork.relationProportion[isocode]).forEach(otherLang => {
       const value = langNetwork.relationProportion[isocode][otherLang];
 
-      this.addLine([isocode, otherLang], 0.5 + value, 'white', 0.5, () =>
-        this.navigateToLanguagePair(isocode, otherLang), `${languagesCoo[isocode].name} ↔ ${languagesCoo[otherLang].name}`
+      this.addLine(
+        [isocode, otherLang],
+        0.5 + value,
+        'white',
+        0.5,
+        () => this.navigateToLanguagePair(isocode, otherLang),
+        `${languagesCoo[isocode].name} ↔ ${languagesCoo[otherLang].name}`
       );
     });
   }

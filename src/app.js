@@ -6,7 +6,7 @@ import 'babel-polyfill';
 import $ from 'jquery';
 import Navigo from 'navigo';
 import Viz from './d3/viz';
-import { inFrame } from "./utils";
+import { inFrame } from './utils';
 
 (() => {
   // dirty hack avoiding babel to reorganise imports
