@@ -368,11 +368,6 @@ class Viz {
           .select(`#languageText-${obj.iso}`)
           .attr('pointer-events', 'none')
           .attr('opacity', 0);
-
-        this.g
-          .select(`#languageCircle-${obj.iso}`)
-          .attr('pointer-events', 'none')
-          .attr('opacity', 0);
       }
     });
   }
@@ -762,7 +757,7 @@ class Viz {
       const clone = cloneTemplate(synonymTemplate);
 
       clone.html(pair[1]);
-      clone.click(() => this.navigateToWord(pair[0], pair[1]));
+      clone.click(() => this.navigateToWord(pair[1], pair[0]));
 
       $(`.right-panel .synonyms-list`).append(clone);
     });
@@ -777,8 +772,6 @@ class Viz {
 
     _.take(wordInfo.translations, 5).forEach(pair => {
       const clone = cloneTemplate(synonymTemplate);
-
-      console.log(pair)
 
       clone.html(`${pair[1]} (${languagesCoo[pair[0]].name})`);
       clone.click(() => this.navigateToWord(pair[1], pair[0]));
