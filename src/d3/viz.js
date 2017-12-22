@@ -37,7 +37,7 @@ class Viz {
 
   show() {
     this.mode = vizMode.None;
-    this.selectedIsocodes = [];
+    this.selectedIsocodes = []; //isocodes the viz is focused on
 
     this.setUpSVG();
     this.addGeoJson();
@@ -216,6 +216,7 @@ class Viz {
           positionsGeo[i][1] + 0.5 * Math.sin(second),
         ]);
       } else {
+        //curvature for edges
         const vec = [positionsGeo[i][0] - positionsGeo[i + 1][0], positionsGeo[i][1] - positionsGeo[i + 1][1]];
         const length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
         const normal = [-vec[0], vec[1]];
@@ -250,7 +251,7 @@ class Viz {
         .text(title);
     }
 
-    if (directed && positionsGeoMiddle.length === 3) {
+    if (directed && positionsGeoMiddle.length === 3) { //arrow for direction
 
       this.gPath
        .append('text')
@@ -271,7 +272,7 @@ class Viz {
       .attr('stroke-dasharray', `${length} ${length}`)
       .attr('stroke-dashoffset', length)
       .transition()
-      .duration(1000) // We animate the path
+      .duration(1000) //animation for the path
       .attr('stroke-dashoffset', 0);
   }
 
@@ -382,6 +383,7 @@ class Viz {
       }
     });
 
+    //sort the languages by number of words so that the most important ones are always visible
     const sorted = _.sortBy(bboxArray, obj => -langNetwork.stats[obj.iso].count);
     if (mainObj) {
       sorted.unshift(mainObj);
@@ -590,7 +592,7 @@ class Viz {
 
     if (parents.length === 0) {
       // no more ancestors
-      this.addLine(previousLangsCopy, 0.25, 'white', 1, null, null, true);
+      this.addLine(previousLangsCopy.length === 2 ? _.reverse(previousLangsCopy) : previousLangsCopy, 0.25, 'white', 1, null, null, true);
     }
     for (const i in parents) {
       this.recursiveAddWordLines(allIso, previousLangsCopy, parents[i]);
@@ -615,15 +617,16 @@ class Viz {
 
     $(`.right-panel .panel-title`).html(languagesCoo[isocode].name); // Title
 
-    $(`.right-panel .mean`).html(langNetwork.stats[isocode].mean.toFixed(2));
-    $(`.right-panel .median`).html(langNetwork.stats[isocode].percentile50.toFixed(2));
+    $(`.right-panel .mean`).html(langNetwork.stats[isocode].mean.toFixed(2)); //mean
+    $(`.right-panel .median`).html(langNetwork.stats[isocode].percentile50.toFixed(2)); //median
     $(`.right-panel .most-used-letter`).html(
       _.take(_.sortBy(langNetwork.stats[isocode].histogram, pair => -pair[1]), 1).map(pair => pair[0].toUpperCase())[0]
-    );
+    ); //most used letter
 
     const sampleTemplate = $(`.right-panel .sample-panel .template`);
     sampleTemplate.hide();
 
+    //samples
     _.take(langInfo.samples, 6).forEach(word => {
       const clone = cloneTemplate(sampleTemplate);
 
@@ -641,8 +644,8 @@ class Viz {
       $(`.right-panel .sample-panel`).append(clone);
     }
 
+    //Alluvial Diagram
     d3.selectAll('.svg-alluvial').remove();
-
     recreateAlluvial(this, isocode, `.language-panel .svg-container`);
 
     // Chord Diagram
@@ -688,12 +691,13 @@ class Viz {
     $('.right-panel .language-pair-panel .first').html(languagesCoo[iso1].name);
     $('.right-panel .language-pair-panel .second').html(languagesCoo[iso2].name);
 
-    $('.right-panel .language-pair-panel .mean-first').html(langNetwork.stats[iso1].mean.toFixed(2));
+    $('.right-panel .language-pair-panel .mean-first').html(langNetwork.stats[iso1].mean.toFixed(2)); //mean
     $('.right-panel .language-pair-panel .mean-second').html(langNetwork.stats[iso2].mean.toFixed(2));
 
-    $('.right-panel .language-pair-panel .median-first').html(langNetwork.stats[iso1].percentile50.toFixed(2));
-    $('.right-panel .language-pair-panel .median-second').html(langNetwork.stats[iso2].percentile50.toFixed(2));
+    $('.right-panel .language-pair-panel .median-first').html(langNetwork.stats[iso1].percentile50.toFixed(2)); //median
+    $('.right-panel .language-pair-panel .median-second').html(langNetwork.stats[iso2].percentile50.toFixed(2)); 
 
+    //Most used letters
     $('.right-panel .language-pair-panel .letters-first').html(
       _.take(_.sortBy(langNetwork.stats[iso1].histogram, pair => -pair[1]), 3)
         .map(pair => pair[0].toUpperCase())
@@ -708,6 +712,7 @@ class Viz {
     const wordTemplate = $(`.right-panel .first-samples-list .template`);
     wordTemplate.hide();
 
+    //Samples for first language
     _.take(info1To2.samples, 6).forEach(word => {
       const clone = cloneTemplate(wordTemplate);
 
@@ -725,6 +730,7 @@ class Viz {
       $(`.right-panel first-samples-list`).append(clone);
     }
 
+    //Samples for second language
     _.take(info2To1.samples, 6).forEach(word => {
       const clone = cloneTemplate(wordTemplate);
 
@@ -741,6 +747,8 @@ class Viz {
 
       $(`.right-panel second-samples-list`).append(clone);
     }
+
+    //Alluvial Diagrams
 
     d3.selectAll('.svg-alluvial').remove();
 
@@ -766,6 +774,7 @@ class Viz {
 
     $(`.right-panel .word-panel h2`).html(wordInfo.word); // Title
 
+    //Homographs
     const homographTemplate = $(`.right-panel .homographs-list .template`);
     homographTemplate.hide();
 
@@ -783,6 +792,7 @@ class Viz {
       $(`.right-panel .homographs-list`).append(clone);
     });
 
+    //Synonyms
     const synonymTemplate = $(`.right-panel .synonyms-list .template`);
     synonymTemplate.hide();
 
@@ -803,6 +813,7 @@ class Viz {
       $(`.right-panel .synonyms-list`).append(clone);
     }
 
+    //Translations
     _.take(wordInfo.translations, 5).forEach(pair => {
       const clone = cloneTemplate(synonymTemplate);
 
@@ -820,11 +831,9 @@ class Viz {
       $(`.right-panel .translations-list`).append(clone);
     }
 
-    // Graph
+    // Etymology tree 
 
-    // Title of the graph
-    $(`.right-panel .word-panel .svg-container .h4`).html(`Parents & Children of ${wordInfo.word}`);
-
+    $(`.right-panel .word-panel .svg-container .h4`).html(`Parents & Children of ${wordInfo.word}`); //title
     recreateEtymology(this, wordInfo, false);
   }
 }

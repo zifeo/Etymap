@@ -23,7 +23,7 @@ function recreateEtymology(viz, wordInfo) {
   treeWidth.parents[0] = 0;
   treeWidth.children[0] = 0;
 
-  function computeMaxDepth(obj, newDepth, key) {
+  function computeMaxDepth(obj, newDepth, key) { //Computes the maximum depth for the trees
     const parents = obj[1];
     if (maxDepth[key] < newDepth) {
       maxDepth[key] = newDepth;
@@ -53,7 +53,7 @@ function recreateEtymology(viz, wordInfo) {
 
   d3.select(`.right-panel .word-panel .svg-container .svg-tree`).remove();
 
-  function recursiveCreateData(obj, key) {
+  function recursiveCreateData(obj, key) { //Maps the server output to d3-friendly format
     const lang = obj[0][0];
     const word = obj[0][1];
     const parents = obj[1];
@@ -94,9 +94,11 @@ function recreateEtymology(viz, wordInfo) {
   createHalfTree('parents');
   createHalfTree('children');
 
-  d3.select('#gEty-parents-0').remove(); // Remove duplicate node
+  d3.select('#gEty-parents-0').remove(); // Remove duplicate central node
 
   function smartTrim(relatives, lang) {
+    /* Is used if a word has many descendants from the same language, in for instance,
+    latin declension, or French conjugation */
     const differentLangs = relatives.filter(o => o[0][0] !== lang);
     const sameLang = _.take(relatives.filter(o => o[0][0] === lang), 3);
     return sameLang.concat(differentLangs);
@@ -113,6 +115,7 @@ function recreateEtymology(viz, wordInfo) {
     const gPaths = g.append('g');
     const gNodes = g.append('g');
 
+    //To avoid collisions, we increase the width based on the maximum width of the graph
     const tree = d3.tree().size([Math.max(maxWidth * width / 5, width), maxDepth[key] / totalDepth]);
 
     const root = d3.hierarchy(data, d => d.parents);
@@ -133,7 +136,7 @@ function recreateEtymology(viz, wordInfo) {
       d.y = height * (maxDepth.children + depth + 1) / (totalDepth + 2);
 
       if (d.depth === 0) {
-        d.x = width / 2;
+        d.x = width / 2; //The central node is always at the same position
       }
     });
 
@@ -150,6 +153,7 @@ function recreateEtymology(viz, wordInfo) {
       return depth === 0 ? '#F66' : key === 'children' ? '#ff7f00' : '#76B5DE';
     }
 
+    //Circles
     nodes
       .append('circle')
       .attr('r', d => (d.depth === 0 ? 20 : 10))
@@ -175,12 +179,14 @@ function recreateEtymology(viz, wordInfo) {
       })
       .on('click', d => viz.navigateToWord(d.data.name, d.data.lang));
 
+    //Words text
     nodes
       .append('text')
       .attr('dy', d => (d.depth === 0 ? '-25px' : '-15px'))
       .attr('text-anchor', 'middle')
       .text(d => d.data.name);
 
+    //Language name
     nodes
       .append('text')
       .attr('dy', d => (d.depth === 0 ? '33px' : '23px'))
@@ -189,6 +195,7 @@ function recreateEtymology(viz, wordInfo) {
       .text(d => languagesCoo[d.data.lang].name)
       .on('click', d => viz.navigateToLanguage(d.data.lang));
 
+    //Links
     gPaths
       .selectAll('none')
       .data(dataLinks, d => d.id)

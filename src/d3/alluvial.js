@@ -98,6 +98,8 @@ function recreateAlluvial(viz, from, selector) {
   // Nodes & text
   function addNodes(data, dataCum, isocodes, group, isFrom) {
     const baseID = isFrom ? 0 : 1;
+
+    //Node
     group
       .selectAll('none')
       .data(dataCum)
@@ -137,6 +139,7 @@ function recreateAlluvial(viz, from, selector) {
       .append('title')
       .text((d, i) => getName(isFrom, i));
 
+    //Language name
     group
       .selectAll('none')
       .data(isocodes)
@@ -152,14 +155,16 @@ function recreateAlluvial(viz, from, selector) {
   addNodes(dataFrom, dataFromCum, isocodesFrom, gFrom, true);
   addNodes(dataTo, dataToCum, isocodesTo, gTo, false);
 
+  //Central node
   gNodes
-    .append('rect') // Central node
+    .append('rect') 
     .attr('fill', '#BA5357')
     .attr('width', nodeWidth)
     .attr('height', height / maxSum)
     .attr('x', width / 2 - nodeWidth / 2)
     .attr('y', offsetMiddle);
 
+  //Central text
   gNodes
     .append('text')
     .attr('dy', '6px')
@@ -245,6 +250,7 @@ function recreateAlluvial(viz, from, selector) {
         return `${languagesCoo[from].name} ↔ ${languagesCoo[isocodes[i]].name}`;
       });
 
+    //Arrow
     gPaths
       .selectAll('none')
       .data(paths)
