@@ -115,7 +115,7 @@ class Viz {
   addAllLanguagesPoints() {
     const gCircle = this.g
       .selectAll('none')
-      .data(allLanguages)
+      .data(_.sortBy(allLanguages, iso => langNetwork.stats[iso] ? langNetwork.stats[iso].count : 1))
       .enter()
       .append('g')
       .attr(
@@ -401,6 +401,8 @@ class Viz {
 
     $('#legend .first .text').html(`${languagesCoo[iso1].name}-speaking countries`);
 
+    $('#legend .circle .text').html(`Languages approximate location`);
+
     if (this.mode === vizMode.Language) {
       $('#legend .second').hide();
     } else {
@@ -601,7 +603,7 @@ class Viz {
     if (langInfo.samples.length === 0) {
       const clone = cloneTemplate(sampleTemplate);
 
-      clone.html(`<strong>No samples for ${languagesCoo[isocode].name}</strong>`);
+      clone.html(`No samples for ${languagesCoo[isocode].name}`);
       clone.removeClass('clickable');
 
       $(`.right-panel .sample-panel`).append(clone);
@@ -686,7 +688,7 @@ class Viz {
     if (info1To2.samples.length === 0) {
       const clone = cloneTemplate(wordTemplate);
 
-      clone.html(`<strong>No samples for ${languagesCoo[iso1].name}</strong>`);
+      clone.html(`No samples for ${languagesCoo[iso1].name}`);
       clone.removeClass('clickable');
 
       $(`.right-panel first-samples-list`).append(clone);
@@ -703,7 +705,7 @@ class Viz {
     if (info2To1.samples.length === 0) {
       const clone = cloneTemplate(wordTemplate);
 
-      clone.html(`<strong>No samples for ${languagesCoo[iso2].name}</strong>`);
+      clone.html(`No samples for ${languagesCoo[iso2].name}`);
       clone.removeClass('clickable');
 
       $(`.right-panel second-samples-list`).append(clone);
@@ -740,7 +742,7 @@ class Viz {
       const clone = cloneTemplate(homographTemplate);
 
       if (lang === wordInfo.lang) {
-        clone.html(`<strong>${languagesCoo[lang].name}</strong>`);
+        clone.html(`${languagesCoo[lang].name}`);
       } else {
         clone.html(languagesCoo[lang].name);
       }
@@ -764,7 +766,7 @@ class Viz {
     if (wordInfo.synonyms.length === 0) {
       const clone = cloneTemplate(synonymTemplate);
 
-      clone.html(`<strong>No synonyms for ${wordInfo.word}</strong>`);
+      clone.html(`No synonyms for ${wordInfo.word}`);
       clone.removeClass('clickable');
 
       $(`.right-panel .synonyms-list`).append(clone);
