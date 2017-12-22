@@ -33,7 +33,7 @@ function recreateChord(viz, params, selector) {
     .innerRadius(innerRadius)
     .outerRadius(outerRadius);
 
-  const ribbon = d3.ribbon().radius(innerRadius);
+  const ribbon = d3.ribbon().radius(innerRadius * 1);
 
   const color = d3
     .scaleLinear()
@@ -117,11 +117,13 @@ function recreateChord(viz, params, selector) {
     .attr('dy', '.35em')
     .attr(
       'transform',
-      d =>
-        `rotate(${(d.startAngle + d.endAngle) * 90 / Math.PI - 90})` +
-        `translate(${outerRadius * 1.05})${d.startAngle + d.endAngle > 2 * Math.PI ? 'scale(-1)' : ''}`
+      d => {
+        const mean = (d.startAngle + d.endAngle) / 2;
+        return `translate(${outerRadius * 1.05 * Math.cos(-Math.PI / 2 + mean)}, ${outerRadius * 1.05 * Math.sin(-Math.PI / 2 + mean)})` +
+                (mean > Math.PI / 2 && mean < 3 * Math.PI / 2 ? `rotate(${mean * 180 / Math.PI + 180})`  : `rotate(${mean * 180 / Math.PI})`)
+      }
     )
-    .style('text-anchor', d => (d.startAngle + d.endAngle > 2 * Math.PI ? 'end' : null))
+    .style('text-anchor', 'middle')
     .text(d => languagesCoo[isocodes[d.index]].name);
 }
 
