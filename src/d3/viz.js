@@ -12,7 +12,7 @@ import { recreateEtymology } from './etymology';
 
 const languagesCoo = langNetwork.locations;
 
-const lineGenerator = d3.line().curve(d3.curveCardinal);
+const lineGenerator = d3.line().curve(d3.curveBasis);
 
 const vizMode = {
   None: 0,
@@ -163,7 +163,7 @@ class Viz {
     this.updateScaleAndOpacity();
   }
 
-  addLine(isocodes, strokeWidth, color, opacity, clickFct) {
+  addLine(isocodes, strokeWidth, color, opacity, clickFct, title) {
     if (isocodes.length > 2) {
       const first = isocodes.slice();
       first.shift();
@@ -211,9 +211,16 @@ class Viz {
           positionsGeo[i][1] + 0.5 * Math.sin(second),
         ]);
       } else {
+        const vec = [positionsGeo[i][0] - positionsGeo[i + 1][0], positionsGeo[i][1] - positionsGeo[i + 1][1]];
+        const length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1])
+        const normal = [-vec[0], vec[1]];
+        if (normal[1] < 0) {
+          normal[0] = -normal[0];
+          normal[1] = -normal[1];
+        }
         positionsGeoMiddle.push([
-          (positionsGeo[i][0] + positionsGeo[i + 1][0]) / 2,
-          (positionsGeo[i][1] + positionsGeo[i + 1][1]) / 2,
+          (positionsGeo[i][0] + positionsGeo[i + 1][0]) / 2 + normal[0] * 0.1,
+          (positionsGeo[i][1] + positionsGeo[i + 1][1]) / 2 + normal[1] * 0.1,
         ]);
       }
     }
@@ -230,7 +237,10 @@ class Viz {
       .attr('class', 'languagePath');
 
     if (clickFct) {
-      path.attr('class', 'languagePath clickable').on('click', clickFct);
+      path.attr('class', 'languagePath clickable')
+       .on('click', clickFct)
+       .append('title')
+        .text(title);
     }
 
     const length = Math.ceil(path.node().getTotalLength());
@@ -449,7 +459,7 @@ class Viz {
       const value = langNetwork.relationProportion[isocode][otherLang];
 
       this.addLine([isocode, otherLang], 0.5 + value, 'white', 0.5, () =>
-        this.navigateToLanguagePair(isocode, otherLang)
+        this.navigateToLanguagePair(isocode, otherLang), `${languagesCoo[isocode].name} ↔ ${languagesCoo[otherLang].name}`
       );
     });
   }
@@ -480,13 +490,13 @@ class Viz {
     const iso1 = info1To2.lang_src;
     const iso2 = info1To2.lang_to;
 
-    const values = langNetwork.fromProportion[iso1].filter(pair => pair[0] === iso2);
-    if (values.length === 0 || values[0] === 0) {
+    const value = langNetwork.relationProportion[iso1][iso2];
+    if (!value) {
       console.error(`No relation between ${iso1} and ${iso2}`);
     }
 
     this.removeAllLines();
-    this.addLine([iso1, iso2], 0.5 + values[0], 'white', 0.7);
+    this.addLine([iso1, iso2], 0.5 + value, 'white', 0.7);
   }
 
   /* Single word */
@@ -573,6 +583,14 @@ class Viz {
 
       $(`.right-panel .sample-panel`).append(clone);
     });
+    if (langInfo.samples.length === 0) {
+      const clone = cloneTemplate(sampleTemplate);
+
+      clone.html(`<strong>No samples for ${languagesCoo[isocode].name}</strong>`);
+      clone.removeClass('clickable');
+
+      $(`.right-panel .sample-panel`).append(clone);
+    }
 
     // only takes the influencing languages, which account for at least 5% of the words
     const influencing = _.takeWhile(langNetwork.fromProportion[isocode], pair => pair[1] > 0.05);
@@ -595,27 +613,12 @@ class Viz {
 
     recreateAlluvial(this, isocode, `.language-panel .svg-container`, dataFrom, isocodesFrom, dataTo, isocodesTo);
 
-    // Template for chord Diagram
-
-    /*
-    const isocodesNotFiltered = Object.keys(langNetwork.relation[isocode]);
-    const tempArray = isocodesNotFiltered.map(iso => [iso, langNetwork.relation[isocode][iso]]);
-    const isocodes = _.take(_.sortBy(tempArray, pair => -pair[1]), 4).map(pair => pair[0]);
-    isocodes.push(isocode);
-
-    const matrixRelations = [];
-    isocodes.forEach(first => {
-      const arr = [];
-
-      isocodes.forEach(second => {
-        const value = langNetwork.relation[first][second] || 0;
-        arr.push(value);
-      });
-
-      matrixRelations.push(arr);
-    }); */
-
-    if (isocodesFrom.length === 0) return;
+    // Chord Diagram
+    if (isocodesFrom.length === 0) {
+      $(`.language-panel .svg-chord-from-container`).hide();
+      return;
+    }
+    $(`.language-panel .svg-chord-from-container`).show();
 
     function getMatrixAndIsocodes(key) {
       const isocodes = _.take(_.sortBy(langNetwork[key][isocode], pair => -pair[1]), 4).map(pair => pair[0]);
@@ -682,6 +685,14 @@ class Viz {
 
       $(`.right-panel .first-samples-list`).append(clone);
     });
+    if (info1To2.samples.length === 0) {
+      const clone = cloneTemplate(wordTemplate);
+
+      clone.html(`<strong>No samples for ${languagesCoo[iso1].name}</strong>`);
+      clone.removeClass('clickable');
+
+      $(`.right-panel first-samples-list`).append(clone);
+    }
 
     _.take(info2To1.samples, 6).forEach(word => {
       const clone = cloneTemplate(wordTemplate);
@@ -691,6 +702,14 @@ class Viz {
 
       $(`.right-panel .second-samples-list`).append(clone);
     });
+    if (info2To1.samples.length === 0) {
+      const clone = cloneTemplate(wordTemplate);
+
+      clone.html(`<strong>No samples for ${languagesCoo[iso2].name}</strong>`);
+      clone.removeClass('clickable');
+
+      $(`.right-panel second-samples-list`).append(clone);
+    }
 
     d3.selectAll('.svg-alluvial').remove();
 
@@ -762,6 +781,14 @@ class Viz {
 
       $(`.right-panel .synonyms-list`).append(clone);
     });
+    if (wordInfo.synonyms.length === 0) {
+      const clone = cloneTemplate(synonymTemplate);
+
+      clone.html(`<strong>No synonyms for ${wordInfo.word}</strong>`);
+      clone.removeClass('clickable');
+
+      $(`.right-panel .synonyms-list`).append(clone);
+    }
 
     _.take(wordInfo.translations, 5).forEach(pair => {
       const clone = cloneTemplate(synonymTemplate);
@@ -771,6 +798,14 @@ class Viz {
 
       $(`.right-panel .translations-list`).append(clone);
     });
+    if (wordInfo.translations.length === 0) {
+      const clone = cloneTemplate(synonymTemplate);
+
+      clone.html(`<strong>No translations for ${wordInfo.word}</strong>`);
+      clone.removeClass('clickable');
+
+      $(`.right-panel .translations-list`).append(clone);
+    }
 
     // Graph
 

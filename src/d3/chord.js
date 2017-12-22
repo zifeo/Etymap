@@ -38,7 +38,7 @@ function recreateChord(viz, params, selector) {
   const color = d3
     .scaleLinear()
     .domain([0, 1, 2, 3, 4])
-    .range(['#BA252A', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']);
+    .range(['#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#BA252A']);
 
   function getColor(index) {
     return d3.rgb(color(index));
@@ -55,7 +55,8 @@ function recreateChord(viz, params, selector) {
     .selectAll('g')
     .data(chords => chords.groups)
     .enter()
-    .append('g');
+    .append('g')
+     .on('click', d => viz.navigateToLanguage(isocodes[d.index]));
 
   groups
     .append('path')
@@ -78,9 +79,8 @@ function recreateChord(viz, params, selector) {
         .duration(300)
         .style('fill-opacity', '0.7');
     })
-    .on('click', d => viz.navigateToLanguage(isocodes[d.index]))
     .append('title')
-    .text(d => `${languagesCoo[isocodes[d.index]].name}`);
+    .text(d => languagesCoo[isocodes[d.index]].name);
 
   g
     .append('g')
@@ -124,6 +124,7 @@ function recreateChord(viz, params, selector) {
       }
     )
     .style('text-anchor', 'middle')
+    .style('font-weight', d => d.index !== 4 ? 'normal' : 'bolder')
     .text(d => languagesCoo[isocodes[d.index]].name);
 }
 

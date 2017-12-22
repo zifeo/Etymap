@@ -186,8 +186,7 @@ function recreateEtymology(viz, wordInfo) {
       .attr('dy', d => (d.depth === 0 ? '33px' : '23px'))
       .attr('text-anchor', 'middle')
       .attr('style', 'cursor:pointer;')
-      // fix for long idioms, ex : "quand le chat n'est pas là, les souris dansent"
-      .text(d => (languagesCoo[d.data.lang] ? languagesCoo[d.data.lang].name : 'fra'))
+      .text(d => languagesCoo[d.data.lang].name)
       .on('click', d => viz.navigateToLanguage(d.data.lang));
 
     gPaths
@@ -197,7 +196,8 @@ function recreateEtymology(viz, wordInfo) {
       .append('path')
       .attr('fill', 'none')
       .attr('stroke', '#AAA')
-      .attr('stroke-width', 3)
+      .attr('stroke-width', d => diffLang(d) ? 7 : 3)
+      .attr('id', d => `pathLink-${d.id}`)
       .attr(
         'd',
         d3
@@ -206,7 +206,19 @@ function recreateEtymology(viz, wordInfo) {
           .target(d => d.parent)
           .x(d => d.x) // reversed as the tree is horizontal
           .y(d => d.y)
-      );
+      )
+      .attr('class', d => diffLang(d) ? 'clickable' : '')
+      .on('click', d => {
+        if (diffLang(d)) {
+          viz.navigateToLanguagePair(d.data.lang, d.parent.data.lang);
+        }
+      })
+      .append('title')
+      .text(d => diffLang(d) ? `${languagesCoo[d.data.lang].name} ↔ ${languagesCoo[d.parent.data.lang].name}` : '');
+
+    function diffLang(d) {
+      return d.data.lang !== d.parent.data.lang;
+    }
   }
 }
 
