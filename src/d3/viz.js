@@ -770,7 +770,8 @@ class Viz {
 
     // Graph
 
-    $(`.right-panel .word-panel .svg-container .h4`).html(`Parents & Children of ${wordInfo.word}`); // Title of the graph
+    // Title of the graph
+    $(`.right-panel .word-panel .svg-container .h4`).html(`Parents & Children of ${wordInfo.word}`);
 
     recreateEtymology(this, wordInfo, false);
   }

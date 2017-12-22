@@ -26,6 +26,7 @@
     "max-len": ["error", 120],
     "no-underscore-dangle": "off",
     "react/no-unescaped-entities": "off",
+    "import/prefer-default-export": "off",
     "prettier/prettier": [
       "error",
       {

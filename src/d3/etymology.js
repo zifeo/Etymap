@@ -7,7 +7,7 @@ import { langNetwork } from '../json/data';
 
 const languagesCoo = langNetwork.locations;
 
-function recreateEtymology(viz, wordInfo, displayParents) {
+function recreateEtymology(viz, wordInfo) {
   const width = $(`.right-panel .word-panel`).width() * 0.95;
 
   const maxDepth = {
@@ -32,7 +32,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
     if (!treeWidth[key][newDepth]) {
       treeWidth[key][newDepth] = 0;
     }
-    treeWidth[key][newDepth]++;
+    treeWidth[key][newDepth] += 1;
 
     if (parents.length > 0) {
       // more ancestors
@@ -84,7 +84,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
     .zoom()
     .scaleExtent([1, 1])
     .on('zoom', () => {
-      const transform = d3.event.transform;
+      const { transform } = d3.event;
       transform.y = 0;
       g.attr('transform', transform);
     });
@@ -125,7 +125,7 @@ function recreateEtymology(viz, wordInfo, displayParents) {
     dataNodes.forEach(d => {
       let depth = 0;
       if (key === 'parents') {
-        depth = d.depth;
+        ({ depth } = d);
       } else {
         depth = -d.depth;
       }
@@ -186,10 +186,11 @@ function recreateEtymology(viz, wordInfo, displayParents) {
       .attr('dy', d => (d.depth === 0 ? '33px' : '23px'))
       .attr('text-anchor', 'middle')
       .attr('style', 'cursor:pointer;')
-      .text(d => (languagesCoo[d.data.lang] ? languagesCoo[d.data.lang].name : 'fra')) // temporary fix for long idioms, ex : "quand le chat n'est pas là, les souris dansent"
+      // fix for long idioms, ex : "quand le chat n'est pas là, les souris dansent"
+      .text(d => (languagesCoo[d.data.lang] ? languagesCoo[d.data.lang].name : 'fra'))
       .on('click', d => viz.navigateToLanguage(d.data.lang));
 
-    const links = gPaths
+    gPaths
       .selectAll('none')
       .data(dataLinks, d => d.id)
       .enter()

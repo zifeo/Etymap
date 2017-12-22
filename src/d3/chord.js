@@ -10,7 +10,6 @@ function recreateChord(viz, params, selector) {
   const matrix = params[0];
   const isocodes = params[1];
 
-  const selectedLanguageIndex = isocodes.length - 1;
   const width = $(`.right-panel .language-panel`).width() * 0.8;
   const height = width * 1.2;
 
@@ -65,14 +64,14 @@ function recreateChord(viz, params, selector) {
     .style('stroke', 'none')
     .attr('id', d => `arc${d.index}`)
     .attr('d', arc)
-    .on('mouseover', (d, i) => {
+    .on('mouseover', d => {
       d3
         .select(`#arc${d.index}`)
         .transition()
         .duration(300)
         .style('fill-opacity', '1');
     })
-    .on('mouseout', (d, i) => {
+    .on('mouseout', d => {
       d3
         .select(`#arc${d.index}`)
         .transition()
@@ -82,10 +81,6 @@ function recreateChord(viz, params, selector) {
     .on('click', d => viz.navigateToLanguage(isocodes[d.index]))
     .append('title')
     .text(d => `${languagesCoo[isocodes[d.index]].name}`);
-
-  function getXY(d, cosOrSin) {
-    return innerRadius * cosOrSin((d.startAngle + d.endAngle) / 2 - Math.PI / 2);
-  }
 
   g
     .append('g')
@@ -99,14 +94,14 @@ function recreateChord(viz, params, selector) {
     .style('fill', d => getColor(d.target.index))
     .style('stroke', 'none')
     .attr('id', d => `ribbon${d.source.index}-${d.target.index}`)
-    .on('mouseover', (d, i) => {
+    .on('mouseover', d => {
       d3
         .select(`#ribbon${d.source.index}-${d.target.index}`)
         .transition()
         .duration(300)
         .style('fill-opacity', '1');
     })
-    .on('mouseout', (d, i) => {
+    .on('mouseout', d => {
       d3
         .select(`#ribbon${d.source.index}-${d.target.index}`)
         .transition()
