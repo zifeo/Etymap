@@ -1,7 +1,7 @@
 // @flow
 
 import 'whatwg-fetch';
-import 'babel-polyfill';
+import '@babel/polyfill';
 
 import $ from 'jquery';
 import Navigo from 'navigo';
