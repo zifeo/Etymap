@@ -61,7 +61,7 @@
     "@babel/polyfill": "^7.0.0",
     "d3": "^5.15.0",
     "jquery": "^3.5.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "navigo": "^7.1.2",
     "semantic-ui-dist": "^2.2.10",
     "whatwg-fetch": "^3.0.0"
